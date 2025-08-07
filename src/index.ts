@@ -1,5 +1,6 @@
 import './masonry-snap-grid-layout.css';
 import MasonrySnapGridLayout  from './MasonrySnapGridLayout';
+import {MasonrySnapGridLayoutOptions}  from './types';
 
 const container = document.getElementById('masonry');
 if (container) {
@@ -34,4 +35,4 @@ if (container) {
 }
 
 export default MasonrySnapGridLayout;
-export { MasonrySnapGridLayout };
+export { MasonrySnapGridLayout, MasonrySnapGridLayoutOptions };

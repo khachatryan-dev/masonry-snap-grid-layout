@@ -1,10 +1,10 @@
 /**
  * MasonrySnapGridLayoutClassNames
  * Optional CSS class names to override default styling selectors.
- * Enables user to customize CSS classes easily.
+ * Enables users to customize CSS classes easily.
  */
 export interface MasonrySnapGridLayoutClassNames {
-    container?: string;    // Class for masonry container wrapper
+    container: string;     // Class for masonry container wrapper
     item?: string;         // Class for each masonry item
     itemContent?: string;  // Wrapper for content inside each item
     itemHeader?: string;   // Header section inside an item
@@ -37,7 +37,7 @@ export interface MasonrySnapGridLayoutOptions {
     initialItems?: number;
 
     /**
-     * Optional class names object to override default CSS class names
+     * Optional class names object to override default CSS class names.
      */
     classNames?: MasonrySnapGridLayoutClassNames;
 

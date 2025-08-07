@@ -26,6 +26,16 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.cjs"
+      }
     }
   },
   "files": [
@@ -34,8 +44,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs --legacy-output",
-    "dev": "tsup src/index.ts --watch --dts --format esm,cjs --legacy-output"
+    "build": "tsup src/index.ts src/reactjs.tsx --dts --format esm,cjs --legacy-output",
+    "dev": "tsup src/index.ts src/reactjs.tsx --watch --dts --format esm,cjs --legacy-output"
   },
   "repository": {
     "type": "git",
@@ -51,7 +61,11 @@
     "node": ">=16"
   },
   "devDependencies": {
+    "@types/react": "^19.1.9",
     "tsup": "8.3.5",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "react": "^19.1.1"
   }
 }
