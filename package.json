@@ -1,6 +1,6 @@
 {
   "name": "masonry-snap-grid-layout",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "A performant, responsive masonry layout library with smooth animations, dynamic columns, and zero dependencies.",
   "keywords": [
     "masonry",

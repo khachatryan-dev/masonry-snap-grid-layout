@@ -19,7 +19,7 @@ interface MasonrySnapGridProps<T>
     style?: React.CSSProperties;
 }
 
-function MasonrySnapGridInner<T>(
+const MasonrySnapGridInner = <T,>(
     {
         items,
         renderItem,
@@ -27,12 +27,10 @@ function MasonrySnapGridInner<T>(
         style,
         ...options
     }: MasonrySnapGridProps<T>,
-    ref: React.Ref<MasonrySnapGridRef>
-) {
+    ref: React.ForwardedRef<MasonrySnapGridRef>
+) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const masonryRef = useRef<MasonrySnapGridLayout<T> | null>(null);
-
-    // React roots storage to prevent memory leaks
     const rootsRef = useRef<Map<HTMLElement, ReactDOM.Root>>(new Map());
 
     // Initialize masonry layout
@@ -52,14 +50,16 @@ function MasonrySnapGridInner<T>(
         });
 
         return () => {
-            // Unmount all React roots to avoid memory leaks
-            rootsRef.current.forEach((root) => root.unmount());
+            // Proper cleanup
+            rootsRef.current.forEach((root, div) => {
+                root.unmount();
+                div.remove();
+            });
             rootsRef.current.clear();
-
             masonryRef.current?.destroy();
             masonryRef.current = null;
         };
-    }, [options, renderItem]); // include renderItem if it's not memoized
+    }, [options, renderItem]);
 
     // Update items on change
     useEffect(() => {
@@ -68,10 +68,12 @@ function MasonrySnapGridInner<T>(
         }
     }, [items]);
 
-    // Expose layout instance through ref
+    // Properly typed imperative handle
     useImperativeHandle(ref, () => ({
-        layout: masonryRef.current!,
-    }));
+        get layout() {
+            return masonryRef.current;
+        }
+    }), []);
 
     return (
         <div
@@ -80,11 +82,11 @@ function MasonrySnapGridInner<T>(
             style={{ position: 'relative', width: '100%', ...style }}
         />
     );
-}
+};
 
-// Apply generic type correctly to forwardRef
+// Properly typed forwardRef component
 const MasonrySnapGrid = forwardRef(MasonrySnapGridInner) as <T>(
-    props: MasonrySnapGridProps<T> & { ref?: React.Ref<MasonrySnapGridRef> }
+    props: MasonrySnapGridProps<T> & { ref?: React.ForwardedRef<MasonrySnapGridRef> }
 ) => ReturnType<typeof MasonrySnapGridInner>;
 
-export default MasonrySnapGridInner
+export default MasonrySnapGrid;
