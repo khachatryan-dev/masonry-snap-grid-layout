@@ -68,12 +68,6 @@ const MasonrySnapGridInner = <T,>(
         }
     }, [items]);
 
-    // Properly typed imperative handle
-    useImperativeHandle(ref, () => ({
-        get layout() {
-            return masonryRef.current;
-        }
-    }), []);
 
     return (
         <div
