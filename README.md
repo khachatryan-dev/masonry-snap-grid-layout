@@ -1,7 +1,7 @@
 # masonry-snap-grid-layout
 
 [![npm version](https://img.shields.io/npm/v/masonry-snap-grid-layout?color=brightgreen)](https://www.npmjs.com/package/masonry-snap-grid-layout)
-[![CI/CD](https://github.com/your-username/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/your-username/masonry-snap-grid-layout/actions)
+[![CI/CD](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions)
 
 A performant masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
 
