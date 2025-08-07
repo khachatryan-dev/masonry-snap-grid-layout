@@ -29,21 +29,23 @@ const MasonrySnapGrid = forwardRef(function MasonrySnapGrid<T>(
     const containerRef = useRef<HTMLDivElement>(null);
     const layoutRef = useRef<MasonrySnapGridLayout | null>(null);
 
-    // Expose layout instance if needed
+    // Expose layout instance via ref for advanced use
     useImperativeHandle(ref, () => ({
         layout: layoutRef.current,
     }));
 
-    // Initialize masonry layout once
+    // Initialize MasonrySnapGridLayout instance on mount or options change
     useEffect(() => {
         if (!containerRef.current) return;
 
         layoutRef.current = new MasonrySnapGridLayout(containerRef.current, {
             ...options,
-            // We disable internal item generation because React controls content
-            initialItems: 0,
+            initialItems: 0, // disable internal item creation
             itemContent: null,
         });
+
+        // Perform initial layout after creation
+        layoutRef.current.calculateLayout();
 
         return () => {
             layoutRef.current?.destroy();
@@ -51,19 +53,18 @@ const MasonrySnapGrid = forwardRef(function MasonrySnapGrid<T>(
         };
     }, [options]);
 
-    // Whenever items change, re-render React children inside container
+    // Whenever `items` change, trigger layout recalculation
     useEffect(() => {
-        if (!containerRef.current || !layoutRef.current) return;
+        if (!layoutRef.current) return;
 
-        // Clear container children before React renders new items
-        containerRef.current.innerHTML = '';
+        // Optionally, you can call a method here to notify layout about changes,
+        // or just rely on React rendering wrapped items (the DOM nodes)
 
-        // Render React children directly inside container
-        // Using ReactDOM.createPortal for each item
+        // Because your React renders items inside container,
+        // just call calculateLayout to reposition after React update
 
-        // However, to keep it simple, we rely on React rendering here:
-
-    }, [items, renderItem]);
+        layoutRef.current.calculateLayout();
+    }, [items]);
 
     return (
         <div
