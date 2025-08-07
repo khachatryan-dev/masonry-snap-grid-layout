@@ -156,11 +156,3 @@ Make sure your `NPM_TOKEN` is saved in GitHub Secrets for automatic publishing.
 MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
 
 ---
-
-```
-
----
-
-If you want, I can prepare this as a ready-to-copy markdown file or help you generate a downloadable README.md.  
-Would you like that?
-```
