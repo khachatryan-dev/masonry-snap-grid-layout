@@ -1,19 +1,25 @@
+
 # masonry-snap-grid-layout
 
 [![npm version](https://img.shields.io/npm/v/masonry-snap-grid-layout?color=brightgreen)](https://www.npmjs.com/package/masonry-snap-grid-layout)
 [![CI/CD](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions)
+[![Demo Vanilla JS](https://img.shields.io/badge/demo-vanilla%20js-blue)](https://codesandbox.io/p/sandbox/l9xl7s)
+[![Demo React](https://img.shields.io/badge/demo-react-blue)](https://codesandbox.io/p/sandbox/rgxsxp)
 
 A performant masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
+
+![Masonry Grid Demo](https://i.imgur.com/JQZ4L7C.gif)
 
 ---
 
 ## 🚀 Features
 
-* **Dynamic Columns & Gutter**: Automatically adapts to container width.
-* **Smooth Animations**: Transitions when layout changes or items shuffle.
-* **Customizable Item Content**: Pass your own HTML or render functions.
-* **Lightweight & Dependency-Free**: Vanilla TypeScript for easy integration.
-* **Responsive & Accessible**: Works well on all screen sizes.
+- **Dynamic Columns & Gutter**: Automatically adapts to container width
+- **Smooth Animations**: CSS-powered transitions when layout changes
+- **Customizable Items**: Render any content with gradient backgrounds and emojis
+- **Lightweight**: Zero dependencies, pure TypeScript
+- **React & Vanilla JS**: Works with both React and plain JavaScript
+- **Responsive**: Perfect for galleries, dashboards, and card layouts
 
 ---
 
@@ -23,138 +29,168 @@ A performant masonry grid layout library with smooth animations, customizable gu
 npm install masonry-snap-grid-layout
 # or
 yarn add masonry-snap-grid-layout
-````
+# or
+pnpm add masonry-snap-grid-layout
+```
 
 ---
 
-## 💡 Usage Example (Vanilla JS)
+## 💡 Usage Examples
 
-```ts
+### Vanilla JavaScript (Live Demo)
+
+```javascript
 import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
-import 'masonry-snap-grid-layout/dist/index.css'; // Import the CSS!
+import 'masonry-snap-grid-layout/dist/index.css';
 
-const container = document.getElementById('masonry-container')!;
+const container = document.getElementById('masonry-container');
+const items = [
+  { id: 1, title: "Sunset", emoji: "🌅", color: "#FF9A9E" },
+  { id: 2, title: "Ocean", emoji: "🌊", color: "#A1C4FD" },
+  // ... more items
+];
+
 const masonry = new MasonrySnapGridLayout(container, {
-  gutter: 12,
+  gutter: 16,
   minColWidth: 200,
-  initialItems: 20,
   animate: true,
-  transitionDuration: 350,
-  itemContent: (index) => {
+  transitionDuration: 300,
+  items: items,
+  renderItem: (item) => {
     const div = document.createElement('div');
-    div.textContent = `Custom Item #${index + 1}`;
+    div.style.height = `${120 + Math.random() * 200}px`;
+    div.style.background = `linear-gradient(135deg, ${item.color} 0%, #FFFFFF 100%)`;
+    div.style.borderRadius = '12px';
+    div.style.padding = '16px';
+    div.style.color = '#333';
+    div.innerHTML = `
+      <div style="font-size: 2rem">${item.emoji}</div>
+      <h3 style="margin: 8px 0">${item.title}</h3>
+    `;
     return div;
-  },
+  }
 });
 ```
 
-In your HTML:
-
-```html
-<div id="masonry-container" style="position: relative; width: 100%;"></div>
-```
+[![Open Vanilla Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/l9xl7s)
 
 ---
 
-## 💙 React Usage Example
+### React (Live Demo)
 
-```tsx
-'use client';
-
-import React from 'react';
+```jsx
 import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
-import 'masonry-snap-grid-layout/dist/index.css'; // Import the CSS!
+import 'masonry-snap-grid-layout/dist/index.css';
 
-export default function MasonryGrid() {
-  const items = Array.from({ length: 25 }, (_, i) => i);
+const items = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  title: `Item ${i + 1}`,
+  emoji: ['🌻', '🌈', '🍕', '🎸', '🚀'][Math.floor(Math.random() * 5)],
+  height: 120 + Math.random() * 200
+}));
 
+export default function Gallery() {
   return (
     <MasonrySnapGrid
       items={items}
-      options={{
-        gutter: 16,
-        minColWidth: 220,
-        animate: true,
-        transitionDuration: 400,
-      }}
-      renderItem={(item, index) => (
-        <div>
-          React Item #{index + 1}
+      gutter={16}
+      minColWidth={220}
+      animate
+      transitionDuration={400}
+      renderItem={(item) => (
+        <div style={{
+          height: `${item.height}px`,
+          background: `linear-gradient(135deg, 
+            hsl(${Math.random() * 360}, 70%, 70%) 0%, 
+            hsl(${Math.random() * 360}, 70%, 80%) 100%)`,
+          borderRadius: '12px',
+          padding: '16px',
+          color: 'white'
+        }}>
+          <div style={{ fontSize: '2rem' }}>{item.emoji}</div>
+          <h3 style={{ margin: '8px 0' }}>{item.title}</h3>
+          <small>Height: {Math.round(item.height)}px</small>
         </div>
       )}
-      className="my-masonry-container"
-      style={{ position: 'relative', width: '100%' }}
     />
   );
 }
 ```
 
+[![Open React Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/rgxsxp)
+
 ---
 
-## ⚙️ API
+## 🛠️ API Reference
 
-### Constructor
+### Configuration Options
 
-```ts
-new MasonrySnapGridLayout(container: HTMLElement, options?: MasonrySnapGridLayoutOptions)
-```
-
-* **container** — The container element where items are rendered.
-* **options** — Configuration options (optional).
+| Option               | Type                      | Default | Description                          |
+|----------------------|---------------------------|---------|--------------------------------------|
+| `gutter`             | `number`                  | `16`    | Spacing between items (px)           |
+| `minColWidth`        | `number`                  | `250`   | Minimum column width (px)            |
+| `animate`            | `boolean`                 | `true`  | Enable/disable animations            |
+| `transitionDuration` | `number`                  | `400`   | Animation duration (ms)              |
+| `items`              | `Array<T>`                | `[]`    | Your data items                      |
+| `renderItem`         | `(item: T) => HTMLElement`| -       | Function to render each item         |
+| `classNames`         | `Object`                  | -       | Custom CSS class names               |
 
 ### Methods
 
-* `shuffleItems(): void` — Shuffle items randomly with animation.
-* `addItems(count: number): void` — Add more items dynamically.
-* `destroy(): void` — Clean up and remove all items and event listeners.
+- `updateItems(newItems: T[])`: Refresh with new items
+- `shuffleItems()`: Randomize item positions
+- `destroy()`: Clean up the instance
 
 ---
 
-## 🛠️ Options
+## 🎨 Customization Tips
 
-| Option               | Type                                                                    | Default             | Description                                      |
-| -------------------- | ----------------------------------------------------------------------- | ------------------- | ------------------------------------------------ |
-| `gutter`             | `number`                                                                | `16`                | Spacing between items in pixels.                 |
-| `minColWidth`        | `number`                                                                | `250`               | Minimum column width in pixels.                  |
-| `animate`            | `boolean`                                                               | `true`              | Enable/disable animations.                       |
-| `transitionDuration` | `number`                                                                | `400`               | Animation duration in milliseconds.              |
-| `initialItems`       | `number`                                                                | `30`                | Number of items generated initially.             |
-| `classNames`         | `Partial<MasonrySnapGridLayoutClassNames>`                              | Default CSS classes | Override CSS class names for styling.            |
-| `itemContent`        | `string` \| `HTMLElement` \| `(index: number) => HTMLElement \| string` | `null`              | Content or content generator callback for items. |
+**1. Gradient Backgrounds**  
+Use CSS gradients for beautiful card backgrounds:
 
----
-
-## 🎨 Styling & Animations
-
-You can customize styles by overriding the CSS classes or providing your own via the `classNames` option.
-
-The layout uses smooth `transform` transitions with `cubic-bezier(0.4, 0, 0.2, 1)` easing for a polished, natural animation effect.
-
----
-
-## 🔁 CI/CD
-
-This package uses **GitHub Actions** to automatically publish new versions to **npm** when you push a version tag like `v1.0.0`.
-
-To use it:
-
-```bash
-npm version patch
-git push origin main --tags
+```css
+background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
 ```
 
-Make sure your `NPM_TOKEN` is saved in GitHub Secrets for automatic publishing.
+**2. Random Emojis**  
+Add personality with emojis:
+
+```javascript
+const emojis = ['🌻', '🌈', '🍕', '🎸', '🚀'];
+const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+```
+
+**3. Responsive Breakpoints**  
+Adjust columns based on screen size:
+
+```javascript
+minColWidth: window.innerWidth < 768 ? 150 : 250
+```
 
 ---
 
-## 📦 npm Package
+## 📦 Package Structure
 
-📌 [View on npm](https://www.npmjs.com/package/masonry-snap-grid-layout)
+```
+dist/
+├── index.js       # Vanilla JS bundle
+├── react.js       # React component
+├── index.d.ts     # TypeScript types
+└── index.css      # Base styles
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
 ## 📄 License
 
 MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
-
----
