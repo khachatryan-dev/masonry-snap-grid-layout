@@ -31,6 +31,7 @@ yarn add masonry-snap-grid-layout
 
 ```ts
 import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
+import 'masonry-snap-grid-layout/dist/index.css'; // Import the CSS!
 
 const container = document.getElementById('masonry-container')!;
 const masonry = new MasonrySnapGridLayout(container, {
@@ -61,7 +62,8 @@ In your HTML:
 'use client';
 
 import React from 'react';
-import MasonrySnapGrid from 'masonry-snap-grid-layout/react'; // Adjust path if needed
+import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
+import 'masonry-snap-grid-layout/dist/index.css'; // Import the CSS!
 
 export default function MasonryGrid() {
   const items = Array.from({ length: 25 }, (_, i) => i);
