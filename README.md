@@ -1,5 +1,8 @@
 # masonry-snap-grid-layout
 
+[![npm version](https://img.shields.io/npm/v/masonry-snap-grid-layout?color=brightgreen)](https://www.npmjs.com/package/masonry-snap-grid-layout)
+[![CI/CD](https://github.com/your-username/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/your-username/masonry-snap-grid-layout/actions)
+
 A performant masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
 
 ---
@@ -53,7 +56,9 @@ const masonry = new MasonrySnapGridLayout(container, {
 
 ### Constructor
 
-`new MasonrySnapGridLayout(container: HTMLElement, options?: MasonrySnapGridLayoutOptions)`
+```ts
+new MasonrySnapGridLayout(container: HTMLElement, options?: MasonrySnapGridLayoutOptions)
+```
 
 - **container** — The container element where items are rendered.
 - **options** — Configuration options (optional).
@@ -67,24 +72,44 @@ const masonry = new MasonrySnapGridLayout(container, {
 
 ## 🛠️ Options
 
-| Option             | Type                               | Default     | Description                              |
-|--------------------|----------------------------------|-------------|------------------------------------------|
-| `gutter`           | `number`                         | `16`        | Spacing between items in pixels.        |
-| `minColWidth`      | `number`                         | `250`       | Minimum column width in pixels.         |
-| `animate`          | `boolean`                        | `true`      | Enable/disable animations.               |
-| `transitionDuration` | `number`                       | `400`       | Animation duration in milliseconds.     |
-| `initialItems`     | `number`                         | `30`        | Number of items generated initially.    |
-| `classNames`       | `object`                         | Default CSS classes | Override CSS class names for styling.   |
-| `itemContent`      | `string` \| `HTMLElement` \| `(index: number) => HTMLElement \| string` | `null` | Content or content generator callback for items. |
+| Option              | Type                                                                 | Default              | Description                                             |
+|---------------------|----------------------------------------------------------------------|----------------------|---------------------------------------------------------|
+| `gutter`            | `number`                                                             | `16`                 | Spacing between items in pixels.                       |
+| `minColWidth`       | `number`                                                             | `250`                | Minimum column width in pixels.                        |
+| `animate`           | `boolean`                                                            | `true`               | Enable/disable animations.                             |
+| `transitionDuration`| `number`                                                             | `400`                | Animation duration in milliseconds.                    |
+| `initialItems`      | `number`                                                             | `30`                 | Number of items generated initially.                   |
+| `classNames`        | `object`                                                             | Default CSS classes  | Override CSS class names for styling.                  |
+| `itemContent`       | `string` \| `HTMLElement` \| `(index: number) => HTMLElement \| string` | `null`           | Content or content generator callback for items.       |
 
 ---
 
 ## 🎨 Styling
 
-You can customize the styles by overriding the CSS classes defined or by providing your own CSS class names through `classNames` option.
+You can customize the styles by overriding the CSS classes defined or by providing your own CSS class names through the `classNames` option.
+
+---
+
+## 🔁 CI/CD
+
+This package uses **GitHub Actions** to automatically publish new versions to **npm** when you push a version tag like `v1.0.0`.
+
+To use it:
+```bash
+npm version patch
+git push origin main --tags
+```
+
+Ensure you have your `NPM_TOKEN` saved in GitHub Secrets for automatic publishing.
+
+---
+
+## 📦 npm Package
+
+📌 [View on npm](https://www.npmjs.com/package/masonry-snap-grid-layout)
 
 ---
 
 ## 📄 License
 
-MIT © Aram Khachatryan
+MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
