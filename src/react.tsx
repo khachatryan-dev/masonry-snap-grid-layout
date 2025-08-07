@@ -1,11 +1,10 @@
-'use client';
-
 import React, {
     useEffect,
     useRef,
     useImperativeHandle,
     forwardRef,
     ReactNode,
+    useMemo
 } from 'react';
 import MasonrySnapGridLayout from './MasonrySnapGridLayout';
 import { MasonrySnapGridLayoutOptions } from './types';
@@ -28,64 +27,60 @@ const MasonrySnapGrid = forwardRef(function MasonrySnapGrid<T>(
 ) {
     const containerRef = useRef<HTMLDivElement>(null);
     const layoutRef = useRef<MasonrySnapGridLayout | null>(null);
+    const itemsRef = useRef<HTMLElement[]>([]);
 
-    // Expose layout instance via ref for advanced use
+    // Create item elements
+    const itemElements = useMemo(() => {
+        return items.map((item, index) => (
+            <div
+                key={index}
+                ref={el => {
+                    if (el) itemsRef.current[index] = el;
+                }}
+                className="masonry-snap-grid-item"
+                style={{ position: 'absolute' }}
+            >
+                {renderItem(item, index)}
+            </div>
+        ));
+    }, [items, renderItem]);
+
+    // Expose layout instance
     useImperativeHandle(ref, () => ({
         layout: layoutRef.current,
     }));
 
-    // Initialize MasonrySnapGridLayout instance on mount or options change
+    // Initialize layout
     useEffect(() => {
         if (!containerRef.current) return;
 
-        layoutRef.current = new MasonrySnapGridLayout(containerRef.current, {
-            ...options,
-            initialItems: 0, // disable internal item creation
-            itemContent: null,
-        });
-
-        // Perform initial layout after creation
-        layoutRef.current.calculateLayout();
+        layoutRef.current = new MasonrySnapGridLayout(
+            containerRef.current,
+            options
+        );
 
         return () => {
             layoutRef.current?.destroy();
-            layoutRef.current = null;
         };
     }, [options]);
 
-    // Whenever `items` change, trigger layout recalculation
+    // Update items
     useEffect(() => {
         if (!layoutRef.current) return;
 
-        // Optionally, you can call a method here to notify layout about changes,
-        // or just rely on React rendering wrapped items (the DOM nodes)
+        // Filter out null refs
+        const validItems = itemsRef.current.filter(Boolean) as HTMLElement[];
+        layoutRef.current.setItems(validItems);
 
-        // Because your React renders items inside container,
-        // just call calculateLayout to reposition after React update
-
-        layoutRef.current.calculateLayout();
-    }, [items]);
+    }, [itemElements]);
 
     return (
         <div
             ref={containerRef}
             className={className}
             style={{ position: 'relative', width: '100%', ...style }}
-            aria-label="Masonry grid"
-            role="list"
         >
-            {items.map((item, index) => (
-                <div
-                    key={index}
-                    className="masonry-snap-grid-item"
-                    style={{ breakInside: 'avoid' }}
-                    role="listitem"
-                    aria-posinset={index + 1}
-                    aria-setsize={items.length}
-                >
-                    {renderItem(item, index)}
-                </div>
-            ))}
+            {itemElements}
         </div>
     );
 });
