@@ -1,0 +1,67 @@
+/*
+  Masonry Snap Grid Layout Styles
+
+  CSS variables for easy customization:
+  --gutter: spacing between items
+  --columns: number of columns (calculated dynamically)
+  --min-col-width: minimum width of columns
+  --transition-duration: animation timing
+  --primary-color, --secondary-color: gradient colors for items
+  --text-color: color for text inside items
+  --shadow-color: shadow color for item depth
+  --item-radius: border-radius for rounded corners
+*/
+
+/* Root CSS variables for theming */
+:root {
+    --gutter: 16px;
+    --columns: 4;
+    --min-col-width: 250px;
+    --transition-duration: 0.4s;
+    --primary-color: #6b73ff;
+    --secondary-color: #000dff;
+    --text-color: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --item-radius: 8px;
+}
+
+/* Container for masonry grid — relative positioning for absolute item placement */
+.masonry-snap-grid-layout-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    transition: height var(--transition-duration) ease-out;
+}
+
+/* Each item absolutely positioned within container */
+.masonry-snap-grid-layout-item {
+    position: absolute;
+    color: var(--text-color);
+    border-radius: var(--item-radius);
+    font-size: 1rem;
+    box-shadow: 0 6px 12px var(--shadow-color);
+    user-select: none;
+    cursor: grab;
+    will-change: transform;
+    transition:
+            transform var(--transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.3s ease,
+            background 0.4s ease;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Hover state for better UX */
+.masonry-snap-grid-layout-item:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Active / grabbing state */
+.masonry-snap-grid-layout-item:active {
+    cursor: grabbing;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+

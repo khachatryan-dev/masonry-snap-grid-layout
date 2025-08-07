@@ -1,0 +1,28 @@
+{
+  "name": "masonry-snap-grid-layout",
+  "version": "0.0.3",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs --legacy-output",
+    "dev": "tsup src/index.ts --watch --dts --format esm,cjs --legacy-output"
+  },
+  "devDependencies": {
+    "tsup": "8.3.5",
+    "typescript": "^5.0.0"
+  }
+}
