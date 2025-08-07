@@ -1,0 +1,16 @@
+.masonry-snap-grid-container {
+    position: relative;
+    width: 100%;
+    transition: height 0.4s ease-out;
+    overflow: hidden;
+}
+
+.masonry-snap-grid-item {
+    position: absolute;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    box-sizing: border-box;
+    transform-origin: top left;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
