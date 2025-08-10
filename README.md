@@ -13,7 +13,7 @@ A performant masonry grid layout library with smooth animations, customizable gu
 ## Demo Video
 
 [![Watch the video](https://img.youtube.com/vi/mHK_6z9WEWs/hqdefault.jpg)](https://www.youtube.com/watch?v=mHK_6z9WEWs)
-
+ 
 ---
 ## 🚀 Features
 
