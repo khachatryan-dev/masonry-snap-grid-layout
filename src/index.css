@@ -1,3 +1,20 @@
+/* 
+====================================================================
+MasonrySnapGridLayout - Base Styles
+====================================================================
+These styles define the core visual and positional behavior of the 
+masonry grid container and its items. They are minimal to allow 
+flexibility for custom themes while ensuring smooth layout animations.
+====================================================================
+*/
+
+/* 
+Container styles:
+- Acts as the positioning context for masonry items (position: relative).
+- Takes full available width.
+- Smoothly animates height changes when items reflow.
+- Hides overflow to prevent content from spilling outside the layout.
+*/
 .masonry-snap-grid-container {
     position: relative;
     width: 100%;
@@ -5,6 +22,15 @@
     overflow: hidden;
 }
 
+/* 
+Item styles:
+- Absolutely positioned within the container.
+- Animates transform changes for smooth reordering.
+- Uses GPU-accelerated transform optimizations (`will-change`, `backface-visibility`).
+- Sets `box-sizing: border-box` for consistent sizing with padding/border.
+- `transform-origin` ensures scaling/rotation pivot from the top-left corner.
+- `perspective` enables subtle 3D rendering improvements on some browsers.
+*/
 .masonry-snap-grid-item {
     position: absolute;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
