@@ -55,6 +55,9 @@
   "bugs": {
     "url": "https://github.com/khachatryan-dev/masonry-snap-grid-layout/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Aram Khachatryan <arkhachat@gmail.com>",
   "license": "MIT",
   "engines": {
