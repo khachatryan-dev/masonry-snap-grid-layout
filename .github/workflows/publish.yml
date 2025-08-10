@@ -8,43 +8,46 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git
-
       - name: Install dependencies
         run: npm ci
 
+      - name: Fix package.json
+        run: npm pkg fix
+
       - name: Bump version
-        id: bump-version
+        id: version
         run: |
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          # Configure git
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Bump version
           npm version patch --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
-          echo "new_version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit and tag version
         run: |
           git add package.json package-lock.json
-          git commit -m "Bump version to v${{ steps.bump-version.outputs.new_version }} [skip ci]"
-          git tag -a v${{ steps.bump-version.outputs.new_version }} -m "Release v${{ steps.bump-version.outputs.new_version }}"
-          git push origin main
-          git push origin v${{ steps.bump-version.outputs.new_version }}
+          git commit -m "Bump version to v${{ steps.version.outputs.new_version }} [skip ci]"
+          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Version ${{ steps.version.outputs.new_version }}"
+          
+          # Push using the token explicitly
+          git push "https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:main
+          git push "https://${{ secrets.REPO_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git" --tags
 
       - name: Build package
         run: npm run build
