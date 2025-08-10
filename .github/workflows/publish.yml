@@ -2,7 +2,7 @@ name: Publish to npm
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Changed from master to main (adjust if needed)
 
 jobs:
   publish:
@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}  # Add this line
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -51,7 +52,7 @@ jobs:
           git commit -m "Bump version to v${NEW_VERSION} [skip ci]"
           
           # Push changes and tag
-          git push origin main
+          git push origin HEAD
           git push origin v${NEW_VERSION}
           
           # Set output for next steps
