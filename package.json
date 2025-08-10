@@ -1,6 +1,6 @@
 {
   "name": "masonry-snap-grid-layout",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A performant, responsive masonry layout library with smooth animations, dynamic columns, and zero dependencies.",
   "keywords": [
     "masonry",
@@ -49,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/khachatryan-dev/masonry-snap-grid-layout.git"
+    "url": "git+https://github.com/khachatryan-dev/masonry-snap-grid-layout.git"
   },
   "homepage": "https://github.com/khachatryan-dev/masonry-snap-grid-layout#readme",
   "bugs": {
