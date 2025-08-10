@@ -8,10 +8,13 @@
 
 A performant masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
 
-![Masonry Grid Demo](https://i.imgur.com/JQZ4L7C.gif)
 
 ---
+## Demo Video
 
+[![Watch the video](https://img.youtube.com/vi/mHK_6z9WEWs/hqdefault.jpg)](https://www.youtube.com/watch?v=mHK_6z9WEWs)
+
+---
 ## 🚀 Features
 
 - **Dynamic Columns & Gutter**: Automatically adapts to container width
