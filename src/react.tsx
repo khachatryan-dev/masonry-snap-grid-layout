@@ -2,6 +2,7 @@ import React, {
     useEffect,
     useRef,
     forwardRef,
+    useCallback,
 } from 'react';
 import ReactDOM from 'react-dom/client';
 import MasonrySnapGridLayout from './MasonrySnapGridLayout';
@@ -9,27 +10,20 @@ import { MasonrySnapGridLayoutOptions, MasonrySnapGridRef } from './types';
 
 /**
  * Props for the MasonrySnapGrid React wrapper.
- *
- * @template T - Type of items in the masonry grid.
+ * Generic <T> allows layout to work with any item type.
  */
 interface MasonrySnapGridProps<T>
     extends Omit<MasonrySnapGridLayoutOptions<T>, 'items' | 'renderItem'> {
-    /** The data items to render into the masonry grid. */
     items: T[];
-
-    /** Renders a single data item into a React node. */
     renderItem: (item: T) => React.ReactNode;
-
-    /** Optional container class name. */
     className?: string;
-
-    /** Optional inline styles for the container. */
     style?: React.CSSProperties;
 }
 
 /**
- * Helper: wait for all <img> inside "el" to load (or error) with a timeout fallback.
- * Returns a promise that resolves when all images are either loaded or the timeout hits.
+ * Utility — Waits until all <img> elements inside a given container
+ * have either loaded or errored, or until the timeout expires.
+ * This ensures layout measurements are based on final image sizes.
  */
 function waitForImages(el: HTMLElement, timeout = 1000): Promise<void> {
     return new Promise((resolve) => {
@@ -44,8 +38,7 @@ function waitForImages(el: HTMLElement, timeout = 1000): Promise<void> {
         const finish = () => {
             if (called) return;
             called = true;
-            // small microtask delay to ensure layout has applied
-            requestAnimationFrame(() => resolve());
+            resolve();
         };
 
         const onLoadOrError = () => {
@@ -55,7 +48,6 @@ function waitForImages(el: HTMLElement, timeout = 1000): Promise<void> {
 
         images.forEach((img) => {
             if (img.complete) {
-                // already finished (loaded or errored)
                 onLoadOrError();
             } else {
                 img.addEventListener('load', onLoadOrError, { once: true });
@@ -63,21 +55,15 @@ function waitForImages(el: HTMLElement, timeout = 1000): Promise<void> {
             }
         });
 
-        // Timeout fallback — in case images hang or take too long
-        setTimeout(() => finish(), timeout);
+        setTimeout(finish, timeout);
     });
 }
 
 /**
- * React wrapper for MasonrySnapGridLayout that supports SSR-friendly rendering.
- *
- * SSR Strategy:
- * - On the server: render all items normally with React → HTML is SEO-friendly & visible without JS.
- * - On the client: after hydration, remove the static HTML and let MasonrySnapGridLayout take over.
- *
- * Fixes:
- * - Delay initial layout until after paint (rAF) so measurements are correct.
- * - Wait for images to load (with a timeout fallback) before triggering layout.
+ * React wrapper for MasonrySnapGridLayout
+ * ---------------------------------------
+ * Handles SSR → CSR transition, forwards ref to parent,
+ * and manages async layout initialization after image load.
  */
 const MasonrySnapGridInner = <T,>(
     {
@@ -89,29 +75,46 @@ const MasonrySnapGridInner = <T,>(
     }: MasonrySnapGridProps<T>,
     ref: React.ForwardedRef<MasonrySnapGridRef>
 ) => {
-    /** Ref to the outer container where the masonry layout will be applied. */
+    // DOM container where the masonry will live
     const containerRef = useRef<HTMLDivElement>(null);
 
-    /** Ref to hold the underlying non-React Masonry layout instance. */
+    // Underlying vanilla masonry instance
     const masonryRef = useRef<MasonrySnapGridLayout<T> | null>(null);
 
-    /**
-     * Stores references to all mounted React roots.
-     * - Needed because we're rendering React components into DOM nodes created manually.
-     * - Helps us unmount cleanly when the component unmounts.
-     */
+    // Track all React roots rendered inside masonry slots (for cleanup)
     const rootsRef = useRef<Map<HTMLElement, ReactDOM.Root>>(new Map());
 
+    // Tracks component mount state to prevent async leaks
+    const isMountedRef = useRef(true);
+
+    // Latest ref passed from parent (keeps forwardRef stable across renders)
+    const latestRef = useRef(ref);
+    latestRef.current = ref;
+
     /**
-     * Server-side / initial render:
-     * We render items as plain HTML so they are visible for SSR & SEO.
-     * Styling here should approximate the final look to minimize CLS.
+     * Forward ref handling — ensures both function refs
+     * and object refs from the parent receive the correct instance.
+     */
+    const updateForwardedRef = useCallback((instance: MasonrySnapGridRef | null) => {
+        if (latestRef.current) {
+            if (typeof latestRef.current === 'function') {
+                latestRef.current(instance);
+            } else {
+                latestRef.current.current = instance;
+            }
+        }
+    }, []);
+
+    /**
+     * Server-rendered placeholder items.
+     * Rendered inline so that:
+     * - SEO crawlers see real content
+     * - No layout shift before hydration
+     * - Screen readers have immediate access
      */
     const serverRenderedItems = (
         <>
             {items.map((item, idx) => (
-                // Use inline-block to let items flow before masonry takes over.
-                // Consumers can override with their own classes/styles.
                 <div key={idx} style={{ display: 'inline-block', verticalAlign: 'top' }}>
                     {renderItem(item)}
                 </div>
@@ -120,113 +123,121 @@ const MasonrySnapGridInner = <T,>(
     );
 
     /**
-     * Client takeover effect:
-     * - Remove SSR content
-     * - Initialize the Masonry instance (but delay the *first layout* until after paint/images)
+     * Effect: Client takeover after hydration
+     * ----------------------------------------
+     * Steps:
+     * 1. Clear server-rendered HTML
+     * 2. Create and initialize masonry layout
+     * 3. Wait for next paint + images load before first layout pass
      */
     useEffect(() => {
-        if (!containerRef.current) return;
-
+        isMountedRef.current = true;
         const container = containerRef.current;
+        if (!container) return;
 
-        // Clear any SSR static HTML so Masonry can manage DOM properly.
+        // Save original SSR content in case init fails
+        const serverContent = container.cloneNode(true) as HTMLElement;
         container.innerHTML = '';
 
-        // Create the masonry instance. We pass a renderItem factory that creates
-        // DOM nodes and mounts React roots into them. The masonry implementation
-        // is expected to insert these returned elements into the layout.
-        masonryRef.current = new MasonrySnapGridLayout(container, {
-            ...options,
-            items,
-            renderItem: (item) => {
-                const div = document.createElement('div');
-                // Optional: set a sensible default style class to avoid flash
-                div.style.willChange = 'transform, height';
-                const root = ReactDOM.createRoot(div);
-                root.render(renderItem(item));
-                rootsRef.current.set(div, root);
-                return div;
-            },
-        });
+        try {
+            // Create Masonry instance with React-powered renderItem
+            masonryRef.current = new MasonrySnapGridLayout(container, {
+                ...options,
+                items,
+                renderItem: (item) => {
+                    const div = document.createElement('div');
+                    div.style.willChange = 'transform, height'; // Hint for smoother animations
+                    const root = ReactDOM.createRoot(div);
+                    root.render(renderItem(item));
+                    rootsRef.current.set(div, root);
+                    return div;
+                },
+            });
+
+            // Expose instance to parent via forwarded ref
+            updateForwardedRef({ layout: masonryRef.current });
+
+        } catch (error) {
+            console.error('Masonry initialization failed:', error);
+            container.replaceWith(serverContent); // Fallback to SSR markup
+            return;
+        }
 
         let rafId: number | null = null;
         let cancelled = false;
 
-        // Wait for a paint frame, then wait for images within the container, then trigger layout.
-        // This prevents the "stacked" initial state where items have zero measured height.
         const doInitialLayout = async () => {
-            // Ensure at least one paint has happened so layout/measurements are meaningful.
-            await new Promise<void>((r) => {
-                rafId = requestAnimationFrame(() => r());
-            });
-
-            // Wait for images inside container (if any) to finish loading or timeout
-            await waitForImages(container, 1000);
-
-            if (cancelled) return;
-
-            // Trigger initial layout. Use updateItems to be conservative and generic.
-            // If your masonry has a dedicated `layout()` method, call that instead.
             try {
+                // Ensure browser has painted initial DOM
+                await new Promise<void>((r) => {
+                    rafId = requestAnimationFrame(() => r());
+                });
+
+                if (cancelled || !isMountedRef.current) return;
+
+                // Wait for images so item heights are final
+                await waitForImages(container, 1000);
+
+                if (cancelled || !isMountedRef.current) return;
+
+                // Trigger initial layout pass
                 masonryRef.current?.updateItems(items);
-            } catch (e) {
-                // Defensive: if updateItems isn't implemented or throws, ignore to avoid crash.
-                // You may want to surface this in dev mode.
-                // console.warn('Masonry initial layout failed', e);
+            } catch (error) {
+                console.error('Initial layout failed:', error);
             }
         };
 
-        // Kick off the layout sequence
         doInitialLayout();
 
         return () => {
-            // cancel RAF if pending
-            if (rafId != null) cancelAnimationFrame(rafId);
+            // Cleanup on unmount
+            isMountedRef.current = false;
             cancelled = true;
 
-            // Unmount all React roots & remove their DOM nodes
-            rootsRef.current.forEach((root, div) => {
+            if (rafId) cancelAnimationFrame(rafId);
+
+            // Unmount React roots inside masonry slots
+            rootsRef.current.forEach((root, el) => {
                 try {
                     root.unmount();
-                } catch (err) {
-                    // ignore
+                    el.remove();
+                } catch (error) {
+                    console.warn('Error during unmount:', error);
                 }
-                // remove from DOM if still there
-                if (div.parentNode) div.remove();
             });
             rootsRef.current.clear();
 
-            // Destroy the masonry instance
+            // Destroy masonry instance
             try {
                 masonryRef.current?.destroy();
-            } catch (err) {
-                // ignore if destroy not present or errors
+            } catch (error) {
+                console.warn('Error during masonry cleanup:', error);
             }
             masonryRef.current = null;
+
+            // Reset forwarded ref
+            updateForwardedRef(null);
         };
-        // NOTE: We intentionally don't include `items` in this dependency array because:
-        // - this effect is the "takeover" after initial hydration; re-initializing masonry
-        //   on every items change would be expensive.
-        // - updates to `items` are handled by the separate `useEffect` below.
-        // We keep `options` & `renderItem` because changing these should re-init the library.
-    }, [options, renderItem]);
+    }, [options, renderItem, updateForwardedRef]);
 
     /**
-     * When items change, ask the masonry instance to update.
-     * This avoids a full re-initialization and is much faster.
+     * Effect: Handle updates when `items` changes
+     * --------------------------------------------
+     * Avoids full re-init by just telling masonry to refresh layout.
+     * Uses rAF to batch updates for better performance.
      */
     useEffect(() => {
-        if (masonryRef.current) {
-            // Defensive: call updateItems inside RAF so layout happens after paint
-            // and measurements are consistent.
-            requestAnimationFrame(() => {
-                try {
-                    masonryRef.current?.updateItems(items);
-                } catch (e) {
-                    // swallow errors to avoid crashing the app
-                }
-            });
-        }
+        if (!masonryRef.current) return;
+
+        const rafId = requestAnimationFrame(() => {
+            try {
+                masonryRef.current?.updateItems(items);
+            } catch (error) {
+                console.error('Items update failed:', error);
+            }
+        });
+
+        return () => cancelAnimationFrame(rafId);
     }, [items]);
 
     return (
@@ -235,14 +246,13 @@ const MasonrySnapGridInner = <T,>(
             className={className}
             style={{ position: 'relative', width: '100%', ...style }}
         >
-            {/* Static SSR-friendly markup that will be removed during hydrate takeover */}
             {serverRenderedItems}
         </div>
     );
 };
 
 /**
- * ForwardRef wrapper so parent components can access MasonrySnapGrid methods.
+ * ForwardRef wrapper so parent components can call layout methods.
  */
 const MasonrySnapGrid = forwardRef(MasonrySnapGridInner) as <T>(
     props: MasonrySnapGridProps<T> & { ref?: React.ForwardedRef<MasonrySnapGridRef> }
