@@ -2,29 +2,25 @@ import React, {
     useEffect,
     useRef,
     forwardRef,
-    useImperativeHandle,
 } from 'react';
 import ReactDOM from 'react-dom/client';
 import MasonrySnapGridLayout from './MasonrySnapGridLayout';
-import {
-    MasonrySnapGridLayoutOptions,
-    MasonrySnapGridRef,
-} from './types';
+import { MasonrySnapGridLayoutOptions, MasonrySnapGridRef } from './types';
 
 /**
- * Props for the MasonrySnapGrid React component.
+ * Props for the MasonrySnapGrid React wrapper.
  *
- * @template T - The type of items in the masonry layout.
+ * @template T - Type of items in the masonry grid.
  */
 interface MasonrySnapGridProps<T>
     extends Omit<MasonrySnapGridLayoutOptions<T>, 'items' | 'renderItem'> {
-    /** Array of data items to be rendered into the masonry grid. */
+    /** The data items to render into the masonry grid. */
     items: T[];
 
-    /** Function that renders a single data item as a React node. */
+    /** Renders a single data item into a React node. */
     renderItem: (item: T) => React.ReactNode;
 
-    /** Optional class name for the container. */
+    /** Optional container class name. */
     className?: string;
 
     /** Optional inline styles for the container. */
@@ -32,11 +28,11 @@ interface MasonrySnapGridProps<T>
 }
 
 /**
- * Internal component that bridges MasonrySnapGridLayout with React.
+ * React wrapper for MasonrySnapGridLayout that supports SSR-friendly rendering.
  *
- * - Manages lifecycle of the underlying MasonrySnapGridLayout instance.
- * - Uses ReactDOM.createRoot to render React nodes into non-React DOM elements.
- * - Handles cleanup to avoid memory leaks.
+ * **SSR Strategy:**
+ * - On the server: render all items normally with React → HTML is SEO-friendly & visible without JS.
+ * - On the client: after hydration, remove the static HTML and let MasonrySnapGridLayout take over.
  */
 const MasonrySnapGridInner = <T,>(
     {
@@ -48,31 +44,68 @@ const MasonrySnapGridInner = <T,>(
     }: MasonrySnapGridProps<T>,
     ref: React.ForwardedRef<MasonrySnapGridRef>
 ) => {
-    /** Ref to the container DOM element where MasonrySnapGridLayout will operate. */
+    /** Ref to the outer container where the masonry layout will be applied. */
     const containerRef = useRef<HTMLDivElement>(null);
 
-    /** Ref to the MasonrySnapGridLayout instance (non-React logic). */
+    /** Ref to hold the underlying non-React Masonry layout instance. */
     const masonryRef = useRef<MasonrySnapGridLayout<T> | null>(null);
 
-    /** Tracks all mounted React roots for cleanup. */
+    /**
+     * Stores references to all mounted React roots.
+     * - Needed because we're rendering React components into DOM nodes created manually.
+     * - Helps us unmount cleanly when the component unmounts.
+     */
     const rootsRef = useRef<Map<HTMLElement, ReactDOM.Root>>(new Map());
 
-    // Initialize masonry layout when container mounts
+    /**
+     * Step 1: Server-side & initial client render
+     * ------------------------------------------
+     * We render all items directly inside the container so they are:
+     * - Visible immediately without JS
+     * - Search engine crawlable
+     * - Accessible for screen readers
+     */
+    const serverRenderedItems = (
+        <>
+            {items.map((item, idx) => (
+                <div
+                    key={idx}
+                    style={{ display: 'inline-block', verticalAlign: 'top' }}
+                >
+                    {renderItem(item)}
+                </div>
+            ))}
+        </>
+    );
+
+    /**
+     * Step 2: After hydration (client-side), replace server-rendered content
+     * ----------------------------------------------------------------------
+     * - Remove the SSR HTML to avoid conflicting with Masonry layout
+     * - Initialize MasonrySnapGridLayout with dynamic item positioning
+     * - Render each item into its own DOM node with React
+     */
     useEffect(() => {
         if (!containerRef.current) return;
 
-        masonryRef.current = new MasonrySnapGridLayout(containerRef.current, {
+        const container = containerRef.current;
+
+        // Remove SSR-rendered children before Masonry takes over
+        container.innerHTML = '';
+
+        // Create and initialize the masonry layout instance
+        masonryRef.current = new MasonrySnapGridLayout(container, {
             ...options,
             items,
             renderItem: (item) => {
-                // Create a standalone DOM element for each item
+                // Create a standalone DOM element for this item
                 const div = document.createElement('div');
 
-                // Render React content into this element
+                // Render the React component into that DOM node
                 const root = ReactDOM.createRoot(div);
                 root.render(renderItem(item));
 
-                // Keep track of the React root for later cleanup
+                // Store root for cleanup on unmount
                 rootsRef.current.set(div, root);
 
                 return div;
@@ -80,20 +113,24 @@ const MasonrySnapGridInner = <T,>(
         });
 
         return () => {
-            // Clean up all React roots and remove their DOM nodes
+            // Unmount all React roots to prevent memory leaks
             rootsRef.current.forEach((root, div) => {
                 root.unmount();
                 div.remove();
             });
             rootsRef.current.clear();
 
-            // Destroy the Masonry instance
+            // Destroy masonry instance
             masonryRef.current?.destroy();
             masonryRef.current = null;
         };
     }, [options, renderItem]);
 
-    // Update only the items when the data changes (avoid full re-initialization)
+    /**
+     * Step 3: When items change, update only the content — not full layout re-init.
+     * ---------------------------------------------------------------------------
+     * This avoids tearing down and rebuilding the entire grid unnecessarily.
+     */
     useEffect(() => {
         if (masonryRef.current) {
             masonryRef.current.updateItems(items);
@@ -105,16 +142,15 @@ const MasonrySnapGridInner = <T,>(
             ref={containerRef}
             className={className}
             style={{ position: 'relative', width: '100%', ...style }}
-        />
+        >
+            {/* Render SSR-friendly static layout before hydration */}
+            {serverRenderedItems}
+        </div>
     );
 };
 
 /**
- * MasonrySnapGrid
- *
- * React wrapper component for MasonrySnapGridLayout.
- *
- * @template T - The type of items in the masonry layout.
+ * ForwardRef wrapper so parent components can access MasonrySnapGrid methods.
  */
 const MasonrySnapGrid = forwardRef(MasonrySnapGridInner) as <T>(
     props: MasonrySnapGridProps<T> & { ref?: React.ForwardedRef<MasonrySnapGridRef> }
