@@ -6,23 +6,56 @@
 [![Demo Vanilla JS](https://img.shields.io/badge/demo-vanilla%20js-blue)](https://codesandbox.io/p/sandbox/l9xl7s)
 [![Demo React](https://img.shields.io/badge/demo-react-blue)](https://codesandbox.io/p/sandbox/rgxsxp)
 
-A performant masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
-
+A **performant, SSR-friendly** masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
 
 ---
-## Demo Video
+
+## ✨ What's New (v1.0.14)
+✅ **SSR-Ready Rendering** — On the server, items are rendered as plain HTML so your grid is SEO-friendly and instantly visible.  
+✅ **Hydration Takeover** — On the client, the library recalculates and animates the masonry layout after hydration.  
+✅ **Zero Dependencies** — Written in TypeScript, works with React and Vanilla JS.  
+
+---
+
+## 📺 Demo Video
 
 [![Watch the video](https://img.youtube.com/vi/mHK_6z9WEWs/hqdefault.jpg)](https://www.youtube.com/watch?v=mHK_6z9WEWs)
-    
+
 ---
+
 ## 🚀 Features
 
-- **Dynamic Columns & Gutter**: Automatically adapts to container width
+- **SSR Friendly (React)**: Server renders static layout → client hydrates → masonry positions are recalculated
+- **Dynamic Columns & Gutter**: Adapts automatically to container width
 - **Smooth Animations**: CSS-powered transitions when layout changes
-- **Customizable Items**: Render any content with gradient backgrounds and emojis
-- **Lightweight**: Zero dependencies, pure TypeScript
-- **React & Vanilla JS**: Works with both React and plain JavaScript
-- **Responsive**: Perfect for galleries, dashboards, and card layouts
+- **Customizable Items**: Works with any DOM or React elements
+- **Lightweight**: Zero dependencies
+- **React & Vanilla JS Support**
+- **Responsive**: Great for galleries, dashboards, and card layouts
+
+---
+
+## 🖼 How SSR Works in React Version
+
+```
+
+┌───────────────┐   Server Render Phase
+│ Static HTML   │ ← React renders all items normally (SEO-friendly)
+└──────┬────────┘
+│
+▼
+┌───────────────┐   Client Hydration Phase
+│ Remove static │ ← JavaScript clears SSR content
+│ HTML items    │
+└──────┬────────┘
+│
+▼
+┌───────────────┐   Masonry Layout Phase
+│ Masonry grid  │ ← Library re-renders items and calculates positions
+│ with animation│
+└───────────────┘
+
+````
 
 ---
 
@@ -34,7 +67,7 @@ npm install masonry-snap-grid-layout
 yarn add masonry-snap-grid-layout
 # or
 pnpm add masonry-snap-grid-layout
-```
+````
 
 ---
 
@@ -50,7 +83,6 @@ const container = document.getElementById('masonry-container');
 const items = [
   { id: 1, title: "Sunset", emoji: "🌅", color: "#FF9A9E" },
   { id: 2, title: "Ocean", emoji: "🌊", color: "#A1C4FD" },
-  // ... more items
 ];
 
 const masonry = new MasonrySnapGridLayout(container, {
@@ -58,18 +90,15 @@ const masonry = new MasonrySnapGridLayout(container, {
   minColWidth: 200,
   animate: true,
   transitionDuration: 300,
-  items: items,
+  items,
   renderItem: (item) => {
     const div = document.createElement('div');
     div.style.height = `${120 + Math.random() * 200}px`;
     div.style.background = `linear-gradient(135deg, ${item.color} 0%, #FFFFFF 100%)`;
     div.style.borderRadius = '12px';
     div.style.padding = '16px';
-    div.style.color = '#333';
-    div.innerHTML = `
-      <div style="font-size: 2rem">${item.emoji}</div>
-      <h3 style="margin: 8px 0">${item.title}</h3>
-    `;
+    div.innerHTML = `<div style="font-size: 2rem">${item.emoji}</div>
+                     <h3>${item.title}</h3>`;
     return div;
   }
 });
@@ -79,7 +108,7 @@ const masonry = new MasonrySnapGridLayout(container, {
 
 ---
 
-### React (Live Demo)
+### React (SSR-Friendly, Live Demo)
 
 ```jsx
 import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
@@ -111,8 +140,7 @@ export default function Gallery() {
           color: 'white'
         }}>
           <div style={{ fontSize: '2rem' }}>{item.emoji}</div>
-          <h3 style={{ margin: '8px 0' }}>{item.title}</h3>
-          <small>Height: {Math.round(item.height)}px</small>
+          <h3>{item.title}</h3>
         </div>
       )}
     />
@@ -126,47 +154,41 @@ export default function Gallery() {
 
 ## 🛠️ API Reference
 
-### Configuration Options
+| Option               | Type                       | Default | Description                  |
+| -------------------- | -------------------------- | ------- | ---------------------------- |
+| `gutter`             | `number`                   | `16`    | Spacing between items (px)   |
+| `minColWidth`        | `number`                   | `250`   | Minimum column width (px)    |
+| `animate`            | `boolean`                  | `true`  | Enable/disable animations    |
+| `transitionDuration` | `number`                   | `400`   | Animation duration (ms)      |
+| `items`              | `Array<T>`                 | `[]`    | Your data items              |
+| `renderItem`         | `(item: T) => HTMLElement` | -       | Function to render each item |
+| `classNames`         | `Object`                   | -       | Custom CSS class names       |
 
-| Option               | Type                      | Default | Description                          |
-|----------------------|---------------------------|---------|--------------------------------------|
-| `gutter`             | `number`                  | `16`    | Spacing between items (px)           |
-| `minColWidth`        | `number`                  | `250`   | Minimum column width (px)            |
-| `animate`            | `boolean`                 | `true`  | Enable/disable animations            |
-| `transitionDuration` | `number`                  | `400`   | Animation duration (ms)              |
-| `items`              | `Array<T>`                | `[]`    | Your data items                      |
-| `renderItem`         | `(item: T) => HTMLElement`| -       | Function to render each item         |
-| `classNames`         | `Object`                  | -       | Custom CSS class names               |
+**Methods**
 
-### Methods
-
-- `updateItems(newItems: T[])`: Refresh with new items
-- `shuffleItems()`: Randomize item positions
-- `destroy()`: Clean up the instance
+* `updateItems(newItems: T[])`: Refresh with new items
+* `shuffleItems()`: Randomize positions
+* `destroy()`: Clean up the instance
 
 ---
 
 ## 🎨 Customization Tips
 
-**1. Gradient Backgrounds**  
-Use CSS gradients for beautiful card backgrounds:
+* **Gradient Backgrounds**
 
 ```css
 background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
 ```
 
-**2. Random Emojis**  
-Add personality with emojis:
+* **Random Emojis**
 
-```javascript
+```js
 const emojis = ['🌻', '🌈', '🍕', '🎸', '🚀'];
-const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 ```
 
-**3. Responsive Breakpoints**  
-Adjust columns based on screen size:
+* **Responsive Breakpoints**
 
-```javascript
+```js
 minColWidth: window.innerWidth < 768 ? 150 : 250
 ```
 
@@ -177,7 +199,7 @@ minColWidth: window.innerWidth < 768 ? 150 : 250
 ```
 dist/
 ├── index.js       # Vanilla JS bundle
-├── react.js       # React component
+├── react.js       # React component (SSR-friendly)
 ├── index.d.ts     # TypeScript types
 └── index.css      # Base styles
 ```
@@ -186,16 +208,16 @@ dist/
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-
+1. Fork this repo
+2. Create a feature branch (`git checkout -b feature/awesome-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a PR
 
 ---
 
 ## 📄 License
 
 MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
+
+
