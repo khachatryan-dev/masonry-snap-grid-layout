@@ -13,7 +13,7 @@ import { MasonrySnapGridLayoutOptions } from './types';
  */
 
 export default MasonrySnapGridLayout;
-export {
+export type {
     MasonrySnapGridLayout,
     MasonrySnapGridLayoutOptions
 };
