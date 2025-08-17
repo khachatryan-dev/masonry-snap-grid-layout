@@ -199,7 +199,6 @@ const MasonrySnapGridInner = <T,>(
             // Unmount React roots inside masonry slots
             rootsRef.current.forEach((root, el) => {
                 try {
-                    root.unmount();
                     el.remove();
                 } catch (error) {
                     console.warn('Error during unmount:', error);

@@ -3,7 +3,7 @@ import MasonrySnapGridLayout from "./MasonrySnapGridLayout";
 /**
  * CSS class names used by MasonrySnapGridLayout for styling.
  */
-export interface MasonrySnapGridLayoutClassNames {
+interface MasonrySnapGridLayoutClassNames {
     /** CSS class applied to the container element. */
     container?: string;
 
@@ -16,7 +16,7 @@ export interface MasonrySnapGridLayoutClassNames {
  *
  * @template T - The type of items being rendered in the masonry grid.
  */
-export interface MasonrySnapGridLayoutOptions<T = unknown> {
+interface MasonrySnapGridLayoutOptions<T = unknown> {
     /**
      * Space between grid items in pixels.
      * @default 16
@@ -65,7 +65,13 @@ export interface MasonrySnapGridLayoutOptions<T = unknown> {
  * Ref object shape for accessing a MasonrySnapGridLayout instance
  * when used inside a React component.
  */
-export interface MasonrySnapGridRef {
+interface MasonrySnapGridRef {
     /** Reference to the underlying MasonrySnapGridLayout instance. */
     layout: MasonrySnapGridLayout | null;
+}
+
+export type {
+    MasonrySnapGridLayoutClassNames,
+    MasonrySnapGridRef,
+    MasonrySnapGridLayoutOptions
 }

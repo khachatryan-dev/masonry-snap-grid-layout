@@ -1,14 +1,14 @@
-/* 
+/*
 ====================================================================
 MasonrySnapGridLayout - Base Styles
 ====================================================================
-These styles define the core visual and positional behavior of the 
-masonry grid container and its items. They are minimal to allow 
+These styles define the core visual and positional behavior of the
+masonry grid container and its items. They are minimal to allow
 flexibility for custom themes while ensuring smooth layout animations.
 ====================================================================
 */
 
-/* 
+/*
 Container styles:
 - Acts as the positioning context for masonry items (position: relative).
 - Takes full available width.
@@ -19,10 +19,9 @@ Container styles:
     position: relative;
     width: 100%;
     transition: height 0.4s ease-out;
-    overflow: hidden;
 }
 
-/* 
+/*
 Item styles:
 - Absolutely positioned within the container.
 - Animates transform changes for smooth reordering.
