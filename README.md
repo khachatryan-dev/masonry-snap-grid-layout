@@ -10,7 +10,7 @@ A **performant, SSR-friendly** masonry grid layout library with smooth animation
 
 ---
 
-## ✨ What's New (v1.0.19)
+## ✨ What's New (v1.0.20)
 ✅ **SSR-Ready Rendering** — On the server, items are rendered as plain HTML so your grid is SEO-friendly and instantly visible.  
 ✅ **Hydration Takeover** — On the client, the library recalculates and animates the masonry layout after hydration.  
 ✅ **Zero Dependencies** — Written in TypeScript, works with React and Vanilla JS.  
