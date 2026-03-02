@@ -8,55 +8,66 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write      # ✅ Needed for pushing commits/tags
+      contents: write      # Needed for pushing commits/tags
       packages: write
       id-token: write
 
     steps:
+      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }} # ✅ Built-in token
 
+      # 2️⃣ Setup Node.js with npm registry
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
+          cache: 'npm'
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 4️⃣ Build package BEFORE version bump
+      - name: Build package
+        run: npm run build
+
+      # 5️⃣ Run tests
       - name: Run tests
         run: npm test
 
+      # 6️⃣ Fix package.json (optional)
       - name: Fix package.json
         run: npm pkg fix
 
+      # 7️⃣ Bump version
       - name: Bump version
         id: version
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
- 
+          
           npm version patch --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      # 8️⃣ Commit and push version + tags
       - name: Commit and tag version
         run: |
           git add package.json package-lock.json
           git commit -m "Bump version to v${{ steps.version.outputs.new_version }} [skip ci]" || echo "No changes to commit"
-          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Version ${{ steps.version.outputs.new_version }}"
+          git tag -a "v${{ steps.version.outputs.new_version }}" -m "Version ${{ steps.version.outputs.new_version }}" || echo "Tag exists"
           git push origin HEAD:main
           git push origin --tags
 
-      - name: Build package
-        run: npm run build
-
+      # 9️⃣ Publish to npm
       - name: Publish to npm
-        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          npm publish --access public
