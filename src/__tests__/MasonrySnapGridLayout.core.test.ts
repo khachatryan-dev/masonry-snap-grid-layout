@@ -71,7 +71,7 @@ describe('MasonrySnapGridLayout (core JS engine)', () => {
     const options = createOptions(2);
 
     const layout = new MasonrySnapGridLayout(container, options);
-    expect(container.style.height).toBe('0');
+    expect(container.style.height).toBe('0px');
     layout.destroy();
   });
 

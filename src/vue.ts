@@ -1,4 +1,4 @@
-import type { App, StyleValue, Slots, Exposure } from 'vue';
+import type { App, StyleValue, SetupContext } from 'vue';
 import {
   createApp,
   defineComponent,
@@ -9,12 +9,14 @@ import {
   ref,
   watch,
 } from 'vue';
+
 import MasonrySnapGridLayout from './MasonrySnapGridLayout';
 import type { MasonrySnapGridLayoutOptions } from './types';
 
 type LayoutMode = MasonrySnapGridLayoutOptions<any>['layoutMode'];
 
-interface MasonryVueProps<T> extends Omit<MasonrySnapGridLayoutOptions<T>, 'items' | 'renderItem'> {
+interface MasonryVueProps<T>
+    extends Omit<MasonrySnapGridLayoutOptions<T>, 'items' | 'renderItem'> {
   items: T[];
   className?: string;
   style?: StyleValue;
@@ -23,6 +25,7 @@ interface MasonryVueProps<T> extends Omit<MasonrySnapGridLayoutOptions<T>, 'item
 function createVueMasonryComponent<T>() {
   return defineComponent({
     name: 'MasonrySnapGrid',
+
     props: {
       items: {
         type: Array as PropType<T[]>,
@@ -37,12 +40,14 @@ function createVueMasonryComponent<T>() {
       transitionDuration: Number,
       layoutMode: String as PropType<LayoutMode>,
       className: String,
-      style: Object as PropType<StyleValue>,
+      style: [Object, String, Array] as PropType<StyleValue>,
     },
-    setup(props: MasonryVueProps<T>, context: { slots: Slots; expose: Exposure }) {
-      const { slots, expose } = context;
+
+    setup(props: MasonryVueProps<T>, { slots, expose }: SetupContext) {
       const containerRef = ref<HTMLElement | null>(null);
       const layoutRef = ref<MasonrySnapGridLayout<T> | null>(null);
+
+      // Track mounted Vue apps for cleanup
       const apps = new Map<HTMLElement, App>();
 
       const createLayout = () => {
@@ -56,19 +61,22 @@ function createVueMasonryComponent<T>() {
           animate: props.animate,
           transitionDuration: props.transitionDuration,
           layoutMode: props.layoutMode,
+
           renderItem: (item: T) => {
             const el = document.createElement('div');
+
             const app = createApp({
               setup() {
                 return () =>
-                  slots.default
-                    ? slots.default({ item })
-                    : null;
+                    slots.default
+                        ? slots.default({ item })
+                        : null;
               },
             });
 
             app.mount(el);
             apps.set(el, app);
+
             return el;
           },
         };
@@ -81,21 +89,23 @@ function createVueMasonryComponent<T>() {
       });
 
       watch(
-        () => props.items,
-        (items: T[]) => {
-          layoutRef.value?.updateItems(items);
-        },
+          () => props.items,
+          (items: T[]) => {
+            layoutRef.value?.updateItems(items);
+          },
       );
 
       onBeforeUnmount(() => {
+        // Clean mounted apps
         apps.forEach((app, el) => {
           try {
             app.unmount();
             el.remove();
           } catch {
-            // ignore
+            // ignore safely
           }
         });
+
         apps.clear();
 
         layoutRef.value?.destroy();
@@ -107,20 +117,19 @@ function createVueMasonryComponent<T>() {
       });
 
       return () =>
-        h('div', {
-          ref: containerRef,
-          class: props.className,
-          style: {
-            position: 'relative',
-            width: '100%',
-            ...(props.style as object | undefined),
-          },
-        });
+          h('div', {
+            ref: containerRef,
+            class: props.className,
+            style: {
+              position: 'relative',
+              width: '100%',
+              ...(props.style as object | undefined),
+            },
+          });
     },
   });
 }
 
-const MasonrySnapGridVue = createVueMasonryComponent<any>();
+const MasonrySnapGridVue = createVueMasonryComponent<MasonryVueProps<unknown>>();
 
 export default MasonrySnapGridVue;
-
