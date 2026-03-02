@@ -36,6 +36,16 @@
         "types": "./dist/react.d.ts",
         "default": "./dist/react.cjs"
       }
+    },
+    "./vue": {
+      "import": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.js"
+      },
+      "require": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.cjs"
+      }
     }
   },
   "files": [
@@ -44,8 +54,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/react.tsx --dts --format esm,cjs --legacy-output",
-    "dev": "tsup src/index.ts src/react.tsx --watch --dts --format esm,cjs --legacy-output"
+    "build": "tsup --dts --format esm,cjs --legacy-output",
+    "dev": "tsup --watch --dts --format esm,cjs --legacy-output",
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -67,10 +78,28 @@
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "tsup": "8.3.5",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@testing-library/react": "^16.0.0",
+    "vitest": "^2.0.0",
+    "jsdom": "^26.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "vue": "^3.5.0"
   },
   "peerDependencies": {
     "react": "^18 || ^19",
-    "react-dom": "^18 || ^19"
+    "react-dom": "^18 || ^19",
+    "vue": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   }
 }

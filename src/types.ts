@@ -18,6 +18,16 @@ interface MasonrySnapGridLayoutClassNames {
  */
 interface MasonrySnapGridLayoutOptions<T = unknown> {
     /**
+     * Layout engine preference.
+     *
+     * - 'auto' (default): Prefer native CSS masonry when the browser supports it,
+     *   otherwise fall back to the JavaScript layout engine.
+     * - 'css': Force CSS masonry when supported, with a JavaScript fallback if not.
+     * - 'js': Always use the JavaScript layout engine and ignore CSS masonry support.
+     */
+    layoutMode?: 'auto' | 'css' | 'js';
+
+    /**
      * Space between grid items in pixels.
      * @default 16
      */

@@ -21,6 +21,14 @@ Container styles:
     overflow: auto;
 }
 
+/*
+ * When the container is using native CSS masonry (`data-masonry-mode="css"`),
+ * we rely on CSS Grid for layout instead of absolute positioning.
+ */
+.masonry-snap-grid-container[data-masonry-mode="css"] {
+    display: grid;
+}
+
 
 
 .masonry-snap-grid-container::-webkit-scrollbar-track
@@ -59,4 +67,16 @@ Item styles:
     transform-origin: top left;
     backface-visibility: hidden;
     perspective: 1000px;
+}
+
+/*
+ * Override item behavior when using native CSS masonry:
+ * - Items are part of the grid flow (no absolute positioning)
+ * - Transform animations are disabled because the browser handles reflow
+ */
+.masonry-snap-grid-container[data-masonry-mode="css"] .masonry-snap-grid-item {
+    position: static;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
 }

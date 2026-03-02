@@ -19,6 +19,8 @@ export default class MasonrySnapGridLayout<T = any> {
     private itemPool: HTMLElement[] = [];
     // Flag to prevent operations after destruction
     private isDestroyed = false;
+    // Whether the current environment supports native CSS masonry
+    private readonly useCssMasonry: boolean;
 
     constructor(container: HTMLElement, options: MasonrySnapGridLayoutOptions<T>) {
         if (!container) {
@@ -28,6 +30,7 @@ export default class MasonrySnapGridLayout<T = any> {
         this.container = container;
         // Merge user-provided options with defaults
         this.options = {
+            layoutMode: 'auto',
             gutter: 16,
             minColWidth: 250,
             animate: true,
@@ -38,6 +41,8 @@ export default class MasonrySnapGridLayout<T = any> {
             },
             ...options,
         };
+
+        this.useCssMasonry = this.shouldUseCssMasonry();
 
         this.init();
     }
@@ -50,8 +55,11 @@ export default class MasonrySnapGridLayout<T = any> {
         if (this.isDestroyed) return;
 
         this.container.classList.add(this.options.classNames.container || '');
+        this.container.dataset.masonryMode = this.useCssMasonry ? 'css' : 'js';
         this.renderItems();
-        this.setupResizeObserver();
+        if (!this.useCssMasonry) {
+            this.setupResizeObserver();
+        }
     }
 
     /**
@@ -140,6 +148,11 @@ export default class MasonrySnapGridLayout<T = any> {
         if (this.isDestroyed || !this.container.isConnected) return;
 
         try {
+            if (this.useCssMasonry) {
+                this.applyCssMasonryLayout();
+                return;
+            }
+
             const { gutter, minColWidth, animate, transitionDuration } = this.options;
             const containerWidth = this.container.clientWidth;
 
@@ -169,6 +182,35 @@ export default class MasonrySnapGridLayout<T = any> {
             // Fallback: simple vertical stacking
             this.applyFallbackLayout();
         }
+    }
+
+    /**
+     * Applies a native CSS masonry layout when supported by the browser.
+     * This avoids manual JavaScript positioning and lets the browser
+     * handle column balancing and reflow.
+     */
+    private applyCssMasonryLayout(): void {
+        const { gutter, minColWidth } = this.options;
+
+        // Configure container as a CSS masonry grid
+        this.container.style.display = 'grid';
+        this.container.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColWidth}px, 1fr))`;
+        // Native masonry row behavior (supported in modern Chromium / Firefox)
+        (this.container.style as any).gridTemplateRows = 'masonry';
+        (this.container.style as any).gridAutoRows = 'masonry';
+        this.container.style.gridAutoFlow = 'dense';
+        this.container.style.gap = `${gutter}px`;
+        // Let the browser control height; clear JS-controlled height
+        this.container.style.height = '';
+
+        // Items participate in normal grid flow; clear JS positioning styles
+        this.items.forEach(item => {
+            item.style.position = '';
+            item.style.transform = '';
+            item.style.transition = '';
+            item.style.willChange = '';
+            item.style.width = '100%';
+        });
     }
 
     /**
@@ -296,10 +338,39 @@ export default class MasonrySnapGridLayout<T = any> {
 
         this.container.innerHTML = '';
         this.container.removeAttribute('style');
+        delete this.container.dataset.masonryMode;
         this.container.classList.remove(this.options.classNames.container || '');
 
         this.items = [];
         this.columnHeights = [];
         this.itemPool = [];
+    }
+
+    /**
+     * Determines whether the current environment supports CSS masonry
+     * and whether it should be used based on user preferences.
+     */
+    private shouldUseCssMasonry(): boolean {
+        const mode = this.options.layoutMode ?? 'auto';
+
+        // In non-browser environments (SSR), always fall back to JS mode.
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return false;
+        }
+
+        const cssSupportsMasonry =
+            typeof CSS !== 'undefined' &&
+            typeof CSS.supports === 'function' &&
+            (
+                CSS.supports('grid-template-rows', 'masonry') ||
+                CSS.supports('grid-template-columns', 'masonry') ||
+                CSS.supports('masonry-auto-flow', 'next')
+            );
+
+        if (mode === 'js') return false;
+        if (mode === 'css') return cssSupportsMasonry;
+
+        // auto mode: prefer CSS masonry when available
+        return cssSupportsMasonry;
     }
 }
