@@ -4,8 +4,10 @@
 [![CI/CD](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions)
 [![Demo Vanilla JS](https://img.shields.io/badge/demo-vanilla%20js-blue)](https://codesandbox.io/p/sandbox/l9xl7s)
 [![Demo React](https://img.shields.io/badge/demo-react-blue)](https://codesandbox.io/p/sandbox/rgxsxp)
-[![Angular Core Usage](https://img.shields.io/badge/demo-angular-red)](#angular-service-based-integration)
-[![Vue 3 Wrapper](https://img.shields.io/badge/demo-vue%203-green)](#vue-3-wrapper-drop-in-component)
+![Angular Demo](https://img.shields.io/badge/demo-angular-red)
+![Vue 3 Demo](https://img.shields.io/badge/demo-vue%203-green)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-ffdd00?logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
+
 
 A **performant, SSR-friendly** masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
 
@@ -105,7 +107,7 @@ import 'masonry-snap-grid-layout/dist/index.css';
 
 ### Vue 3 Drop-in Component
 
-```vue
+```
 <template>
   <MasonrySnapGrid :items="items" :gutter="16" :minColWidth="240">
     <template #default="{ item }">
@@ -120,7 +122,6 @@ import 'masonry-snap-grid-layout/dist/index.css';
 import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
 </script>
 ```
-
 
 ---
 
@@ -150,7 +151,7 @@ import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
 
 **Methods**:
 
-```ts
+```
 updateItems(newItems: T[])
 destroy()
 ```
@@ -191,9 +192,65 @@ npm test
 
 ---
 
+# 👤 Author & Support
+
+Built and maintained by **Aram Khachatryan** — if this project helped you, you can support its ongoing development:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-ffdd00?logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
+
+You can also find me on GitHub: [arkhachats](https://github.com/khachatryan-dev)
+
+---
+
 # 📄 License
 
 MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
 
 ---
 
+# 🏁 Running the examples locally
+
+This repository includes small example apps to try the library in multiple frameworks. The examples are located under the `examples/` folder.
+
+Note: Some examples import the local package (using `file:../..`) — if you change the core source or want examples to use the built package, run `npm run build` in the repository root first to generate the `dist/` artifacts.
+
+Vanilla JS (no build required)
+
+```powershell
+cd examples/vanilla
+npx serve .
+# Open http://localhost:3000 (or the port shown)
+```
+
+React (Vite + TypeScript)
+
+```powershell
+cd examples/react
+npm install
+npm run dev
+# Open http://localhost:5173
+```
+
+Vue 3 (Vite + TypeScript)
+
+```powershell
+cd examples/vue
+npm install
+npm run dev
+# Open http://localhost:5173
+```
+
+Angular (create a project locally)
+
+```powershell
+# Create an Angular app with the CLI
+npm install -g @angular/cli
+ng new masonry-grid-angular-demo --routing=false --style=css
+cd masonry-grid-angular-demo
+npm install masonry-snap-grid-layout
+# Add to src/styles.css:
+@import 'masonry-snap-grid-layout/dist/index.css';
+# Add a component and initialize MasonrySnapGridLayout in ngAfterViewInit (see examples/angular/README.md)
+ng serve
+# Open http://localhost:4200
+```

@@ -42,6 +42,9 @@ export default class MasonrySnapGridLayout<T = any> {
             ...options,
         };
 
+        // Cache initial width (useful when first measuring)
+        this.lastContainerWidth = typeof container.clientWidth === 'number' ? container.clientWidth : 0;
+
         this.useCssMasonry = this.shouldUseCssMasonry();
 
         this.init();
@@ -64,54 +67,71 @@ export default class MasonrySnapGridLayout<T = any> {
 
     /**
      * Renders items into the container using a pooled DOM strategy:
-     * - Avoids DOM churn by reusing elements where possible
-     * - Only creates new nodes when needed
+     * - Reuses elements where possible
+     * - Creates new nodes when needed
      * - Removes unused pool items when shrinking
+     *
+     * This implementation avoids fragile index-based orphan checks and
+     * appends only missing nodes while updating existing ones in-place.
      */
     private renderItems(): void {
         if (this.isDestroyed) return;
 
-        // Remove orphaned elements from the DOM
-        this.items.forEach(item => {
-            if (!this.options.items.some((_, i) => this.itemPool[i] === item)) {
-                item.remove();
-            }
-        });
+        const newItems = this.options.items || [];
+        const needed = newItems.length;
 
-        this.items = [];
-        this.columnHeights = [];
+        // Ensure pool has enough elements
+        for (let i = this.itemPool.length; i < needed; i++) {
+            const el = document.createElement('div');
+            if (this.options.classNames?.item) el.classList.add(this.options.classNames.item);
+            this.itemPool[i] = el;
+        }
 
-        // Use a fragment for batch DOM insertion (better performance)
-        const fragment = document.createDocumentFragment();
-        this.options.items.forEach((itemData, index) => {
-            let itemElement = this.itemPool[index];
+        // Update or append each pooled element for the current items
+        this.items = new Array(needed);
 
-            if (!itemElement) {
-                itemElement = document.createElement('div');
-                itemElement.classList.add(this.options.classNames.item || '');
-                this.itemPool[index] = itemElement;
-            }
+        for (let i = 0; i < needed; i++) {
+            const itemData = newItems[i];
+            const itemElement = this.itemPool[i];
 
             // Render content via provided renderItem function
             const content = this.options.renderItem(itemData);
+
             if (typeof content === 'string') {
+                // string content - set innerHTML
                 itemElement.innerHTML = content;
             } else if (content instanceof Node) {
+                // If the provided node is already the same as the only child, avoid re-append
+                if (itemElement.firstChild !== content) {
+                    // Clear existing contents and append the new node
+                    itemElement.innerHTML = '';
+                    itemElement.appendChild(content);
+                }
+            } else {
+                // Fallback: clear content
                 itemElement.innerHTML = '';
-                itemElement.appendChild(content);
             }
 
-            fragment.appendChild(itemElement);
-            this.items.push(itemElement);
-        });
+            // Ensure element has the item class
+            if (this.options.classNames?.item && !itemElement.classList.contains(this.options.classNames.item)) {
+                itemElement.classList.add(this.options.classNames.item);
+            }
 
-        // Trim excess pooled items
-        while (this.itemPool.length > this.options.items.length) {
-            const item = this.itemPool.pop()!;
-            item.remove();
+            // Append to container if not already attached (preserve existing nodes)
+            if (itemElement.parentElement !== this.container) {
+                this.container.appendChild(itemElement);
+            }
+
+            this.items[i] = itemElement;
         }
 
-        this.container.appendChild(fragment);
+        // Trim excess pooled items (remove extra nodes from DOM)
+        while (this.itemPool.length > needed) {
+            const item = this.itemPool.pop()!;
+            if (item.parentElement === this.container) item.remove();
+        }
+
+        // Trigger layout
         this.updateLayout();
     }
 
@@ -370,7 +390,13 @@ export default class MasonrySnapGridLayout<T = any> {
         if (mode === 'js') return false;
         if (mode === 'css') return cssSupportsMasonry;
 
-        // auto mode: prefer CSS masonry when available
-        return cssSupportsMasonry;
+        // auto mode: prefer CSS masonry when available and on known engines
+        if (!cssSupportsMasonry) return false;
+
+        const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+        const isChromium = /Chrome|Chromium|Edg|OPR/.test(ua);
+        const isFirefox = /Firefox/.test(ua);
+
+        return isChromium || isFirefox;
     }
 }

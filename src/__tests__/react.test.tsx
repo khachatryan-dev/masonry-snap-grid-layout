@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import MasonrySnapGrid from '../react';
 
 interface Item {
@@ -9,7 +9,7 @@ interface Item {
 }
 
 describe('MasonrySnapGrid React wrapper', () => {
-  it('renders items and attaches container class', () => {
+  it('renders items and attaches container class', async () => {
     const items: Item[] = [
       { id: 1, title: 'First' },
       { id: 2, title: 'Second' },
@@ -26,8 +26,14 @@ describe('MasonrySnapGrid React wrapper', () => {
       />,
     );
 
-    const renderedItems = screen.getAllByTestId('masonry-item');
-    expect(renderedItems).toHaveLength(2);
+    // Wait for async initialization to complete
+    await waitFor(
+      () => {
+        const renderedItems = screen.getAllByTestId('masonry-item');
+        expect(renderedItems).toHaveLength(2);
+      },
+      { timeout: 2000 }
+    );
   });
 });
 

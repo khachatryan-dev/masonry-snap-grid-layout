@@ -12,7 +12,7 @@
     "vanilla-js",
     "masonry-layout"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -20,7 +20,7 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.ts",
@@ -30,7 +30,7 @@
     "./react": {
       "import": {
         "types": "./dist/react.d.ts",
-        "default": "./dist/react.js"
+        "default": "./dist/react.mjs"
       },
       "require": {
         "types": "./dist/react.d.ts",
@@ -40,13 +40,14 @@
     "./vue": {
       "import": {
         "types": "./dist/vue.d.ts",
-        "default": "./dist/vue.js"
+        "default": "./dist/vue.mjs"
       },
       "require": {
         "types": "./dist/vue.d.ts",
         "default": "./dist/vue.cjs"
       }
-    }
+    },
+    "./dist/index.css": "./dist/index.css"
   },
   "files": [
     "dist",
@@ -54,8 +55,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup --dts --format esm,cjs --legacy-output",
-    "dev": "tsup --watch --dts --format esm,cjs --legacy-output",
+    "build": "tsup --dts --format esm,cjs",
+    "dev": "tsup --watch --dts --format esm,cjs",
     "test": "vitest run"
   },
   "repository": {

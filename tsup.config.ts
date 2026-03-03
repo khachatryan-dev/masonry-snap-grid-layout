@@ -9,6 +9,9 @@ export default defineConfig({
     splitting: false,
     sourcemap: true,
     external: ['react', 'react-dom', 'vue'], // important: don't bundle React/Vue
+    outExtension: ({ format }) => ({
+        js: format === 'esm' ? '.mjs' : '.cjs'
+    }),
     esbuildOptions(options) {
         options.tsconfig = './tsconfig.json';
     },

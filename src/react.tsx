@@ -196,16 +196,19 @@ const MasonrySnapGridInner = <T,>(
 
             if (rafId) cancelAnimationFrame(rafId);
 
-            // Unmount React roots inside masonry slots
-            rootsRef.current.forEach((root, el) => {
-                try {
-                    root.unmount();
-                    el.remove();
-                } catch (error) {
-                    console.warn('Error during unmount:', error);
-                }
+            // Schedule unmounting in microtask queue to avoid React 19 render phase conflicts
+            Promise.resolve().then(() => {
+                // Unmount React roots inside masonry slots
+                rootsRef.current.forEach((root, el) => {
+                    try {
+                        root.unmount();
+                        el.remove();
+                    } catch (error) {
+                        console.warn('Error during unmount:', error);
+                    }
+                });
+                rootsRef.current.clear();
             });
-            rootsRef.current.clear();
 
             // Destroy masonry instance
             try {
