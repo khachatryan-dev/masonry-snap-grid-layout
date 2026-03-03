@@ -348,7 +348,9 @@ export default class MasonrySnapGridLayout<T = any> {
 
         this.isDestroyed = true;
 
-        this.resizeObserver?.disconnect();
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
         this.resizeObserver = undefined;
 
         if (this.rafId) {
