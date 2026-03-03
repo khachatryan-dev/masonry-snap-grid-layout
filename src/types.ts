@@ -69,6 +69,13 @@ interface MasonrySnapGridLayoutOptions<T = unknown> {
      * Optional custom class names for the container and items.
      */
     classNames?: MasonrySnapGridLayoutClassNames;
+
+    /**
+     * Controls whether the layout auto-initializes during construction.
+     * - `true` (default): constructor will call `init()` when running in a browser
+     * - `false`: consumer should call the public `mount()` method when ready (useful for SSR/hydration)
+     */
+    autoMount?: boolean;
 }
 
 /**

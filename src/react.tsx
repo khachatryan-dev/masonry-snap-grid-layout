@@ -159,12 +159,14 @@ const MasonrySnapGridInner = <T,>(
 
         // Save original SSR content in case init fails
         const serverContent = container.cloneNode(true) as HTMLElement;
-        container.innerHTML = '';
+        // Do not clear server HTML yet — wait until we are ready to mount
+        // container.innerHTML will be cleared right before mounting to avoid flicker
 
         try {
             // Create Masonry instance with React-powered renderItem
             masonryRef.current = new MasonrySnapGridLayout(container, {
-                ...options,
+                ...stableOptions,
+                autoMount: false,
                 items,
                 renderItem: (item) => {
                     const div = document.createElement('div');
@@ -202,8 +204,17 @@ const MasonrySnapGridInner = <T,>(
 
                 if (cancelled || !isMountedRef.current) return;
 
-                // Trigger initial layout pass
-                masonryRef.current?.updateItems(items);
+                // Now that images are ready and hydration finished, clear SSR content and mount
+                try {
+                    // Clear server-rendered HTML right before mounting so React roots can be created into fresh nodes
+                    try { container.innerHTML = ''; } catch (e) { /* ignore */ }
+                    masonryRef.current?.mount();
+                    // allow React roots to commit before measuring/positioning
+                    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+                    masonryRef.current?.updateItems(items);
+                } catch (err) {
+                    console.error('Mount or initial update failed:', err);
+                }
             } catch (error) {
                 console.error('Initial layout failed:', error);
             }
@@ -234,7 +245,7 @@ const MasonrySnapGridInner = <T,>(
 
             // Destroy masonry instance
             try {
-                masonryRef.current?.destroy();
+                masonryRef.current && masonryRef.current.destroy();
             } catch (error) {
                 console.warn('Error during masonry cleanup:', error);
             }
@@ -243,7 +254,7 @@ const MasonrySnapGridInner = <T,>(
             // Reset forwarded ref
             updateForwardedRef(null);
         };
-    }, [options, renderItem, updateForwardedRef]);
+    }, [stableOptions, renderItem, updateForwardedRef, items]);
 
     /**
      * Effect: Handle updates when `items` changes

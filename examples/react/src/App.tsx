@@ -1,5 +1,5 @@
 import React from 'react';
-import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
+import MasonrySnapGrid from 'masonry-snap-grid-layout/dist/react';
 import 'masonry-snap-grid-layout/dist/index.css';
 
 type Item = {
@@ -25,7 +25,7 @@ export default function App() {
         layoutMode="auto"
         animate
         transitionDuration={400}
-        renderItem={(item) => (
+        renderItem={(item: Item) => (
           <div
             style={{
               height: item.height,
