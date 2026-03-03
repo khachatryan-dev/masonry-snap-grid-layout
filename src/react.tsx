@@ -3,6 +3,7 @@ import React, {
     useRef,
     forwardRef,
     useCallback,
+    useMemo,
 } from 'react';
 import ReactDOM from 'react-dom/client';
 import MasonrySnapGridLayout from './MasonrySnapGridLayout';
@@ -90,6 +91,27 @@ const MasonrySnapGridInner = <T,>(
     // Latest ref passed from parent (keeps forwardRef stable across renders)
     const latestRef = useRef(ref);
     latestRef.current = ref;
+
+    // Stabilize options object to prevent unnecessary re-initialization
+    // Only recreate when specific layout options actually change
+    const stableOptions = useMemo(
+        () => ({
+            layoutMode: options.layoutMode,
+            gutter: options.gutter,
+            minColWidth: options.minColWidth,
+            animate: options.animate,
+            transitionDuration: options.transitionDuration,
+            classNames: options.classNames,
+        }),
+        [
+            options.layoutMode,
+            options.gutter,
+            options.minColWidth,
+            options.animate,
+            options.transitionDuration,
+            options.classNames,
+        ]
+    );
 
     /**
      * Forward ref handling — ensures both function refs

@@ -45,6 +45,52 @@ A **performant, SSR-friendly** masonry grid layout library with smooth animation
 
 ---
 
+# 🚀 SSR Support (Next.js, Nuxt, SvelteKit)
+
+This library has **full Server-Side Rendering (SSR) support** out of the box!
+
+- ✅ **Next.js App Router** - Works seamlessly with server and client components
+- ✅ **Next.js Pages Router** - Compatible with traditional routing
+- ✅ **Nuxt.js 3** - Full SSR support with auto-hydration
+- ✅ **SvelteKit** - Works with both SSR and static generation
+- ✅ **SEO Friendly** - All content rendered on server (crawlable)
+- ✅ **No Layout Shift** - Server renders items, client enhances layout
+
+## Quick Next.js Example
+
+```tsx
+'use client';
+
+import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
+import 'masonry-snap-grid-layout/dist/index.css';
+
+export default function MasonryGrid({ items }) {
+  return (
+    <MasonrySnapGrid
+      items={items}
+      gutter={16}
+      minColWidth={220}
+      renderItem={(item) => (
+        <div style={{ height: item.height, background: '#f0f0f0' }}>
+          {item.title}
+        </div>
+      )}
+    />
+  );
+}
+```
+
+**How it works:**
+1. Server renders items as static HTML (SEO-friendly)
+2. Browser receives HTML immediately (fast FCP)
+3. Client hydrates component, initializes masonry layout
+4. Smooth animations on resize and updates
+
+📖 **Full SSR Guide**: See [SSR_GUIDE.md](./SSR_GUIDE.md)
+📖 **Next.js Example**: See [NEXTJS_SSR_EXAMPLE.md](./NEXTJS_SSR_EXAMPLE.md)
+
+---
+
 # 🚀 Quick Start
 
 ### Install
