@@ -1,6 +1,6 @@
 import React from 'react';
-import MasonrySnapGrid from 'masonry-snap-grid-layout/dist/react';
-import 'masonry-snap-grid-layout/dist/index.css';
+import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
+import 'masonry-snap-grid-layout/style.css';
 
 type Item = {
   id: number;

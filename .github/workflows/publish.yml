@@ -80,9 +80,3 @@ jobs:
       # ------------------------------
       - name: Build package
         run: npm run build
-
-      # ------------------------------
-      # 9️⃣ Publish Package (Trusted Publishing)
-      # ------------------------------
-      - name: Publish to npm
-        run: npm publish --provenance

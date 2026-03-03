@@ -47,7 +47,29 @@
         "default": "./dist/vue.cjs"
       }
     },
-    "./dist/index.css": "./dist/index.css"
+    "./dist/react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.mjs"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./dist/vue": {
+      "import": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.mjs"
+      },
+      "require": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.cjs"
+      }
+    },
+    "./index.css": "./dist/index.css",
+    "./dist/index.css": "./dist/index.css",
+    "./style.css": "./dist/index.css"
   },
   "files": [
     "dist",

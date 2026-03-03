@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
-import 'masonry-snap-grid-layout/dist/index.css';
+import 'masonry-snap-grid-layout/style.css';
 
 interface Item {
   id: number;
