@@ -1,6 +1,40 @@
-node_modules
-dist
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+package-lock.json
 
-# Local example apps
-examples/*/node_modules
-examples/*/dist
+# ── Build output ──────────────────────────────────────────────
+dist/
+out-tsc/
+
+# ── Examples (local installs & builds) ───────────────────────
+examples/*/node_modules/
+examples/*/dist/
+examples/*/package-lock.json
+
+# ── TypeScript ────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Vite ──────────────────────────────────────────────────────
+.vite/
+
+# ── Test & coverage ───────────────────────────────────────────
+coverage/
+.vitest/
+
+# ── Editors ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Env / secrets ────────────────────────────────────────────
+.env
+.env.local
+.env.*.local

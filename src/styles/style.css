@@ -1,0 +1,61 @@
+/* =============================================================
+   masonry-snap-grid-layout — base styles
+   Import: import 'masonry-snap-grid-layout/style.css'
+   ============================================================= */
+
+/* ── Container base ─────────────────────────────────────────── */
+.msgl-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── SSR / pre-layout: responsive CSS grid (visible on server) ─ */
+.msgl-container--ssr {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--msgl-min-col-width, 250px), 1fr)
+  );
+  gap: var(--msgl-gutter, 16px);
+}
+
+/* ── CSS native masonry mode ────────────────────────────────── */
+.msgl-container--css {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--msgl-min-col-width, 250px), 1fr)
+  );
+  /* Native CSS masonry — progressively enhanced */
+  grid-template-rows: masonry;
+  gap: var(--msgl-gutter, 16px);
+  align-content: start;
+}
+
+/* ── JS masonry mode ────────────────────────────────────────── */
+.msgl-container--js {
+  position: relative;
+}
+
+/* ── Item base ──────────────────────────────────────────────── */
+.msgl-item {
+  box-sizing: border-box;
+}
+
+/* Items inside JS masonry container are absolutely positioned */
+.msgl-container--js > .msgl-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+/* Items inside SSR container keep normal flow */
+.msgl-container--ssr > .msgl-item {
+  break-inside: avoid;
+}
+
+/* ── Transition animation (JS mode) ────────────────────────── */
+.msgl-item--animated {
+  transition: transform var(--msgl-transition-duration, 400ms) ease;
+}
