@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="new version">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/MasonrySnapGridLayout.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/cssEngine.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/layoutEngine.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/types.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/utils.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/react/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/styles/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/core.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/masonry-snap-grid-layout.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ALL_FIXED_FINAL.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AUDIT_COMPLETION_CHECKLIST.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AUDIT_INDEX.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AUDIT_REPORT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AUDIT_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/COMPLETE_FIX_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DOCUMENTATION_INDEX.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FINAL_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FIXES_APPLIED.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/IMPORT_ERROR_FIXED.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/IMPORT_PATHS_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/INDEX.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LOCAL_TESTING_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LOCAL_TESTING_RESULTS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NEXTJS_SSR_EXAMPLE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/QUICK_START.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/REACT_EXAMPLE_VERIFICATION.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/REACT_FIX_COMPLETE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/REACT_RESIZE_FIX.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSR_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSR_IMPLEMENTATION_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSR_QUICK_REFERENCE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/START_HERE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TESTING_EXAMPLES.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/VERIFICATION_CHECKLIST.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/angular/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/src/App.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/src/main.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/react/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vanilla/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vanilla/main.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vanilla/test-local.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/src/App.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/src/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vue/vite.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/MasonrySnapGridLayout.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__tests__/MasonrySnapGridLayout.core.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__tests__/framework-usage.angular-vue.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__tests__/react.test.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__tests__/setup.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/react.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vue.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-diagnostic.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-examples.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsup.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout" value="30vUdUQpL6twiQjrODok1CI7rP5" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;khachatryan-dev&quot;
+  }
+}</component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/khachatryan-dev/masonry-snap-grid-layout.git&quot;,
+    &quot;accountId&quot;: &quot;ca931aac-d8a6-48ab-ba52-c4e00838b188&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="30vUdUQpL6twiQjrODok1CI7rP5" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/new-feature",
+    "js.last.introduce.type": "CONST",
+    "last_opened_file_path": "C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.dev (1).executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.ng.executor": "Run",
+    "npm.serve:ssr:masonry-test.executor": "Run",
+    "npm.start.executor": "Run",
+    "npm.test (1).executor": "Run",
+    "npm.test.executor": "Run",
+    "npm.watch.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\WebStorm 2024.3.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\testing\masonry-test\src" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\testing\aaa\core" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\testing" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\testing\aaa" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\testing\masonry-test" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\src\react" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout\src\core" />
+      <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="build" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/examples/vue/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/examples/react/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="test (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="test" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/masonry-test/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="test" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.dev (1)" />
+        <item itemvalue="npm.test (1)" />
+        <item itemvalue="npm.test" />
+        <item itemvalue="npm.build" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-WS-243.23654.157" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="" />
+      <created>1754507628236</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754507628236</updated>
+      <workItem from="1754507630097" duration="29223000" />
+      <workItem from="1755024066455" duration="29489000" />
+      <workItem from="1755723892620" duration="20000" />
+      <workItem from="1755723941828" duration="6614000" />
+      <workItem from="1760871028923" duration="16000" />
+      <workItem from="1772481282311" duration="9492000" />
+      <workItem from="1772555379172" duration="4887000" />
+      <workItem from="1772560911631" duration="7289000" />
+      <workItem from="1772646170229" duration="1049000" />
+      <workItem from="1772647246020" duration="1384000" />
+      <workItem from="1772648653410" duration="417000" />
+      <workItem from="1772649080631" duration="118000" />
+      <workItem from="1772649206808" duration="979000" />
+    </task>
+    <task id="LOCAL-00005" summary="add react.js part">
+      <option name="closed" value="true" />
+      <created>1754592076727</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1754592076727</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1754597631187</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1754597631187</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix bug">
+      <option name="closed" value="true" />
+      <created>1754599972105</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1754599972105</updated>
+    </task>
+    <task id="LOCAL-00008" summary="bugfix react part">
+      <option name="closed" value="true" />
+      <created>1754601684543</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1754601684543</updated>
+    </task>
+    <task id="LOCAL-00009" summary="bugfix react part">
+      <option name="closed" value="true" />
+      <created>1754602177115</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1754602177115</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update readme file">
+      <option name="closed" value="true" />
+      <created>1754602570190</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1754602570190</updated>
+    </task>
+    <task id="LOCAL-00011" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823153074</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823153074</updated>
+    </task>
+    <task id="LOCAL-00012" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823354831</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823354831</updated>
+    </task>
+    <task id="LOCAL-00013" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823393428</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823393428</updated>
+    </task>
+    <task id="LOCAL-00014" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823689557</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823689557</updated>
+    </task>
+    <task id="LOCAL-00015" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823777731</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823777731</updated>
+    </task>
+    <task id="LOCAL-00016" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823851769</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823851769</updated>
+    </task>
+    <task id="LOCAL-00017" summary="check ci/cd">
+      <option name="closed" value="true" />
+      <created>1754823932136</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1754823932136</updated>
+    </task>
+    <task id="LOCAL-00018" summary="docs: add professional comments and JSDoc across core layout, React wrapper, types, and CSS">
+      <option name="closed" value="true" />
+      <created>1754824853430</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1754824853430</updated>
+    </task>
+    <task id="LOCAL-00019" summary="add video demo">
+      <option name="closed" value="true" />
+      <created>1754828336256</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828336256</updated>
+    </task>
+    <task id="LOCAL-00020" summary="add video demo">
+      <option name="closed" value="true" />
+      <created>1754828474532</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828474532</updated>
+    </task>
+    <task id="LOCAL-00021" summary="add video demo">
+      <option name="closed" value="true" />
+      <created>1754828542137</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828542137</updated>
+    </task>
+    <task id="LOCAL-00022" summary="add video demo">
+      <option name="closed" value="true" />
+      <created>1754828738994</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1754828738994</updated>
+    </task>
+    <task id="LOCAL-00023" summary="add video demo">
+      <option name="closed" value="true" />
+      <created>1754830709985</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1754830709985</updated>
+    </task>
+    <task id="LOCAL-00024" summary="docs: enhance README with SSR details and usage improvements">
+      <option name="closed" value="true" />
+      <created>1755024632839</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1755024632839</updated>
+    </task>
+    <task id="LOCAL-00025" summary="fix(masonry): prevent initial item overlap by delaying layout until images load">
+      <option name="closed" value="true" />
+      <created>1755025766772</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1755025766772</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fix(masonry): prevent initial item overlap by delaying layout until images load">
+      <option name="closed" value="true" />
+      <created>1755028832379</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1755028832379</updated>
+    </task>
+    <task id="LOCAL-00027" summary="docs: add detailed comments and improve SSR hydration handling in MasonrySnapGrid">
+      <option name="closed" value="true" />
+      <created>1755033095028</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1755033095028</updated>
+    </task>
+    <task id="LOCAL-00028" summary="docs:update  readme file">
+      <option name="closed" value="true" />
+      <created>1755033160854</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1755033160854</updated>
+    </task>
+    <task id="LOCAL-00029" summary="docs:update  fix resizing bug">
+      <option name="closed" value="true" />
+      <created>1755418615104</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1755418615104</updated>
+    </task>
+    <task id="LOCAL-00030" summary="docs:update  update readme fiel">
+      <option name="closed" value="true" />
+      <created>1755418759608</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1755418759608</updated>
+    </task>
+    <task id="LOCAL-00031" summary="docs:update  fix render on react">
+      <option name="closed" value="true" />
+      <created>1755545411403</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1755545411403</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772481945157</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1772481945157</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772482011908</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1772482011908</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772482159786</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1772482159786</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772483575024</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1772483575024</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772484119846</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1772484119846</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772484224049</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1772484224049</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772484458800</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1772484458800</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772485136454</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1772485136454</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772485345007</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1772485345007</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772485915349</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1772485915349</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772486552085</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1772486552085</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772486985330</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1772486985330</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772487210375</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1772487210375</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772487577154</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1772487577154</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772488024716</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1772488024716</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772488170679</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1772488170679</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772488719973</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1772488719973</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling">
+      <option name="closed" value="true" />
+      <created>1772558185039</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1772558185039</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Updates&#10;&#10;fix crash in vanilla js">
+      <option name="closed" value="true" />
+      <created>1772558748958</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1772558748958</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Updates&#10;&#10;fix crash in react js">
+      <option name="closed" value="true" />
+      <created>1772562506324</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1772562506324</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Fix React masonry layout issues and enhance SSR support">
+      <option name="closed" value="true" />
+      <created>1772569429462</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1772569429462</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Add comprehensive documentation and fix import paths for masonry-snap-grid-layout">
+      <option name="closed" value="true" />
+      <created>1772570301953</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1772570301953</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add CI/CD Part for publish" />
+    <MESSAGE value="update project information" />
+    <MESSAGE value="add react.js part" />
+    <MESSAGE value="fix bug" />
+    <MESSAGE value="bugfix react part" />
+    <MESSAGE value="update readme file" />
+    <MESSAGE value="check ci/cd" />
+    <MESSAGE value="docs: add professional comments and JSDoc across core layout, React wrapper, types, and CSS" />
+    <MESSAGE value="add video demo" />
+    <MESSAGE value="docs: enhance README with SSR details and usage improvements" />
+    <MESSAGE value="fix(masonry): prevent initial item overlap by delaying layout until images load" />
+    <MESSAGE value="docs: add detailed comments and improve SSR hydration handling in MasonrySnapGrid" />
+    <MESSAGE value="docs:update  readme file" />
+    <MESSAGE value="docs:update  fix resizing bug" />
+    <MESSAGE value="docs:update  update readme fiel" />
+    <MESSAGE value="docs:update  fix render on react" />
+    <MESSAGE value="Updates&#10;&#10;Added new features for Angular and Vue.js&#10;&#10;Implemented CSS support for the masonry section&#10;&#10;Integrated a masonry grid layout package for improved layout handling" />
+    <MESSAGE value="Updates&#10;&#10;fix crash in vanilla js" />
+    <MESSAGE value="Updates&#10;&#10;fix crash in react js" />
+    <MESSAGE value="Fix React masonry layout issues and enhance SSR support" />
+    <MESSAGE value="Add comprehensive documentation and fix import paths for masonry-snap-grid-layout" />
+    <MESSAGE value="new version" />
+    <option name="LAST_COMMIT_MESSAGE" value="new version" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

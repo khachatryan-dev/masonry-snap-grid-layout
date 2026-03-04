@@ -1,0 +1,8 @@
+.masonry-snap-grid {
+  width: 100%;
+}
+
+.masonry-snap-grid > * {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
