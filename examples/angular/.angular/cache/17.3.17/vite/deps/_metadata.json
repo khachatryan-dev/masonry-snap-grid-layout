@@ -1,0 +1,49 @@
+{
+  "hash": "237720cd",
+  "configHash": "7cbbe396",
+  "lockfileHash": "0c955095",
+  "browserHash": "f54775aa",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "3630d540",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "cbb5718a",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "d6785123",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "53da0822",
+      "needsInterop": false
+    },
+    "masonry-snap-grid-layout": {
+      "src": "../../../../../../../dist/index.js",
+      "file": "masonry-snap-grid-layout.js",
+      "fileHash": "d33fb01c",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-6STTTEGY": {
+      "file": "chunk-6STTTEGY.js"
+    },
+    "chunk-JXWBXESQ": {
+      "file": "chunk-JXWBXESQ.js"
+    },
+    "chunk-WDMUDEB6": {
+      "file": "chunk-WDMUDEB6.js"
+    }
+  }
+}

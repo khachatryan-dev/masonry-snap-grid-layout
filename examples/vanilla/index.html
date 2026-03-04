@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>masonry-snap-grid-layout — Vanilla JS</title>
+    <link rel="stylesheet" href="../../dist/style.css" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 24px; }
+      h1 { margin-bottom: 24px; font-size: 1.4rem; color: #333; }
+      #controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
+      label { font-size: .875rem; color: #555; }
+      button {
+        padding: 8px 16px; border: none; border-radius: 6px;
+        background: #4f46e5; color: #fff; cursor: pointer; font-size: .875rem;
+      }
+      button:hover { background: #4338ca; }
+      .card {
+        border-radius: 12px; padding: 16px;
+        display: flex; flex-direction: column; gap: 8px;
+        font-size: .875rem; color: #333;
+      }
+      .card h2 { font-size: 1rem; }
+      .card p { color: #666; line-height: 1.5; }
+      #grid { width: 100%; }
+    </style>
+  </head>
+  <body>
+    <h1>masonry-snap-grid-layout — Vanilla JS Demo</h1>
+
+    <div id="controls">
+      <label>Gutter: <input id="gutter" type="range" min="4" max="40" value="16" /></label>
+      <label>Min col width: <input id="minColWidth" type="range" min="100" max="400" value="220" /></label>
+      <button id="addBtn">+ Add item</button>
+      <button id="removeBtn">- Remove item</button>
+    </div>
+
+    <div id="grid"></div>
+
+    <script type="module">
+      import MasonrySnapGridLayout from '../../dist/index.js';
+
+      const COLORS = [
+        '#fde68a', '#a7f3d0', '#bfdbfe', '#fca5a5',
+        '#c4b5fd', '#fdba74', '#6ee7b7', '#93c5fd',
+      ];
+
+      let items = Array.from({ length: 12 }, (_, i) => ({
+        id: i,
+        title: `Card ${i + 1}`,
+        body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'.slice(
+          0, 20 + (i * 7) % 80
+        ),
+        height: 80 + (i * 37) % 180,
+        color: COLORS[i % COLORS.length],
+      }));
+
+      const container = document.getElementById('grid');
+
+      const masonry = new MasonrySnapGridLayout(container, {
+        layoutMode: 'js',
+        gutter: 16,
+        minColWidth: 220,
+        animate: true,
+        items,
+        renderItem(item) {
+          const el = document.createElement('div');
+          el.className = 'card';
+          el.style.background = item.color;
+          el.style.height = item.height + 'px';
+          el.innerHTML = `<h2>${item.title}</h2><p>${item.body}</p>`;
+          return el;
+        },
+      });
+
+      // Controls
+      let nextId = items.length;
+
+      document.getElementById('addBtn').addEventListener('click', () => {
+        items = [
+          ...items,
+          {
+            id: nextId,
+            title: `Card ${nextId + 1}`,
+            body: 'A new card was added dynamically.',
+            height: 100 + (nextId * 53) % 160,
+            color: COLORS[nextId % COLORS.length],
+          },
+        ];
+        nextId++;
+        masonry.updateItems(items);
+      });
+
+      document.getElementById('removeBtn').addEventListener('click', () => {
+        if (items.length === 0) return;
+        items = items.slice(0, -1);
+        masonry.updateItems(items);
+      });
+
+      document.getElementById('gutter').addEventListener('input', rebuild);
+      document.getElementById('minColWidth').addEventListener('input', rebuild);
+
+      function rebuild() {
+        masonry.destroy();
+        // Re-create with new options (simplest approach for vanilla)
+        const newGutter = parseInt(document.getElementById('gutter').value, 10);
+        const newMinCol = parseInt(document.getElementById('minColWidth').value, 10);
+        Object.assign(masonry, new MasonrySnapGridLayout(container, {
+          layoutMode: 'js',
+          gutter: newGutter,
+          minColWidth: newMinCol,
+          animate: true,
+          items,
+          renderItem(item) {
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.style.background = item.color;
+            el.style.height = item.height + 'px';
+            el.innerHTML = `<h2>${item.title}</h2><p>${item.body}</p>`;
+            return el;
+          },
+        }));
+      }
+    </script>
+  </body>
+</html>

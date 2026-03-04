@@ -1,118 +1,86 @@
+<div align="center">
+
 # masonry-snap-grid-layout
 
-[![npm version](https://img.shields.io/npm/v/masonry-snap-grid-layout?color=brightgreen)](https://www.npmjs.com/package/masonry-snap-grid-layout)
-[![CI/CD](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions/workflows/publish.yml/badge.svg)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions)
-[![Demo Vanilla JS](https://img.shields.io/badge/demo-vanilla%20js-blue)](https://codesandbox.io/p/sandbox/l9xl7s)
-[![Demo React](https://img.shields.io/badge/demo-react-blue)](https://codesandbox.io/p/sandbox/rgxsxp)
-![Angular Demo](https://img.shields.io/badge/demo-angular-red)
-![Vue 3 Demo](https://img.shields.io/badge/demo-vue%203-green)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-ffdd00?logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
+**A performant, SSR-friendly masonry grid for Vanilla JS, React, Vue 3, and Angular**
 
+[![npm version](https://img.shields.io/npm/v/masonry-snap-grid-layout?color=6366f1&labelColor=1e1b4b&style=flat-square)](https://www.npmjs.com/package/masonry-snap-grid-layout)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/khachatryan-dev/masonry-snap-grid-layout/publish.yml?style=flat-square&labelColor=1e1b4b&color=6366f1&label=CI%2FCD)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/actions)
+[![License: MIT](https://img.shields.io/badge/license-MIT-6366f1?style=flat-square&labelColor=1e1b4b)](./LICENSE)
+[![Zero deps](https://img.shields.io/badge/dependencies-0-6366f1?style=flat-square&labelColor=1e1b4b)](./package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-first-6366f1?style=flat-square&labelColor=1e1b4b&logo=typescript&logoColor=white)](./tsconfig.json)
 
-A **performant, SSR-friendly** masonry grid layout library with smooth animations, customizable gutter, columns, and dynamic item content.
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
 
-> **Next-generation, SSR-safe Masonry layout library** for **Vanilla JS**, **React**, **Vue 3**, and **Angular**, with zero dependencies and smooth animations.
+<br/>
 
----
+[![Vanilla JS Demo](https://img.shields.io/badge/▶%20Vanilla%20JS-demo-f7df1e?style=for-the-badge)](https://codesandbox.io/p/sandbox/l9xl7s)
+[![React Demo](https://img.shields.io/badge/▶%20React-demo-61dafb?style=for-the-badge)](https://codesandbox.io/p/sandbox/rgxsxp)
+[![Vue 3 Demo](https://img.shields.io/badge/▶%20Vue%203-demo-42b883?style=for-the-badge)](#)
+[![Angular Demo](https://img.shields.io/badge/▶%20Angular-demo-dd0031?style=for-the-badge)](#)
 
-# 🌟 Highlights
-
-| Feature                | Description                                                           |
-| ---------------------- | --------------------------------------------------------------------- |
-| ✅ CSS-First Masonry    | Uses native browser CSS masonry if available for **best performance** |
-| ✅ JS Fallback Engine   | Battle-tested JS layout engine for unsupported browsers               |
-| ✅ SSR-Friendly React   | Server renders static HTML, client hydrates smoothly                  |
-| ✅ Vue 3 Drop-in        | Scoped slot support for full flexibility                              |
-| ✅ Angular Lifecycle    | Works inside `ngAfterViewInit`                                        |
-| ✅ Zero Dependencies    | Lightweight, fast, and modern                                         |
-| ✅ TypeScript-First     | Full type safety                                                      |
-| ✅ Smooth Animations    | Works with dynamic content and transitions                            |
-| ✅ Responsive & Dynamic | Automatic columns & gutter based on container width                   |
+</div>
 
 ---
 
-# 🎬 Demo Video
+## Overview
 
-[![Watch Demo](https://img.youtube.com/vi/mHK_6z9WEWs/hqdefault.jpg)](https://www.youtube.com/watch?v=mHK_6z9WEWs)
+`masonry-snap-grid-layout` is a **zero-dependency**, **TypeScript-first** masonry layout engine that works across every major framework. It uses **native CSS masonry** when the browser supports it, and falls back to a smooth JS engine otherwise — giving you the best of both worlds without any configuration.
 
----
-
-# 🖼 Live Demos
-
-| Vanilla JS                                                                                                         | React                                                                                                            | Vue 3                                                                                                          |
-| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [![Vanilla Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/l9xl7s) | [![React Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/rgxsxp) | [![Vue Demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/xyz123) |
-
----
-
-# 🚀 SSR Support (Next.js, Nuxt, SvelteKit)
-
-This library has **full Server-Side Rendering (SSR) support** out of the box!
-
-- ✅ **Next.js App Router** - Works seamlessly with server and client components
-- ✅ **Next.js Pages Router** - Compatible with traditional routing
-- ✅ **Nuxt.js 3** - Full SSR support with auto-hydration
-- ✅ **SvelteKit** - Works with both SSR and static generation
-- ✅ **SEO Friendly** - All content rendered on server (crawlable)
-- ✅ **No Layout Shift** - Server renders items, client enhances layout
-
-## Quick Next.js Example
-
-```tsx
-'use client';
-
-import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
-import 'masonry-snap-grid-layout/dist/index.css';
-
-export default function MasonryGrid({ items }) {
-  return (
-    <MasonrySnapGrid
-      items={items}
-      gutter={16}
-      minColWidth={220}
-      renderItem={(item) => (
-        <div style={{ height: item.height, background: '#f0f0f0' }}>
-          {item.title}
-        </div>
-      )}
-    />
-  );
-}
+```
+┌─────────┐  ┌─────────────┐  ┌──────┐
+│ Card 1  │  │   Card 2    │  │ Card │
+│         │  │   (tall)    │  │  3   │
+└─────────┘  │             │  └──────┘
+┌──────────┐ │             │  ┌────────────┐
+│  Card 4  │ └─────────────┘  │   Card 5   │
+│  (tall)  │  ┌──────────┐   │            │
+│          │  │  Card 6  │   └────────────┘
+└──────────┘  └──────────┘
 ```
 
-**How it works:**
-1. Server renders items as static HTML (SEO-friendly)
-2. Browser receives HTML immediately (fast FCP)
-3. Client hydrates component, initializes masonry layout
-4. Smooth animations on resize and updates
+---
 
-📖 **Full SSR Guide**: See [SSR_GUIDE.md](./SSR_GUIDE.md)
-📖 **Next.js Example**: See [NEXTJS_SSR_EXAMPLE.md](./NEXTJS_SSR_EXAMPLE.md)
+## ✨ Features
+
+| | Feature | Detail |
+|---|---|---|
+| 🎨 | **CSS-First Engine** | Uses native `grid-template-rows: masonry` when available |
+| ⚙️ | **JS Fallback Engine** | Rock-solid JS layout for all other browsers |
+| 🖥️ | **SSR Ready** | Server renders static HTML — no layout shift, SEO-friendly |
+| ⚡ | **Zero Dependencies** | Nothing to audit, nothing to update |
+| 🔷 | **TypeScript-First** | Fully typed generics for your data items |
+| 🎬 | **Smooth Animations** | CSS `transform` transitions on layout changes |
+| 📐 | **Responsive** | Recalculates columns automatically via `ResizeObserver` |
+| 🧩 | **Multi-Framework** | Vanilla JS · React · Vue 3 · Angular |
 
 ---
 
-# 🚀 Quick Start
-
-### Install
+## 📦 Installation
 
 ```bash
+# npm
 npm install masonry-snap-grid-layout
-# or
+
+# yarn
 yarn add masonry-snap-grid-layout
-# or
+
+# pnpm
 pnpm add masonry-snap-grid-layout
 ```
 
 ---
 
-### Vanilla JS Example
+## 🚀 Quick Start
+
+### Vanilla JS
 
 ```js
 import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
-import 'masonry-snap-grid-layout/dist/index.css';
+import 'masonry-snap-grid-layout/style.css';
 
 const masonry = new MasonrySnapGridLayout(container, {
-  layoutMode: 'auto',
+  layoutMode: 'auto',   // 'auto' | 'css' | 'js'
   gutter: 16,
   minColWidth: 240,
   animate: true,
@@ -120,183 +88,260 @@ const masonry = new MasonrySnapGridLayout(container, {
   renderItem: (item) => {
     const el = document.createElement('div');
     el.style.height = item.height + 'px';
-    el.style.background = `linear-gradient(135deg, ${item.color} 0%, #fff 100%)`;
+    el.style.background = `linear-gradient(135deg, ${item.color}, #fff)`;
     el.textContent = item.title;
     return el;
   },
 });
+
+// Later:
+masonry.updateItems(newItems);
+masonry.destroy();
 ```
 
 ---
 
-### React (SSR-Friendly)
+### ⚛️ React
+
+SSR-safe — works with Next.js App Router, Pages Router, and plain Vite.
 
 ```tsx
 import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
-import 'masonry-snap-grid-layout/dist/index.css';
+import 'masonry-snap-grid-layout/style.css';
 
-<MasonrySnapGrid
-  items={items}
-  layoutMode="auto"
-  gutter={16}
-  minColWidth={240}
-  animate
-  renderItem={(item) => (
-    <div style={{ height: item.height, borderRadius: '12px', padding: '16px' }}>
-      {item.title}
-    </div>
-  )}
-/>
+export default function Gallery({ items }) {
+  return (
+    <MasonrySnapGrid
+      items={items}
+      layoutMode="auto"
+      gutter={16}
+      minColWidth={240}
+      animate
+      renderItem={(item) => (
+        <div style={{ height: item.height, borderRadius: 12, padding: 16 }}>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </div>
+      )}
+    />
+  );
+}
 ```
+
+**Next.js App Router** — add `'use client'` since the component uses browser APIs after hydration:
+
+```tsx
+'use client';
+
+import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
+import 'masonry-snap-grid-layout/style.css';
+```
+
+**How SSR works:**
+1. Server renders items in a responsive CSS grid → visible HTML for crawlers
+2. Browser receives full HTML immediately → fast FCP
+3. Client hydrates, measures heights, applies masonry transforms
+4. `ResizeObserver` keeps layout correct on window resize
 
 ---
 
-### Vue 3 Drop-in Component
+### 💚 Vue 3
 
-```
+Drop-in component with a typed scoped slot — no render functions needed.
+
+```vue
+<script setup lang="ts">
+import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
+import 'masonry-snap-grid-layout/style.css';
+</script>
+
 <template>
-  <MasonrySnapGrid :items="items" :gutter="16" :minColWidth="240">
+  <MasonrySnapGrid
+    :items="items"
+    :gutter="16"
+    :min-col-width="240"
+    :animate="true"
+  >
     <template #default="{ item }">
-      <div :style="{ height: item.height + 'px', borderRadius: '12px', padding: '16px' }">
-        {{ item.title }}
+      <div
+        :style="{
+          height: item.height + 'px',
+          borderRadius: '12px',
+          padding: '16px',
+        }"
+      >
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.body }}</p>
       </div>
     </template>
   </MasonrySnapGrid>
 </template>
-
-<script setup lang="ts">
-import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
-</script>
 ```
 
 ---
 
-# ⚡ Engine Comparison
+### 🔴 Angular
 
-| Feature           | CSS Masonry | JS Masonry |
-| ----------------- | ----------- | ---------- |
-| Browser Native    | ✅           | ❌          |
-| Animation Support | Limited     | ✅ Smooth   |
-| SSR Support       | ✅ (React)   | ✅          |
-| Zero Dependencies | ✅           | ✅          |
-| Performance       | ⚡ Fast      | ⚡ Fast     |
+Standalone component — works with Angular 17+ and the default Ivy compiler.
+
+```typescript
+// app.component.ts
+import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
+
+@Component({ selector: 'app-root', standalone: true, template: `<div #grid></div>` })
+export class AppComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('grid') gridRef!: ElementRef<HTMLDivElement>;
+  private masonry?: MasonrySnapGridLayout<Item>;
+
+  ngAfterViewInit() {
+    this.masonry = new MasonrySnapGridLayout(this.gridRef.nativeElement, {
+      items: this.items,
+      gutter: 16,
+      minColWidth: 240,
+      animate: true,
+      renderItem: (item) => {
+        const el = document.createElement('div');
+        el.style.height = item.height + 'px';
+        el.textContent = item.title;
+        return el;
+      },
+    });
+  }
+
+  ngOnDestroy() { this.masonry?.destroy(); }
+}
+```
+
+Import the stylesheet in `src/styles.css`:
+
+```css
+@import 'masonry-snap-grid-layout/style.css';
+```
 
 ---
 
-# 🧩 API Overview
+## 🧩 API Reference
 
-| Option               | Type                       | Default  | Description          |
-| -------------------- | -------------------------- | -------- | -------------------- |
-| `layoutMode`         | `'auto' \| 'css' \| 'js'`  | `'auto'` | Engine strategy      |
-| `gutter`             | `number`                   | 16       | Space between items  |
-| `minColWidth`        | `number`                   | 250      | Minimum column width |
-| `animate`            | `boolean`                  | true     | Enable JS animations |
-| `transitionDuration` | `number`                   | 400      | Duration (ms)        |
-| `items`              | `Array<T>`                 | required | Data items           |
-| `renderItem`         | `(item: T) => HTMLElement` | required | Render function      |
+### Options
 
-**Methods**:
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `items` | `T[]` | **required** | Array of data items to render |
+| `renderItem` | `(item: T) => HTMLElement` | **required** | Returns the DOM element for each item |
+| `layoutMode` | `'auto' \| 'css' \| 'js'` | `'auto'` | `auto` uses CSS masonry if supported, else JS |
+| `gutter` | `number` | `16` | Gap between items in pixels |
+| `minColWidth` | `number` | `250` | Minimum column width in pixels |
+| `animate` | `boolean` | `true` | Smooth CSS transform transitions |
+| `transitionDuration` | `number` | `400` | Transition length in ms (JS mode) |
 
+### Methods (Vanilla JS)
+
+```ts
+masonry.updateItems(newItems: T[])  // Swap items and re-layout
+masonry.destroy()                   // Remove layout styles and stop observing
 ```
-updateItems(newItems: T[])
-destroy()
-```
+
+### React Props
+
+All options above apply, plus:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `renderItem` | `(item: T) => ReactNode` | JSX render function (not HTMLElement) |
+| `className` | `string` | Extra class on the container |
+| `style` | `CSSProperties` | Extra inline styles on the container |
+
+### Vue Props & Slots
+
+All options apply as kebab-case props (`:gutter`, `:min-col-width`, etc.)
+
+| Slot | Slot props | Description |
+|------|-----------|-------------|
+| `#default` | `{ item: T, index: number }` | Renders each card's content |
 
 ---
 
-# 🧪 Testing
+## ⚡ Engine Comparison
 
-Built with **Vitest**. Covers:
+| | CSS Masonry | JS Masonry |
+|---|---|---|
+| **Availability** | Firefox (flag) + Chrome 135+ | All browsers |
+| **Animations** | Limited | ✅ Smooth `transform` |
+| **SSR Support** | ✅ | ✅ |
+| **Performance** | ⚡ Native | ⚡ Transform-based |
+| **Column control** | Browser decides | Exact `minColWidth` |
 
-* Core layout engine
-* React SSR hydration
-* Vue 3 wrapper
-* Lifecycle & Angular usage
-* Zero-width container handling
+> `layoutMode: 'auto'` picks CSS masonry when `CSS.supports('grid-template-rows', 'masonry')` is true, and falls back to JS automatically.
 
-``` bash
+---
+
+## 🖥️ Running Examples Locally
+
+> **First** — build the library so examples can import from `dist/`:
+> ```bash
+> npm run build
+> ```
+
+| Framework | Command | URL |
+|-----------|---------|-----|
+| **Vanilla JS** | `cd examples/vanilla && npx serve .` | http://localhost:3000 |
+| **React** | `cd examples/react && npm install && npm run dev` | http://localhost:5173 |
+| **Vue 3** | `cd examples/vue && npm install && npm run dev` | http://localhost:5173 |
+| **Angular** | `cd examples/angular && npm install && npm run dev` | http://localhost:4200 |
+
+Each example features live sliders for gutter / column width and add/remove buttons for dynamic updates.
+
+---
+
+## 🧪 Testing
+
+```bash
 npm test
 ```
 
----
+Tests are written with **Vitest** and cover:
 
-# 📈 Performance & Best Practices
-
-* Minimal DOM thrashing using `transform`
-* `ResizeObserver` for responsive layout
-* Optimized for dashboards, galleries, and dynamic content
-* Handles zero-width containers gracefully
-
----
-
-# 🤝 Contributing
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/awesome-feature`)
-3. Commit your changes
-4. Open a Pull Request
+- Column count algorithm (including zero-width containers)
+- JS masonry layout engine — positioning, heights, animations
+- CSS masonry engine — grid property output
+- `MasonrySnapGridLayout` class — full lifecycle (`init`, `updateItems`, `destroy`, `ResizeObserver`)
+- React component — SSR class, layout modes, item updates, ResizeObserver teardown
 
 ---
 
-# 👤 Author & Support
+## 📈 Performance Notes
 
-Built and maintained by **Aram Khachatryan** — if this project helped you, you can support its ongoing development:
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-☕-ffdd00?logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
-
-You can also find me on GitHub: [arkhachats](https://github.com/khachatryan-dev)
+- **No DOM thrashing** — item widths are set in one batch, heights read in one pass, transforms applied last
+- **`ResizeObserver`** — efficient, debounce-free responsive layout
+- **`will-change: transform`** — GPU-composited animations on layout items
+- **Tree-shakeable** — import only what you use (`/react`, `/vue`, `/angular`)
 
 ---
 
-# 📄 License
+## 🤝 Contributing
+
+```bash
+git clone https://github.com/khachatryan-dev/masonry-snap-grid-layout
+cd masonry-snap-grid-layout
+npm install
+npm test        # run tests
+npm run build   # build dist/
+```
+
+1. Fork → feature branch → PR
+2. All PRs should keep `npm test` green
+
+---
+
+## 👤 Author
+
+Built and maintained by **Aram Khachatryan**
+
+[![GitHub](https://img.shields.io/badge/GitHub-khachatryan--dev-181717?style=flat-square&logo=github)](https://github.com/khachatryan-dev)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
+
+---
+
+## 📄 License
 
 MIT © [Aram Khachatryan](https://github.com/khachatryan-dev)
-
----
-
-# 🏁 Running the examples locally
-
-This repository includes small example apps to try the library in multiple frameworks. The examples are located under the `examples/` folder.
-
-Note: Some examples import the local package (using `file:../..`) — if you change the core source or want examples to use the built package, run `npm run build` in the repository root first to generate the `dist/` artifacts.
-
-Vanilla JS (no build required)
-
-```powershell
-cd examples/vanilla
-npx serve .
-# Open http://localhost:3000 (or the port shown)
-```
-
-React (Vite + TypeScript)
-
-```powershell
-cd examples/react
-npm install
-npm run dev
-# Open http://localhost:5173
-```
-
-Vue 3 (Vite + TypeScript)
-
-```powershell
-cd examples/vue
-npm install
-npm run dev
-# Open http://localhost:5173
-```
-
-Angular (create a project locally)
-
-```powershell
-# Create an Angular app with the CLI
-npm install -g @angular/cli
-ng new masonry-grid-angular-demo --routing=false --style=css
-cd masonry-grid-angular-demo
-npm install masonry-snap-grid-layout
-# Add to src/styles.css:
-@import 'masonry-snap-grid-layout/dist/index.css';
-# Add a component and initialize MasonrySnapGridLayout in ngAfterViewInit (see examples/angular/README.md)
-ng serve
-# Open http://localhost:4200
-```

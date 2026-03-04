@@ -1,21 +1,28 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), vue()],
   build: {
     lib: {
       entry: {
         index: path.resolve(__dirname, 'src/index.ts'),
-        react: path.resolve(__dirname, 'src/react/index.ts')
+        'react/index': path.resolve(__dirname, 'src/react/index.ts'),
+        'vue/index': path.resolve(__dirname, 'src/vue/index.ts'),
       },
-      formats: ['es']
+      formats: ['es'],
     },
     rollupOptions: {
-      external: ['react']
+      external: ['react', 'react-dom', 'react/jsx-runtime', 'vue'],
+      output: {
+        assetFileNames: '[name][extname]',
+        preserveModules: false,
+      },
     },
-    sourcemap: true,
-    emptyOutDir: true
-  }
+    sourcemap: false,
+    minify: false,
+    emptyOutDir: true,
+  },
 });

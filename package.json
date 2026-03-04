@@ -6,7 +6,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": ["./dist/style.css"],
-  "files": ["dist"],
+  "files": ["dist", "src/angular"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,23 +16,46 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js"
     },
-    "./style.css": "./dist/style.css"
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "import": "./dist/vue/index.js"
+    },
+    "./angular": {
+      "types": "./src/angular/index.ts",
+      "default": "./src/angular/index.ts"
+    },
+    "./style.css": "./dist/style.css",
+    "./dist/index.css": "./dist/style.css"
   },
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "vue": ">=3",
+    "@angular/core": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "vue": { "optional": true },
+    "@angular/core": { "optional": true }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
     "test": "vitest run",
-    "dev": "vitest"
+    "dev": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.0",
+    "@testing-library/react": "^14.3.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-vue": "^5.1.0",
+    "jsdom": "^24.1.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "typescript": "^5.4.0",
-    "vite": "^5.0.0",
-    "vitest": "^1.5.0",
-    "@vitejs/plugin-react": "^4.0.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "jsdom": "^24.0.0"
+    "vite": "^5.4.0",
+    "vitest": "^1.6.0",
+    "vue": "^3.5.0"
   }
 }
