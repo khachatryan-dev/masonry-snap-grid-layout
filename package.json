@@ -1,12 +1,17 @@
 {
   "name": "masonry-snap-grid-layout",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "sideEffects": ["./dist/style.css"],
-  "files": ["dist", "src/angular"],
+  "sideEffects": [
+    "./dist/style.css"
+  ],
+  "files": [
+    "dist",
+    "src/angular"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -33,9 +38,15 @@
     "@angular/core": ">=17"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "vue": { "optional": true },
-    "@angular/core": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    }
   },
   "scripts": {
     "build": "vite build && tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
