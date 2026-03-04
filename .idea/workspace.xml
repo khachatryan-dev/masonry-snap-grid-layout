@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix yaml file" />
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix yaml file">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -183,22 +186,6 @@
       <workItem from="1772648653410" duration="417000" />
       <workItem from="1772649080631" duration="118000" />
       <workItem from="1772649206808" duration="4699000" />
-    </task>
-    <task id="LOCAL-00008" summary="bugfix react part">
-      <option name="closed" value="true" />
-      <created>1754601684543</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1754601684543</updated>
-    </task>
-    <task id="LOCAL-00009" summary="bugfix react part">
-      <option name="closed" value="true" />
-      <created>1754602177115</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1754602177115</updated>
     </task>
     <task id="LOCAL-00010" summary="update readme file">
       <option name="closed" value="true" />
@@ -576,7 +563,23 @@
       <option name="project" value="LOCAL" />
       <updated>1772656289238</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="fix yaml file">
+      <option name="closed" value="true" />
+      <created>1772656380114</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1772656380114</updated>
+    </task>
+    <task id="LOCAL-00058" summary="fix yaml file">
+      <option name="closed" value="true" />
+      <created>1772656459576</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1772656459576</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -618,6 +621,18 @@
     <MESSAGE value="new version" />
     <MESSAGE value="fix yaml file" />
     <option name="LAST_COMMIT_MESSAGE" value="fix yaml file" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/examples/vanilla/index.html</url>
+          <line>49</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

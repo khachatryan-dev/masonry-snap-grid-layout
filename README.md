@@ -16,7 +16,7 @@
 
 [![Vanilla JS Demo](https://img.shields.io/badge/▶%20Vanilla%20JS-demo-f7df1e?style=for-the-badge)](https://codesandbox.io/p/sandbox/l9xl7s)
 [![React Demo](https://img.shields.io/badge/▶%20React-demo-61dafb?style=for-the-badge)](https://codesandbox.io/p/sandbox/rgxsxp)
-[![Vue 3 Demo](https://img.shields.io/badge/▶%20Vue%203-demo-42b883?style=for-the-badge)](#)
+[![Vue 3 Demo](https://img.shields.io/badge/▶%20Vue%203-demo-42b883?style=for-the-badge)](https://codesandbox.io/p/devbox/r58pdw)
 [![Angular Demo](https://img.shields.io/badge/▶%20Angular-demo-dd0031?style=for-the-badge)](#)
 
 </div>
