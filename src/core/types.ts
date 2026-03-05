@@ -1,7 +1,12 @@
-export type LayoutMode = 'auto' | 'css' | 'js';
+export type LayoutMode = 'auto' | 'js';
 
 export interface MasonryOptions<T> {
-  /** Engine strategy: 'auto' uses CSS masonry if supported, else JS fallback. Default: 'auto' */
+  /**
+   * Engine strategy.
+   * - `'auto'` (default) — uses native CSS `grid-template-rows: masonry` when the
+   *   browser supports it; falls back to JS absolute-positioning masonry otherwise.
+   * - `'js'` — always uses JS masonry, regardless of browser support.
+   */
   layoutMode?: LayoutMode;
   /** Space between items in pixels. Default: 16 */
   gutter?: number;

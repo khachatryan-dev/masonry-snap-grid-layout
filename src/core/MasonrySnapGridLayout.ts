@@ -47,9 +47,8 @@ export default class MasonrySnapGridLayout<T> {
   }
 
   private shouldUseCss(): boolean {
-    const { layoutMode } = this.options;
-    if (layoutMode === 'css') return true;
-    if (layoutMode === 'js') return false;
+    if (this.options.layoutMode === 'js') return false;
+    // 'auto' (default): use CSS masonry only when the browser natively supports it
     return supportsCss('grid-template-rows', 'masonry');
   }
 

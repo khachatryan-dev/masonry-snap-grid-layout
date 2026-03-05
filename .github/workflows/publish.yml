@@ -1,4 +1,4 @@
-name: CI / Publish
+name: CI
 
 on:
   push:
@@ -11,9 +11,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# ──────────────────────────────────────────────────────────────
-# Job 1 — CI: runs on every push and every pull request
-# ──────────────────────────────────────────────────────────────
 jobs:
   ci:
     name: Test & Build
@@ -58,68 +55,3 @@ jobs:
           [ -f dist/style.css ]      || (echo "❌ dist/style.css missing"      && exit 1)
           [ -f dist/index.d.ts ]     || (echo "❌ dist/index.d.ts missing"     && exit 1)
           echo "✅ All required dist files present"
-
-# ──────────────────────────────────────────────────────────────
-# Job 2 — Publish: only on push to main, after CI passes
-# ──────────────────────────────────────────────────────────────
-  publish:
-    name: Version & Publish to npm
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write   # push version commit + tag
-      id-token: write   # npm provenance attestation
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
-
-      - name: Cache npm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json') }}
-          restore-keys: ${{ runner.os }}-npm-
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Bump patch version
-        id: version
-        run: |
-          git config user.name  "GitHub Actions"
-          git config user.email "actions@github.com"
-
-          # Increment patch in package.json only — no git tag yet
-          npm version patch --no-git-tag-version
-
-          NEW_VERSION=$(node -p "require('./package.json').version")
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "📦 Bumped to v$NEW_VERSION"
-
-      - name: Build (with updated version)
-        run: npm run build
-
-      - name: Commit, tag & push
-        run: |
-          git add package.json
-          git commit -m "Bump version to v${{ steps.version.outputs.new_version }} [skip ci]"
-          git tag -a "v${{ steps.version.outputs.new_version }}" \
-                    -m "Release v${{ steps.version.outputs.new_version }}"
-          git push origin HEAD:main
-          git push origin --tags
-
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -227,13 +227,18 @@ describe('MasonrySnapGridLayout', () => {
     ).not.toThrow();
   });
 
-  it('applies CSS masonry when layoutMode is "css"', () => {
+  it('applies CSS masonry when layoutMode is "auto" and browser supports it', () => {
+    const originalSupports = CSS.supports;
+    CSS.supports = vi.fn().mockReturnValue(true);
+
     new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'css',
+      layoutMode: 'auto',
     });
     expect(container.style.display).toBe('grid');
+
+    CSS.supports = originalSupports;
   });
 
   it('uses default options when none provided', () => {
