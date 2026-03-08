@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.2.3] — 2026
+
+
+### Added
+- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.
+- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.
+- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.
+- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.
+- Comments added throughout the React component for easier maintenance and readability.
+### Fixed
+- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.
+- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.
+- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.
+- React component: `'isMeasured'` reset on items change no longer breaks virtualization.
+- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects.
+
+---
+
 ## [1.2.2] — 2025
 
 ### Changed

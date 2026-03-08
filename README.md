@@ -11,6 +11,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-6366f1?style=flat-square&labelColor=1e1b4b)](./LICENSE)
 [![Zero deps](https://img.shields.io/badge/dependencies-0-6366f1?style=flat-square&labelColor=1e1b4b)](./package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-first-6366f1?style=flat-square&labelColor=1e1b4b&logo=typescript&logoColor=white)](./tsconfig.json)
+[![Socket Badge](https://badge.socket.dev/npm/package/masonry-snap-grid-layout/1.2.3?style=flat-square&labelColor=1e1b4b&logo=socket&logoColor=white&color=6366f1)](https://badge.socket.dev/npm/package/masonry-snap-grid-layout/1.2.3)
+[![BundlePhobia](https://badgen.net/bundlephobia/minzip/masonry-snap-grid-layout?style=flat-square&labelColor=1e1b4b&color=6366f1&icon=npm)](https://bundlephobia.com/package/masonry-snap-grid-layout)
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%E2%98%95-ffdd00?style=flat-square&logo=buy-me-a-coffee&logoColor=000)](https://buymeacoffee.com/arkhachats)
 

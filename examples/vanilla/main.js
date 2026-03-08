@@ -5,7 +5,7 @@ const COLORS = [
   '#fde68a', '#a7f3d0', '#bfdbfe', '#fca5a5',
   '#c4b5fd', '#fdba74', '#6ee7b7', '#93c5fd',
 ];
-const INITIAL_COUNT = 200;
+const INITIAL_COUNT = 1200;
 
 function makeItem(i) {
   return {

@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -8,42 +9,51 @@ import React, {
 import { LayoutMode } from '../core/types';
 import { getColumnCount, supportsCss } from '../core/utils';
 
+/**
+ * Public component props
+ */
 export interface MasonrySnapGridProps<T> {
-  /** Array of data items to render */
+  /** Data items to render */
   items: T[];
+
   /**
-   * Engine strategy.
-   * - `'auto'` (default) — uses native CSS masonry if the browser supports it; falls back to JS.
-   * - `'js'` — always uses JS masonry.
+   * Layout engine strategy
+   * - 'auto' (default) -> use CSS masonry if supported
+   * - 'js' -> always use JS masonry
    */
   layoutMode?: LayoutMode;
-  /** Space between items in pixels. Default: 16 */
+
+  /** Space between items (px) */
   gutter?: number;
-  /** Minimum column width in pixels. Default: 250 */
+
+  /** Minimum column width (px) */
   minColWidth?: number;
-  /** Enable smooth CSS transition animations. Default: true */
+
+  /** Enable transform transition animations */
   animate?: boolean;
-  /** Transition duration in ms (JS mode only). Default: 400 */
+
+  /** Transition duration in milliseconds */
   transitionDuration?: number;
-  /** Render function — receives an item and returns JSX */
+
+  /** Item renderer */
   renderItem: (item: T) => React.ReactNode;
-  /** Optional className for the container */
+
+  /** Optional container class */
   className?: string;
-  /** Optional inline styles for the container */
+
+  /** Optional container styles */
   style?: React.CSSProperties;
-  /**
-   * Enable scroll-based virtualization for large datasets (JS masonry mode only).
-   * After the initial measurement pass, only items visible within the viewport
-   * plus the `overscan` buffer are kept in the DOM. Default: false
-   */
+
+  /** Enable scroll virtualization */
   virtualize?: boolean;
-  /**
-   * Pixel buffer above and below the viewport rendered during virtualization.
-   * Larger values reduce pop-in on fast scrolling. Default: 300
-   */
+
+  /** Extra viewport buffer when virtualizing */
   overscan?: number;
 }
 
+/**
+ * Internal layout position for each item
+ */
 interface ItemPosition {
   x: number;
   y: number;
@@ -51,88 +61,147 @@ interface ItemPosition {
 }
 
 /**
- * SSR-friendly React masonry grid component.
+ * MasonrySnapGrid
  *
- * - Server renders all items as a responsive CSS grid (SEO-friendly, visible in page source).
- * - Client detects native CSS masonry support and uses it when available.
- * - Falls back to JS absolute-positioning masonry with optional scroll virtualization.
- * - Automatically re-layouts on container resize via ResizeObserver.
+ * SSR friendly masonry grid that:
+ * - renders SEO friendly markup on server
+ * - upgrades to CSS masonry when supported
+ * - falls back to JS masonry positioning
+ * - supports optional virtualization
  *
- * @example
- * <MasonrySnapGrid
- *   items={items}
- *   gutter={16}
- *   minColWidth={240}
- *   virtualize
- *   renderItem={(item) => <div style={{ height: item.height }}>{item.title}</div>}
- * />
+ * The component uses cached heights and absolute positioning
+ * to calculate column flow similar to Pinterest layouts.
  */
 function MasonrySnapGrid<T>({
-  items,
-  layoutMode = 'auto',
-  gutter = 16,
-  minColWidth = 250,
-  animate = true,
-  transitionDuration = 400,
-  renderItem,
-  className,
-  style,
-  virtualize = false,
-  overscan = 300,
-}: MasonrySnapGridProps<T>) {
+                              items,
+                              layoutMode = 'auto',
+                              gutter = 16,
+                              minColWidth = 250,
+                              animate = true,
+                              transitionDuration = 400,
+                              renderItem,
+                              className,
+                              style,
+                              virtualize = false,
+                              overscan = 300,
+                            }: MasonrySnapGridProps<T>) {
+
+  /**
+   * Container DOM reference
+   */
   const containerRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * Refs to individual item elements
+   * Used to measure heights after render
+   */
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  /** Cached measured offsetHeight for each item by index. */
-  const cachedHeightsRef = useRef<number[]>([]);
-  /** Container's absolute top offset from the document top (updated on mount/resize). */
-  const containerAbsTopRef = useRef(0);
   /**
-   * Ref mirror of `isMeasured` — read inside callbacks without adding to deps.
-   * Avoids recreating computeLayout / ResizeObserver on every measurement cycle.
+   * Cache of measured item heights
+   * Prevents unnecessary re-measurement
+   */
+  const cachedHeightsRef = useRef<number[]>([]);
+
+  /**
+   * Absolute container offset from document top
+   * Used for virtualization calculations
+   */
+  const containerAbsTopRef = useRef(0);
+
+  /**
+   * Tracks whether all items have been measured
+   * Required before enabling virtualization
    */
   const isMeasuredRef = useRef(false);
 
-  // isMounted is false on server / initial hydration to avoid mismatch
+  /**
+   * Stores previous container width to avoid
+   * unnecessary layout recalculations on height changes
+   */
+  const prevWidthRef = useRef(0);
+
+  /**
+   * Stable reference to layout computation function
+   * Allows effects to call the latest version safely
+   */
+  const computeLayoutRef = useRef<() => void>(() => {});
+
+  /**
+   * Client mount detection (avoids SSR mismatch)
+   */
   const [isMounted, setIsMounted] = useState(false);
+
+  /**
+   * Calculated positions for each item
+   */
   const [positions, setPositions] = useState<ItemPosition[]>([]);
+
+  /**
+   * Total container height (used when JS positioning active)
+   */
   const [containerHeight, setContainerHeight] = useState(0);
+
+  /**
+   * Whether native CSS masonry should be used
+   */
   const [useCss, setUseCss] = useState(false);
-  // Triggers a re-render when the initial measurement pass completes
+
+  /**
+   * Virtualization activation state
+   */
   const [isMeasured, setIsMeasured] = useState(false);
+
+  /**
+   * Current scroll position
+   */
   const [scrollY, setScrollY] = useState(0);
+
+  /**
+   * Viewport height
+   */
   const [viewportH, setViewportH] = useState(0);
 
-  // Determine engine once on mount (client-only)
-  // 'auto': use CSS masonry if browser supports it, else JS
-  // 'js': always use JS masonry
+  /**
+   * Detect client mount and CSS masonry support
+   */
   useEffect(() => {
     setIsMounted(true);
+
     if (layoutMode !== 'js') {
       setUseCss(supportsCss('grid-template-rows', 'masonry'));
     }
   }, [layoutMode]);
 
-  // When items change, reset measurement state so all items are rendered again
-  // for re-measurement (handles added/removed items correctly).
+  /**
+   * Ensure itemRefs array length always matches items
+   */
+  useEffect(() => {
+    itemRefs.current.length = items.length;
+  }, [items]);
+
+  /**
+   * Reset measurement when items change
+   */
   useEffect(() => {
     if (!virtualize) return;
+
     isMeasuredRef.current = false;
     setIsMeasured(false);
-    // Trim the cache to current length; keep heights for unchanged items
-    cachedHeightsRef.current = cachedHeightsRef.current.slice(0, items.length);
+
+    cachedHeightsRef.current =
+        cachedHeightsRef.current.slice(0, items.length);
   }, [items, virtualize]);
 
   /**
-   * Stable ref to the latest computeLayout.
-   * Lets ResizeObserver and the measurement-reset effect always call the
-   * current version without putting `computeLayout` in their dep arrays —
-   * which would otherwise reconnect the observer / re-run those effects on
-   * every items change, triggering an immediate ResizeObserver fire and an
-   * extra layout cycle.
+   * Core masonry layout algorithm
+   *
+   * Steps:
+   * 1. Measure item heights
+   * 2. Determine column count
+   * 3. Place each item in the shortest column
+   * 4. Calculate container height
    */
-  const computeLayoutRef = useRef<() => void>(() => {});
-
   const computeLayout = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -142,98 +211,145 @@ function MasonrySnapGrid<T>({
 
     const cols = getColumnCount(containerWidth, minColWidth, gutter);
     const colWidth = (containerWidth - gutter * (cols - 1)) / cols;
+
     const colHeights = new Array<number>(cols).fill(0);
 
-    // Measure currently-rendered items and update the height cache.
-    // Off-screen virtualized items have null refs — their cached heights are reused.
+    /**
+     * Measure visible item heights
+     */
     itemRefs.current.slice(0, items.length).forEach((el, i) => {
-      if (el) {
-        const h = el.offsetHeight;
-        if (h > 0) cachedHeightsRef.current[i] = h;
-      }
+      if (!el) return;
+
+      const h = el.offsetHeight;
+      if (h > 0) cachedHeightsRef.current[i] = h;
     });
 
-    // Compute positions for ALL items using cached heights so the container
-    // height and scroll are always correct even when items are virtualized away.
+    /**
+     * Calculate masonry positions
+     */
     const newPositions: ItemPosition[] = items.map((_, i) => {
-      const minH = Math.min(...colHeights);
-      const col = colHeights.indexOf(minH);
+
+      let minH = colHeights[0];
+      let col = 0;
+
+      // find shortest column
+      for (let c = 1; c < cols; c++) {
+        if (colHeights[c] < minH) {
+          minH = colHeights[c];
+          col = c;
+        }
+      }
+
       const pos: ItemPosition = {
         x: col * (colWidth + gutter),
         y: colHeights[col],
         width: colWidth,
       };
+
       colHeights[col] += (cachedHeightsRef.current[i] ?? 0) + gutter;
+
       return pos;
     });
 
     const maxColHeight =
-      items.length > 0 ? Math.max(...colHeights) - gutter : 0;
+        items.length > 0 ? Math.max(...colHeights) - gutter : 0;
+
     setPositions(newPositions);
     setContainerHeight(Math.max(0, maxColHeight));
 
-    // Once every item has a cached height, enable virtualization.
+    /**
+     * Activate virtualization once all items measured
+     */
     if (virtualize && !isMeasuredRef.current) {
       const allCached = items.every(
-        (_, i) => (cachedHeightsRef.current[i] ?? 0) > 0
+          (_, i) => (cachedHeightsRef.current[i] ?? 0) > 0
       );
+
       if (allCached) {
         isMeasuredRef.current = true;
         setIsMeasured(true);
       }
     }
+
   }, [items, gutter, minColWidth, virtualize]);
 
-  // Keep the ref in sync with the latest computeLayout after every render.
-  useEffect(() => {
+  /**
+   * Keep computeLayout ref updated
+   */
+  useLayoutEffect(() => {
     computeLayoutRef.current = computeLayout;
-  });
+  }, [computeLayout]);
 
-  // Primary layout effect — runs after mount and whenever items / gutter / minColWidth change.
+  /**
+   * Initial layout calculation
+   */
   useEffect(() => {
     if (!isMounted || useCss) return;
-    computeLayout();
-  }, [isMounted, useCss, computeLayout]);
-
-  // Secondary layout effect — fires only when isMeasured resets to false.
-  // Does NOT depend on computeLayout so it never fires just because items changed —
-  // that would duplicate the work already done by the primary effect above.
-  useEffect(() => {
-    if (!isMounted || useCss || isMeasured) return;
     computeLayoutRef.current();
-  }, [isMounted, useCss, isMeasured]); // ← no computeLayout dep
+  }, [isMounted, useCss, items, gutter, minColWidth]);
 
-  // Respond to container resize. Clear height cache because column widths
-  // change, which means item heights may change too.
-  // Does NOT depend on computeLayout so the observer is never reconnected
-  // on items changes. Reconnecting a live observer immediately fires its callback,
-  // which would reset isMeasured and trigger an extra unwanted layout cycle.
+  /**
+   * Recalculate layout after measurement completes
+   */
   useEffect(() => {
     if (!isMounted || useCss) return;
+    computeLayoutRef.current();
+  }, [isMeasured]);
+
+  /**
+   * ResizeObserver
+   *
+   * Only reacts to WIDTH changes to prevent layout loops.
+   */
+  useEffect(() => {
+    if (!isMounted || useCss) return;
+
     const container = containerRef.current;
     if (!container || typeof ResizeObserver === 'undefined') return;
 
-    const observer = new ResizeObserver(() => {
+    const observer = new ResizeObserver((entries) => {
+
+      const width = entries[0].contentRect.width;
+
+      if (prevWidthRef.current === width) return;
+
+      prevWidthRef.current = width;
+
       cachedHeightsRef.current = [];
       isMeasuredRef.current = false;
-      setIsMeasured(false);
-      computeLayoutRef.current(); // always latest, no dep needed
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [isMounted, useCss]); // ← no computeLayout dep — observer is stable
 
-  // Track window scroll and viewport size for virtualization
+      setIsMeasured(false);
+
+      computeLayoutRef.current();
+    });
+
+    observer.observe(container);
+
+    return () => observer.disconnect();
+
+  }, [isMounted, useCss]);
+
+  /**
+   * Scroll + viewport tracking
+   *
+   * Used for virtualization calculations.
+   */
   useEffect(() => {
     if (!virtualize || !isMounted || useCss) return;
 
     const syncContainerTop = () => {
       if (containerRef.current) {
         containerAbsTopRef.current =
-          containerRef.current.getBoundingClientRect().top + window.scrollY;
+            containerRef.current.getBoundingClientRect().top +
+            window.scrollY;
       }
     };
-    const onScroll = () => setScrollY(window.scrollY);
+
+    const onScroll = () => {
+      setScrollY(window.scrollY);
+      syncContainerTop();
+    };
+
     const onResize = () => {
       setViewportH(window.innerHeight);
       syncContainerTop();
@@ -242,7 +358,6 @@ function MasonrySnapGrid<T>({
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
 
-    // Initialise synchronously so the first render has correct values
     setViewportH(window.innerHeight);
     syncContainerTop();
     setScrollY(window.scrollY);
@@ -251,102 +366,145 @@ function MasonrySnapGrid<T>({
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
     };
+
   }, [virtualize, isMounted, useCss]);
 
   /**
-   * Set of item indices that should be rendered.
-   * `null` means "render everything" (virtualization inactive or not yet measured).
+   * Determine which items are visible when virtualization is enabled
    */
   const visibleIndices = useMemo<Set<number> | null>(() => {
-    if (!virtualize || !isMeasured || positions.length === 0) return null;
 
-    // Item positions are relative to the container top.
-    // Translate scroll position into container-relative coordinates.
-    const relStart = scrollY - containerAbsTopRef.current - overscan;
-    const relEnd = scrollY - containerAbsTopRef.current + viewportH + overscan;
+    if (!virtualize || !isMeasured || positions.length === 0) {
+      return null;
+    }
+
+    const relStart =
+        scrollY - containerAbsTopRef.current - overscan;
+
+    const relEnd =
+        scrollY -
+        containerAbsTopRef.current +
+        viewportH +
+        overscan;
 
     const visible = new Set<number>();
+
     positions.forEach((pos, i) => {
+
       const itemH = cachedHeightsRef.current[i] ?? 0;
+
       if (pos.y + itemH >= relStart && pos.y <= relEnd) {
         visible.add(i);
       }
+
     });
+
     return visible;
+
   }, [virtualize, isMeasured, positions, scrollY, viewportH, overscan]);
 
-  // ─── CSS masonry mode ────────────────────────────────────────────────────
+  /**
+   * CSS Masonry mode
+   *
+   * If supported, this avoids JS layout entirely.
+   */
   if (isMounted && useCss) {
     return (
-      <div
-        ref={containerRef}
-        className={`msgl-container msgl-container--css${className ? ` ${className}` : ''}`}
-        style={
-          {
-            '--msgl-gutter': `${gutter}px`,
-            '--msgl-min-col-width': `${minColWidth}px`,
-            ...style,
-          } as React.CSSProperties
-        }
-      >
-        {items.map((item, i) => (
-          <div key={i} className="msgl-item">
-            {renderItem(item)}
-          </div>
-        ))}
-      </div>
+        <div
+            ref={containerRef}
+            className={`msgl-container msgl-container--css${
+                className ? ` ${className}` : ''
+            }`}
+            style={{
+              '--msgl-gutter': `${gutter}px`,
+              '--msgl-min-col-width': `${minColWidth}px`,
+              ...style,
+            } as React.CSSProperties}
+        >
+          {items.map((item, i) => (
+              <div key={i} className="msgl-item">
+                {renderItem(item)}
+              </div>
+          ))}
+        </div>
     );
   }
 
-  // ─── JS masonry mode (+ SSR initial render) ──────────────────────────────
-  // SSR note: the server renders all items with the `--ssr` class (a plain CSS
-  // grid), so they are visible in the page source and indexable by crawlers.
-  // The client switches to `--js` after hydration and applies masonry positions.
-  const hasPositions = isMounted && positions.length === items.length && items.length > 0;
+  /**
+   * Determine if positions are ready
+   */
+  const hasPositions =
+      isMounted &&
+      positions.length === items.length &&
+      items.length > 0;
 
+  /**
+   * JS Masonry rendering
+   */
   return (
-    <div
-      ref={containerRef}
-      className={`msgl-container${isMounted ? ' msgl-container--js' : ' msgl-container--ssr'}${className ? ` ${className}` : ''}`}
-      style={
-        {
-          position: isMounted ? 'relative' : undefined,
-          height: hasPositions ? `${containerHeight}px` : undefined,
-          '--msgl-transition-duration': `${transitionDuration}ms`,
-          ...style,
-        } as React.CSSProperties
-      }
-    >
-      {items.map((item, i) => {
-        const pos = positions[i];
-        const isPositioned = isMounted && pos !== undefined;
+      <div
+          ref={containerRef}
+          className={`msgl-container${
+              isMounted
+                  ? ' msgl-container--js'
+                  : ' msgl-container--ssr'
+          }${className ? ` ${className}` : ''}`}
+          style={{
+            position: isMounted ? 'relative' : undefined,
+            height: hasPositions
+                ? `${containerHeight}px`
+                : undefined,
+            '--msgl-transition-duration': `${transitionDuration}ms`,
+            ...style,
+          } as React.CSSProperties}
+      >
 
-        // After the initial measurement pass, skip items outside the viewport.
-        // `visibleIndices === null` means virtualization is inactive → render all.
-        if (visibleIndices !== null && !visibleIndices.has(i)) return null;
+        {items.map((item, i) => {
 
-        return (
-          <div
-            key={i}
-            ref={(el) => {
-              itemRefs.current[i] = el;
-            }}
-            className={`msgl-item${animate && isPositioned ? ' msgl-item--animated' : ''}`}
-            style={
-              isPositioned
-                ? {
-                    position: 'absolute',
-                    width: `${pos.width}px`,
-                    transform: `translate(${pos.x}px, ${pos.y}px)`,
+          const pos = positions[i];
+          const isPositioned =
+              isMounted && pos !== undefined;
+
+          /**
+           * Skip items outside viewport when virtualizing
+           */
+          if (
+              visibleIndices !== null &&
+              positions.length === items.length &&
+              !visibleIndices.has(i)
+          ) {
+            return null;
+          }
+
+          return (
+              <div
+                  key={i}
+                  ref={(el) => {
+                    if (itemRefs.current[i] !== el) {
+                      itemRefs.current[i] = el;
+                    }
+                  }}
+                  className={`msgl-item${
+                      animate && isPositioned
+                          ? ' msgl-item--animated'
+                          : ''
+                  }`}
+                  style={
+                    isPositioned
+                        ? {
+                          position: 'absolute',
+                          width: `${pos.width}px`,
+                          transform: `translate(${pos.x}px, ${pos.y}px)`,
+                        }
+                        : undefined
                   }
-                : undefined
-            }
-          >
-            {renderItem(item)}
-          </div>
-        );
-      })}
-    </div>
+              >
+                {renderItem(item)}
+              </div>
+          );
+
+        })}
+      </div>
   );
 }
 

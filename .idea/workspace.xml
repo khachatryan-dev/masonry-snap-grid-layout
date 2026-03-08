@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="update README.md">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/angular/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/examples/angular/src/app/app.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/react/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/examples/react/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vanilla/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vanilla/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vue/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vue/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/MasonrySnapGridLayout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/MasonrySnapGridLayout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/vanilla/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vanilla/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/react.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,33 +59,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;js.last.introduce.type&quot;: &quot;CONST&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.ng.executor&quot;: &quot;Run&quot;,
-    &quot;npm.serve:ssr:masonry-test.executor&quot;: &quot;Run&quot;,
-    &quot;npm.start.executor&quot;: &quot;Run&quot;,
-    &quot;npm.test (1).executor&quot;: &quot;Run&quot;,
-    &quot;npm.test.executor&quot;: &quot;Run&quot;,
-    &quot;npm.watch.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "js.last.introduce.type": "CONST",
+    "last_opened_file_path": "C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.dev (1).executor": "Run",
+    "npm.dev (3).executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.ng.executor": "Run",
+    "npm.serve:ssr:masonry-test.executor": "Run",
+    "npm.start.executor": "Run",
+    "npm.test (1).executor": "Run",
+    "npm.test.executor": "Run",
+    "npm.watch.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
@@ -108,7 +102,7 @@
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.dev (3)">
+  <component name="RunManager" selected="npm.build">
     <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -161,9 +155,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.dev (3)" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.build" />
+        <item itemvalue="npm.dev (3)" />
         <item itemvalue="npm.dev (2)" />
         <item itemvalue="npm.start" />
       </list>
@@ -202,15 +196,8 @@
       <workItem from="1772731020714" duration="610000" />
       <workItem from="1772732326337" duration="393000" />
       <workItem from="1772732730210" duration="69000" />
-      <workItem from="1772732808292" duration="5313000" />
-    </task>
-    <task id="LOCAL-00011" summary="check ci/cd">
-      <option name="closed" value="true" />
-      <created>1754823153074</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1754823153074</updated>
+      <workItem from="1772732808292" duration="7322000" />
+      <workItem from="1772980554077" duration="2953000" />
     </task>
     <task id="LOCAL-00012" summary="check ci/cd">
       <option name="closed" value="true" />
@@ -596,7 +583,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772660544037</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job">
+      <option name="closed" value="true" />
+      <created>1772739934556</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1772739934557</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -638,7 +633,8 @@
     <MESSAGE value="new version" />
     <MESSAGE value="fix yaml file" />
     <MESSAGE value="update README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="update README.md" />
+    <MESSAGE value="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job" />
+    <option name="LAST_COMMIT_MESSAGE" value="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
