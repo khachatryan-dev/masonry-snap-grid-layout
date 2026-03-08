@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job">
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vanilla/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vanilla/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/react.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +99,7 @@
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.build">
+  <component name="RunManager" selected="npm.test">
     <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -143,11 +140,11 @@
       <envs />
       <method v="2" />
     </configuration>
-    <configuration name="start" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/examples/angular/package.json" />
+    <configuration name="test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
-        <script value="start" />
+        <script value="test" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -155,11 +152,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.test" />
         <item itemvalue="npm.dev" />
         <item itemvalue="npm.build" />
         <item itemvalue="npm.dev (3)" />
         <item itemvalue="npm.dev (2)" />
-        <item itemvalue="npm.start" />
       </list>
     </recent_temporary>
   </component>
@@ -197,15 +194,7 @@
       <workItem from="1772732326337" duration="393000" />
       <workItem from="1772732730210" duration="69000" />
       <workItem from="1772732808292" duration="7322000" />
-      <workItem from="1772980554077" duration="2953000" />
-    </task>
-    <task id="LOCAL-00012" summary="check ci/cd">
-      <option name="closed" value="true" />
-      <created>1754823354831</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1754823354831</updated>
+      <workItem from="1772980554077" duration="4608000" />
     </task>
     <task id="LOCAL-00013" summary="check ci/cd">
       <option name="closed" value="true" />
@@ -591,7 +580,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772739934557</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects.">
+      <option name="closed" value="true" />
+      <created>1772983705051</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1772983705051</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -609,7 +606,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add CI/CD Part for publish" />
     <MESSAGE value="update project information" />
     <MESSAGE value="add react.js part" />
     <MESSAGE value="fix bug" />
@@ -634,7 +630,8 @@
     <MESSAGE value="fix yaml file" />
     <MESSAGE value="update README.md" />
     <MESSAGE value="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job" />
-    <option name="LAST_COMMIT_MESSAGE" value="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job" />
+    <MESSAGE value="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects." />
+    <option name="LAST_COMMIT_MESSAGE" value="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
