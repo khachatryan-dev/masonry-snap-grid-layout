@@ -38,3 +38,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Angular build cache (4.6MB of Vite deps; regenerated on every build)
+.angular/
+examples/*/.angular/

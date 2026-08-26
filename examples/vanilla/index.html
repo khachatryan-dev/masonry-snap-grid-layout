@@ -5,53 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>masonry-snap-grid-layout — Vanilla JS</title>
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: system-ui, sans-serif; background: #f5f5f5; padding: 24px; }
-      h1 { margin-bottom: 8px; font-size: 1.4rem; color: #333; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f5f5f5;
+        padding: 24px;
+      }
+      h1 {
+        margin-bottom: 8px;
+        font-size: 1.4rem;
+        color: #333;
+      }
 
-      #badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+      #badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
       .badge {
-        padding: 4px 10px; border-radius: 99px; color: #fff;
-        font-size: .75rem; font-weight: 600; white-space: nowrap;
+        padding: 4px 10px;
+        border-radius: 99px;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
       }
 
       #controls {
-        display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;
-        margin-bottom: 24px; padding: 16px;
-        background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+        display: flex;
+        gap: 16px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
       }
-      .ctrl { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; color: #555; }
-      .ctrl input[type=range] { width: 120px; }
+      .ctrl {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 0.8rem;
+        color: #555;
+      }
+      .ctrl input[type='range'] {
+        width: 120px;
+      }
 
-      .seg { display: flex; gap: 4px; }
+      .seg {
+        display: flex;
+        gap: 4px;
+      }
       .seg button {
-        padding: 4px 10px; border: none; border-radius: 6px; cursor: pointer;
-        font-size: .75rem; font-weight: 600; background: #e5e7eb; color: #374151;
+        padding: 4px 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: #e5e7eb;
+        color: #374151;
       }
-      .seg button.active { background: #4f46e5; color: #fff; }
+      .seg button.active {
+        background: #4f46e5;
+        color: #fff;
+      }
 
-      .action-btns { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 2px; }
-      .btn { padding: 8px 14px; border: none; border-radius: 6px; color: #fff; cursor: pointer; font-size: .875rem; }
-      .btn-add    { background: #4f46e5; }
-      .btn-remove { background: #6b7280; }
-      .btn-reset  { background: #9ca3af; }
-      .btn:hover  { filter: brightness(1.1); }
+      .action-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-bottom: 2px;
+      }
+      .btn {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+      .btn-add {
+        background: #4f46e5;
+      }
+      .btn-prepend {
+        background: #0f766e;
+      }
+      .btn-shuffle {
+        background: #7c3aed;
+      }
+      .btn-remove {
+        background: #6b7280;
+      }
+      .btn-reset {
+        background: #9ca3af;
+      }
+      .btn:hover {
+        filter: brightness(1.1);
+      }
 
       .card {
-        border-radius: 12px; padding: 16px;
-        display: flex; flex-direction: column; gap: 8px;
-        font-size: .875rem; color: #333;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: #333;
       }
-      .card strong { font-size: 1rem; }
-      .card p { color: #555; line-height: 1.5; margin: 0; }
+      .card strong {
+        font-size: 1rem;
+      }
+      .card p {
+        color: #555;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      .photo {
+        margin: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #e5e7eb;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      }
+      .photo img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .photo figcaption {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        color: #555;
+      }
+
+      #hint {
+        font-size: 0.8rem;
+        color: #666;
+        margin: 0 0 16px;
+      }
+      #hint code {
+        background: #e5e7eb;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
     </style>
   </head>
   <body>
     <h1>masonry-snap-grid-layout — Vanilla JS Demo</h1>
 
     <div id="badges">
-      <span id="badge-engine" class="badge" style="background:#4f46e5">⚙ JS masonry</span>
-      <span id="badge-count"  class="badge" style="background:#6b7280">0 items</span>
+      <span id="badge-engine" class="badge" style="background: #4f46e5"
+        >⚙ JS masonry</span
+      >
+      <span id="badge-count" class="badge" style="background: #6b7280"
+        >0 items</span
+      >
+      <span id="badge-columns" class="badge" style="background: #374151"></span>
+      <span id="badge-layout" class="badge" style="background: #0f766e"></span>
+      <span
+        id="badge-images"
+        class="badge"
+        style="background: #be185d; display: none"
+        >🖼 Images with no width/height — watch it self-heal</span
+      >
     </div>
 
     <div id="controls">
@@ -64,11 +188,33 @@
       </div>
 
       <div class="ctrl">
+        Content
+        <div class="seg" id="content-seg">
+          <button data-content="text" class="active">text</button>
+          <button data-content="images">images</button>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        Columns
+        <div class="seg" id="columns-seg">
+          <button data-colmode="minWidth" class="active">min width</button>
+          <button data-colmode="fixed">fixed</button>
+          <button data-colmode="responsive">breakpoints</button>
+        </div>
+      </div>
+
+      <div class="ctrl" id="fixed-wrap" style="display: none">
+        <span id="fixed-label">Fixed columns: 3</span>
+        <input id="fixedColumns" type="range" min="1" max="6" value="3" />
+      </div>
+
+      <div class="ctrl">
         <span id="gutter-label">Gutter: 16px</span>
         <input id="gutter" type="range" min="0" max="40" value="16" />
       </div>
 
-      <div class="ctrl">
+      <div class="ctrl" id="mincol-wrap">
         <span id="col-label">Min col: 220px</span>
         <input id="minColWidth" type="range" min="100" max="400" value="220" />
       </div>
@@ -82,11 +228,21 @@
       </div>
 
       <div class="action-btns">
-        <button class="btn btn-add"    id="addBtn">+ Add</button>
+        <button class="btn btn-add" id="addBtn">+ Append</button>
+        <button class="btn btn-prepend" id="prependBtn">↑ Prepend</button>
+        <button class="btn btn-shuffle" id="shuffleBtn">⇄ Shuffle</button>
         <button class="btn btn-remove" id="removeBtn">− Remove</button>
-        <button class="btn btn-reset"  id="resetBtn">↺ Reset</button>
+        <button class="btn btn-reset" id="resetBtn">↺ Reset</button>
       </div>
     </div>
+
+    <p id="hint">
+      Controls call <code>setOptions()</code> — the grid is never destroyed and
+      rebuilt. <strong>Prepend</strong> and <strong>Shuffle</strong> demonstrate
+      <code>getItemKey</code>: existing elements are reused instead of recreated.
+      Switch <strong>Content</strong> to <em>images</em> to watch the grid re-pack
+      itself as each image decodes.
+    </p>
 
     <div id="grid" class="msgl-container"></div>
 

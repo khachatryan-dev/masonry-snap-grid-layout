@@ -27,10 +27,10 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). We expect all 
 
 There are several ways to contribute:
 
-* Report bugs or issues
-* Suggest new features or improvements
-* Fix bugs or implement features via pull requests
-* Improve documentation or examples
+- Report bugs or issues
+- Suggest new features or improvements
+- Fix bugs or implement features via pull requests
+- Improve documentation or examples
 
 ---
 
@@ -38,11 +38,11 @@ There are several ways to contribute:
 
 When reporting a bug, please include:
 
-* A clear **description** of the problem
-* Steps to **reproduce** the issue
-* The **expected** behavior vs. **actual** behavior
-* Screenshots or code snippets if applicable
-* Your environment details (Node version, browser, OS)
+- A clear **description** of the problem
+- Steps to **reproduce** the issue
+- The **expected** behavior vs. **actual** behavior
+- Screenshots or code snippets if applicable
+- Your environment details (Node version, browser, OS)
 
 Create a new issue in the [GitHub Issues](https://github.com/yourusername/masonry-snap-grid-layout/issues) section.
 
@@ -52,9 +52,9 @@ Create a new issue in the [GitHub Issues](https://github.com/yourusername/masonr
 
 When requesting a new feature, please include:
 
-* A clear **description** of the feature
-* **Use cases** and why it’s needed
-* Examples or mockups if applicable
+- A clear **description** of the feature
+- **Use cases** and why it’s needed
+- Examples or mockups if applicable
 
 Feature requests should also be submitted as GitHub Issues.
 
@@ -73,10 +73,10 @@ Before submitting a PR:
 
 PR Description should include:
 
-* Purpose of the PR
-* What changes were made
-* Any related issues (`Fixes #123`)
-* Screenshots or examples if relevant
+- Purpose of the PR
+- What changes were made
+- Any related issues (`Fixes #123`)
+- Screenshots or examples if relevant
 
 ---
 
@@ -118,11 +118,11 @@ Add tests for any bug fixes or new features.
 
 ## Code Style
 
-* TypeScript with strict type checks
-* Prettier for formatting
-* ESLint for linting
-* Use meaningful variable and function names
-* Include JSDoc comments for all public functions and components
+- TypeScript with strict type checks
+- Prettier for formatting
+- ESLint for linting
+- Use meaningful variable and function names
+- Include JSDoc comments for all public functions and components
 
 ```bash
 # Run lint
@@ -134,3 +134,11 @@ npm run format
 ---
 
 Thank you for contributing! Your help keeps `masonry-snap-grid-layout` reliable, fast, and easy to use.
+
+## Architecture
+
+Before changing layout behaviour, read [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+The short version: the layout algorithm lives once, in `src/core/`, and the
+framework folders are thin adapters over it. Put fixes in the core so all four
+adapters get them together, and run `npm run verify` before opening a PR.

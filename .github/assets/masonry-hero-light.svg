@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="230" viewBox="0 0 880 230" role="img" aria-label="A six-column masonry grid of items with varying heights, each placed in the shortest available column.">
+<defs>
+<linearGradient id="g0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1" stop-opacity="0.95"/><stop offset="1" stop-color="#6366f1" stop-opacity="0.55"/></linearGradient>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#818cf8" stop-opacity="0.95"/><stop offset="1" stop-color="#818cf8" stop-opacity="0.55"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a5b4fc" stop-opacity="0.95"/><stop offset="1" stop-color="#a5b4fc" stop-opacity="0.55"/></linearGradient>
+</defs>
+<rect x="0.0" y="0.0" width="135.0" height="76" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="149.0" y="0.0" width="135.0" height="46" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="298.0" y="0.0" width="135.0" height="98" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="447.0" y="0.0" width="135.0" height="60" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="596.0" y="0.0" width="135.0" height="38" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="745.0" y="0.0" width="135.0" height="70" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="596.0" y="52.0" width="135.0" height="54" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="149.0" y="60.0" width="135.0" height="86" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="447.0" y="74.0" width="135.0" height="42" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="745.0" y="84.0" width="135.0" height="64" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="0.0" y="90.0" width="135.0" height="34" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="298.0" y="112.0" width="135.0" height="58" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="596.0" y="120.0" width="135.0" height="48" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="447.0" y="130.0" width="135.0" height="78" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="0.0" y="138.0" width="135.0" height="40" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="149.0" y="160.0" width="135.0" height="68" rx="9" fill="url(#g0)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="745.0" y="162.0" width="135.0" height="52" rx="9" fill="url(#g1)" stroke="#4f46e5" stroke-opacity="0.18"/>
+<rect x="596.0" y="182.0" width="135.0" height="44" rx="9" fill="url(#g2)" stroke="#4f46e5" stroke-opacity="0.18"/>
+</svg>

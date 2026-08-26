@@ -25,8 +25,16 @@
           "configurations": {
             "production": {
               "budgets": [
-                { "type": "initial", "maximumWarning": "500kb", "maximumError": "1mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "2kb", "maximumError": "4kb" }
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
               ],
               "outputHashing": "all"
             },
@@ -41,8 +49,12 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": { "buildTarget": "masonry-angular-example:build:production" },
-            "development": { "buildTarget": "masonry-angular-example:build:development" }
+            "production": {
+              "buildTarget": "masonry-angular-example:build:production"
+            },
+            "development": {
+              "buildTarget": "masonry-angular-example:build:development"
+            }
           },
           "defaultConfiguration": "development"
         }

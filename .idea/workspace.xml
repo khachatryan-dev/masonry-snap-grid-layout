@@ -5,8 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/react.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/angular/masonry-snap-grid.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/angular/masonry-snap-grid.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/MasonrySnapGridLayout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/MasonrySnapGridLayout.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/cssEngine.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/cssEngine.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/layoutEngine.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/layoutEngine.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/core.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/setup.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/setup.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +26,9 @@
     <persistenceIdMap>
       <entry key="_C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout" value="30vUdUQpL6twiQjrODok1CI7rP5" />
     </persistenceIdMap>
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="57" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -45,6 +57,15 @@
     &quot;accountId&quot;: &quot;ca931aac-d8a6-48ab-ba52-c4e00838b188&quot;
   }
 }</component>
+  <component name="JiraMajeraCodeReviewSettings">
+    <option name="popularEmojiShortcuts">
+      <list />
+    </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -58,12 +79,17 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "js.last.introduce.type": "CONST",
-    "last_opened_file_path": "C:/Users/khach/OneDrive/Desktop/masonry-snap-grid-layout",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/Users/macdev/Documents/Projects/masonry-snap-grid-layout",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -80,6 +106,7 @@
     "npm.test.executor": "Run",
     "npm.watch.executor": "Run",
     "settings.editor.selected.configurable": "preferences.pluginManager",
+    "to.speed.mode.migration.done": "true",
     "ts.external.directory.path": "C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -163,7 +190,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-WS-243.23654.157" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.30387.83" />
       </set>
     </attachedChunks>
   </component>
@@ -195,6 +222,7 @@
       <workItem from="1772732730210" duration="69000" />
       <workItem from="1772732808292" duration="7322000" />
       <workItem from="1772980554077" duration="4608000" />
+      <workItem from="1787732539642" duration="1134000" />
     </task>
     <task id="LOCAL-00013" summary="check ci/cd">
       <option name="closed" value="true" />
