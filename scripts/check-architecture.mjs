@@ -82,7 +82,10 @@ const LAYERS = [
   },
 ];
 
-const layerOf = (rel) => LAYERS.find((l) => l.match(rel))?.name ?? null;
+const layerOf = (rel) => {
+  const normalized = rel.split('\\').join('/');
+  return LAYERS.find((l) => l.match(normalized))?.name ?? null;
+};
 
 // ── collect source files ──────────────────────────────────────────────────────
 const EXT = new Set(['.ts', '.tsx', '.vue']);
