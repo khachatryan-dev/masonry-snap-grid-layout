@@ -1,8 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { getColumnCount, supportsCss } from '../src/core/utils';
-import { applyMasonryLayout, removeMasonryLayout } from '../src/core/layoutEngine';
-import { applyCssMasonry, removeCssMasonry } from '../src/core/cssEngine';
-import MasonrySnapGridLayout from '../src/core/MasonrySnapGridLayout';
+import { getColumnCount, supportsCss } from '../src/core';
+import {
+  applyMasonryLayout,
+  removeMasonryLayout,
+} from '../src/core/engine/jsEngine';
+import { applyCssMasonry, removeCssMasonry } from '../src/core/engine/cssEngine';
+import MasonrySnapGridLayout from '../src/vanilla/MasonrySnapGridLayout';
+import { installMockResizeObserver, MockResizeObserver } from './setup';
 
 // ── Utility functions ────────────────────────────────────────────────────────
 
@@ -66,7 +70,10 @@ describe('applyMasonryLayout', () => {
   });
 
   it('does not apply layout when container width is 0', () => {
-    Object.defineProperty(container, 'clientWidth', { value: 0, configurable: true });
+    Object.defineProperty(container, 'clientWidth', {
+      value: 0,
+      configurable: true,
+    });
     applyMasonryLayout(container, items, 250, 16, false, 400);
     expect(container.style.height).toBe('');
   });
@@ -197,12 +204,23 @@ describe('MasonrySnapGridLayout', () => {
     expect(container.children.length).toBe(0);
   });
 
-  it('disconnects ResizeObserver on destroy()', () => {
-    const disconnectSpy = vi.fn();
+  it('disconnects every ResizeObserver it created on destroy()', () => {
+    // The engine creates one observer for the container and one shared
+    // observer for the items, so assert that all of them are torn down
+    // rather than pinning the assertion to a specific count.
+    const created: Array<{ disconnected: boolean }> = [];
     const OriginalResizeObserver = globalThis.ResizeObserver;
+
     globalThis.ResizeObserver = class {
+      private record = { disconnected: false };
+      constructor() {
+        created.push(this.record);
+      }
       observe() {}
-      disconnect = disconnectSpy;
+      unobserve() {}
+      disconnect() {
+        this.record.disconnected = true;
+      }
     } as unknown as typeof ResizeObserver;
 
     const masonry = new MasonrySnapGridLayout(container, {
@@ -210,20 +228,26 @@ describe('MasonrySnapGridLayout', () => {
       renderItem: makeItem,
       layoutMode: 'js',
     });
+
+    expect(created.length).toBeGreaterThan(0);
     masonry.destroy();
-    expect(disconnectSpy).toHaveBeenCalledOnce();
+    expect(created.every((o) => o.disconnected)).toBe(true);
 
     globalThis.ResizeObserver = OriginalResizeObserver;
   });
 
   it('handles zero-width container gracefully', () => {
-    Object.defineProperty(container, 'clientWidth', { value: 0, configurable: true });
-    expect(() =>
-      new MasonrySnapGridLayout(container, {
-        items,
-        renderItem: makeItem,
-        layoutMode: 'js',
-      })
+    Object.defineProperty(container, 'clientWidth', {
+      value: 0,
+      configurable: true,
+    });
+    expect(
+      () =>
+        new MasonrySnapGridLayout(container, {
+          items,
+          renderItem: makeItem,
+          layoutMode: 'js',
+        })
     ).not.toThrow();
   });
 
@@ -239,6 +263,108 @@ describe('MasonrySnapGridLayout', () => {
     expect(container.style.display).toBe('grid');
 
     CSS.supports = originalSupports;
+  });
+
+  it('does not leak observed elements across updates', () => {
+    // Removing a node from the DOM does not stop a ResizeObserver watching it,
+    // so a full rebuild must unobserve the outgoing elements or the observer's
+    // set grows without bound on every updateItems() call.
+    const restore = installMockResizeObserver();
+    try {
+      const masonry = new MasonrySnapGridLayout(container, {
+        items,
+        renderItem: makeItem,
+        layoutMode: 'js',
+      });
+
+      for (let i = 0; i < 5; i++) masonry.updateItems(['a', 'b', 'c']);
+
+      const watched = MockResizeObserver.instances.reduce(
+        (total, o) =>
+          total + [...o.observed].filter((el) => el !== container).length,
+        0
+      );
+      expect(watched).toBe(3);
+      masonry.destroy();
+    } finally {
+      restore();
+    }
+  });
+
+  it('replaces elements rather than stranding them when renderItem changes', () => {
+    // With getItemKey set, render() reconciles instead of wiping the container,
+    // so a new renderer must explicitly discard the elements the old one built.
+    const masonry = new MasonrySnapGridLayout<string>(container, {
+      items,
+      renderItem: makeItem,
+      layoutMode: 'js',
+      getItemKey: (item) => item,
+    });
+    expect(container.children.length).toBe(3);
+
+    masonry.setOptions({
+      renderItem: (title: string) => {
+        const el = document.createElement('span');
+        el.textContent = `new ${title}`;
+        return el;
+      },
+    });
+
+    expect(container.children.length).toBe(3);
+    expect(
+      Array.from(container.children).every((el) => el.tagName === 'SPAN')
+    ).toBe(true);
+    masonry.destroy();
+  });
+
+  it('reuses elements across updates when getItemKey is supplied', () => {
+    const masonry = new MasonrySnapGridLayout<string>(container, {
+      items,
+      renderItem: makeItem,
+      layoutMode: 'js',
+      getItemKey: (item) => item,
+    });
+
+    const gamma = Array.from(container.children).find(
+      (el) => el.textContent === 'Gamma'
+    );
+
+    masonry.updateItems(['Delta', ...items]);
+
+    expect(container.children.length).toBe(4);
+    expect(
+      Array.from(container.children).find((el) => el.textContent === 'Gamma')
+    ).toBe(gamma);
+    masonry.destroy();
+  });
+
+  it('drops elements whose keys disappear', () => {
+    const masonry = new MasonrySnapGridLayout<string>(container, {
+      items,
+      renderItem: makeItem,
+      layoutMode: 'js',
+      getItemKey: (item) => item,
+    });
+
+    masonry.updateItems(['Alpha']);
+
+    expect(container.children.length).toBe(1);
+    expect(container.textContent).toBe('Alpha');
+    masonry.destroy();
+  });
+
+  it('re-layouts when setOptions changes the gutter', () => {
+    const masonry = new MasonrySnapGridLayout(container, {
+      items,
+      renderItem: makeItem,
+      layoutMode: 'js',
+    });
+    const before = (container.children[1] as HTMLElement).style.transform;
+
+    masonry.setOptions({ gutter: 0 });
+
+    expect((container.children[1] as HTMLElement).style.transform).not.toBe(before);
+    masonry.destroy();
   });
 
   it('uses default options when none provided', () => {

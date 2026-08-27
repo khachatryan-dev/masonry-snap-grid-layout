@@ -1,0 +1,5 @@
+dist
+node_modules
+coverage
+examples/*/.angular
+examples/*/node_modules

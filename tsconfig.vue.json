@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/vue", "src/core", "src/vanilla", "src/vue-shim.d.ts"]
+}

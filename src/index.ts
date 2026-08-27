@@ -1,2 +1,8 @@
-export { default } from './core/MasonrySnapGridLayout';
-export type { MasonryOptions, LayoutMode } from './core/types';
+export { default } from './vanilla';
+export type {
+  MasonryOptions,
+  LayoutMode,
+  LayoutInfo,
+  ColumnsOption,
+  ItemPosition,
+} from './core';

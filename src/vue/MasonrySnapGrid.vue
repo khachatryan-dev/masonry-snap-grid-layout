@@ -8,8 +8,25 @@ import {
   nextTick,
   type ComponentPublicInstance,
 } from 'vue';
-import type { LayoutMode } from '../core/types';
-import { getColumnCount, supportsCss } from '../core/utils';
+import {
+  canVirtualize,
+  computeLayout,
+  computeVisibleIndices,
+  createItemObserver,
+  createScheduler,
+  createScrollTracker,
+  EMPTY_SCROLL_STATE,
+  resolveColumnCount,
+  resolveScrollTarget,
+  supportsCss,
+  type ColumnsOption,
+  type ItemObserver,
+  type ItemPosition,
+  type LayoutInfo,
+  type LayoutMode,
+  type ScrollState,
+  type ScrollTargetOption,
+} from '../core';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 const props = withDefaults(
@@ -18,6 +35,11 @@ const props = withDefaults(
     layoutMode?: LayoutMode;
     gutter?: number;
     minColWidth?: number;
+    /**
+     * Fixed column count, or a mobile-first map of `minContainerWidth -> columns`
+     * such as `{ 0: 1, 640: 2, 1024: 3 }`. Overrides `minColWidth` when set.
+     */
+    columns?: ColumnsOption;
     animate?: boolean;
     transitionDuration?: number;
     /**
@@ -31,6 +53,29 @@ const props = withDefaults(
      * Larger values reduce pop-in on fast scrolling. Default: 300
      */
     overscan?: number;
+    /**
+     * Scrolling viewport used for virtualization. Defaults to the page; pass an
+     * element to virtualize inside an `overflow: auto` container.
+     */
+    scrollContainer?: ScrollTargetOption;
+    /**
+     * Assumed item height before measurement. Lets very large lists skip the
+     * render-everything measurement pass.
+     */
+    estimatedItemHeight?: number;
+    /**
+     * Stable identity per item, used as the `:key` and to keep cached heights
+     * attached to the right item across reorders. Strongly recommended when
+     * items can be reordered, filtered, or prepended.
+     */
+    getItemKey?: (item: T, index: number) => string | number;
+    /**
+     * Watch each item for size changes so the layout self-heals when content
+     * settles — images decoding, fonts swapping, embeds resizing. Default: true
+     */
+    observeItemResize?: boolean;
+    /** Also listen for image `load`/`error` inside items. Default: true */
+    watchImages?: boolean;
   }>(),
   {
     layoutMode: 'auto',
@@ -40,8 +85,15 @@ const props = withDefaults(
     transitionDuration: 400,
     virtualize: false,
     overscan: 300,
+    observeItemResize: true,
+    watchImages: true,
   }
 );
+
+// ── Emits ─────────────────────────────────────────────────────────────────────
+const emit = defineEmits<{
+  layout: [info: LayoutInfo];
+}>();
 
 // ── Slots ─────────────────────────────────────────────────────────────────────
 defineSlots<{
@@ -49,25 +101,26 @@ defineSlots<{
 }>();
 
 // ── State ─────────────────────────────────────────────────────────────────────
-interface Position { x: number; y: number; width: number }
-
 const containerRef = ref<HTMLDivElement | null>(null);
 const itemEls = ref<(HTMLDivElement | null)[]>([]);
-const positions = ref<Position[]>([]);
+const positions = ref<ItemPosition[]>([]);
 const containerHeight = ref(0);
 const isMounted = ref(false);
 const useCss = ref(false);
+const cssWidth = ref(0);
 
 /** Cached measured offsetHeight for each item by index. */
 const cachedHeights: number[] = [];
-/** Container's absolute top from document top (updated on mount/resize). */
-let containerAbsTop = 0;
 /** Whether all items have been measured at least once. */
 let isMeasuredFlag = false;
 
 const isMeasured = ref(false); // reactive mirror for template/computed
-const scrollY = ref(0);
-const viewportH = ref(0);
+const scroll = ref<ScrollState>(EMPTY_SCROLL_STATE);
+
+const hasEstimate = computed(
+  () =>
+    typeof props.estimatedItemHeight === 'number' && props.estimatedItemHeight > 0
+);
 
 // ── Derived styles ────────────────────────────────────────────────────────────
 const containerClass = computed(() => {
@@ -80,18 +133,35 @@ const containerClass = computed(() => {
 const containerStyle = computed<Record<string, string>>(() => {
   const s: Record<string, string> = {
     '--msgl-transition-duration': `${props.transitionDuration}ms`,
+    '--msgl-gutter': `${props.gutter}px`,
+    '--msgl-min-col-width': `${props.minColWidth}px`,
   };
+
   if (useCss.value) {
-    s['--msgl-gutter'] = `${props.gutter}px`;
-    s['--msgl-min-col-width'] = `${props.minColWidth}px`;
+    if (props.columns !== undefined) {
+      const count = resolveColumnCount(
+        cssWidth.value || containerRef.value?.offsetWidth || 0,
+        {
+          columns: props.columns,
+          minColWidth: props.minColWidth,
+          gutter: props.gutter,
+        }
+      );
+      s.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
+    }
     return s;
   }
+
   if (isMounted.value) {
     s.position = 'relative';
     if (containerHeight.value > 0) s.height = `${containerHeight.value}px`;
   }
   return s;
 });
+
+function itemKey(item: T, i: number): string | number {
+  return props.getItemKey ? props.getItemKey(item, i) : i;
+}
 
 function getItemClass(i: number): string {
   const positioned = isMounted.value && positions.value[i] !== undefined;
@@ -112,33 +182,43 @@ function getItemStyle(i: number): Record<string, string> {
 
 // ── Visibility for virtualization ─────────────────────────────────────────────
 /**
- * Returns true when the item at index `i` should be rendered.
- * While virtualization is inactive (or not yet measured), all items are shown.
+ * Indices currently inside the viewport, or `null` when every item renders.
+ * Computed once per dependency change rather than per item, so rendering a
+ * large list does not run the visibility maths N times.
  */
+const visibleIndices = computed<Set<number> | null>(() => {
+  const active = canVirtualize({
+    virtualize: props.virtualize,
+    isMeasured: isMeasured.value,
+    hasEstimate: hasEstimate.value,
+    itemCount: props.items.length,
+  });
+
+  if (!active || positions.value.length !== props.items.length) return null;
+
+  return computeVisibleIndices({
+    positions: positions.value,
+    heights: cachedHeights,
+    scroll: scroll.value,
+    overscan: props.overscan,
+    fallbackHeight: hasEstimate.value ? props.estimatedItemHeight : 0,
+  });
+});
+
 function isVisible(i: number): boolean {
-  if (!props.virtualize || !isMeasured.value || positions.value.length === 0) {
-    return true;
-  }
-  const pos = positions.value[i];
-  if (!pos) return true;
-  const itemH = cachedHeights[i] ?? 0;
-  const relStart = scrollY.value - containerAbsTop - props.overscan;
-  const relEnd = scrollY.value - containerAbsTop + viewportH.value + props.overscan;
-  return pos.y + itemH >= relStart && pos.y <= relEnd;
+  const visible = visibleIndices.value;
+  return visible === null || visible.has(i);
 }
 
 // ── Layout calculation ────────────────────────────────────────────────────────
-function computeLayout(): void {
+function runLayout(): void {
   const container = containerRef.value;
   if (!container) return;
 
   const w = container.offsetWidth;
   if (w <= 0) return;
 
-  const { gutter, minColWidth, items, virtualize } = props;
-  const cols = getColumnCount(w, minColWidth, gutter);
-  const colW = (w - gutter * (cols - 1)) / cols;
-  const colHeights: number[] = new Array<number>(cols).fill(0);
+  const { gutter, minColWidth, items, virtualize, columns } = props;
 
   // Measure currently-rendered items; off-screen items reuse cached heights.
   itemEls.value.slice(0, items.length).forEach((el, i) => {
@@ -148,21 +228,20 @@ function computeLayout(): void {
     }
   });
 
-  // Compute positions for ALL items using cached heights so the container
-  // height and scrollbar are always correct even when items are virtualized.
-  const newPos: Position[] = items.map((_, i) => {
-    const minH = Math.min(...colHeights);
-    const col = colHeights.indexOf(minH);
-    const pos: Position = { x: col * (colW + gutter), y: colHeights[col], width: colW };
-    colHeights[col] += (cachedHeights[i] ?? 0) + gutter;
-    return pos;
+  // Positions are computed for ALL items, using cached or estimated heights, so
+  // the container height and scrollbar stay correct while items are virtualized.
+  const result = computeLayout({
+    count: items.length,
+    heights: cachedHeights,
+    containerWidth: w,
+    gutter,
+    minColWidth,
+    columns,
+    fallbackHeight: hasEstimate.value ? props.estimatedItemHeight : 0,
   });
 
-  positions.value = newPos;
-  containerHeight.value = Math.max(
-    0,
-    items.length > 0 ? Math.max(...colHeights) - gutter : 0
-  );
+  positions.value = result.positions;
+  containerHeight.value = result.containerHeight;
 
   // Enable virtualization once all items have a cached height.
   if (virtualize && !isMeasuredFlag) {
@@ -172,39 +251,54 @@ function computeLayout(): void {
       isMeasured.value = true;
     }
   }
+
+  emit('layout', {
+    columnCount: result.columnCount,
+    columnWidth: result.columnWidth,
+    containerHeight: result.containerHeight,
+    itemCount: items.length,
+    engine: 'js',
+  });
 }
 
-// ── Collect item element refs from v-for ──────────────────────────────────────
+// ── Item element refs + self-healing observation ──────────────────────────────
+let itemObserver: ItemObserver | null = null;
+
 function collectItemRef(
   el: Element | ComponentPublicInstance | null,
   i: number
 ): void {
-  if (el instanceof HTMLElement) {
-    itemEls.value[i] = el as HTMLDivElement;
-  } else {
-    itemEls.value[i] = null;
-  }
-}
+  const next = el instanceof HTMLElement ? (el as HTMLDivElement) : null;
+  const prev = itemEls.value[i];
 
-// ── Scroll tracking ───────────────────────────────────────────────────────────
-function syncContainerTop(): void {
-  if (containerRef.value) {
-    containerAbsTop =
-      containerRef.value.getBoundingClientRect().top + window.scrollY;
-  }
-}
-
-function onScroll(): void {
-  scrollY.value = window.scrollY;
-}
-
-function onWindowResize(): void {
-  viewportH.value = window.innerHeight;
-  syncContainerTop();
+  if (prev && prev !== next) itemObserver?.unobserve(prev);
+  itemEls.value[i] = next;
+  if (next) itemObserver?.observe(next);
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 let resizeObserver: ResizeObserver | null = null;
+let disposeScroll: (() => void) | null = null;
+
+/** Coalesced relayout after a container width change invalidates heights. */
+const widthChangeScheduler = createScheduler(() => {
+  cachedHeights.length = 0;
+  isMeasuredFlag = false;
+  isMeasured.value = false;
+  runLayout();
+});
+
+function startScrollTracking(): void {
+  disposeScroll?.();
+  const target = resolveScrollTarget(props.scrollContainer);
+  disposeScroll = createScrollTracker(
+    target,
+    () => containerRef.value,
+    (state) => {
+      scroll.value = state;
+    }
+  );
+}
 
 onMounted(async () => {
   // 'auto' (default): use CSS masonry if browser supports it, else JS
@@ -214,37 +308,64 @@ onMounted(async () => {
   }
 
   isMounted.value = true;
+  await nextTick();
 
-  if (!useCss.value) {
-    await nextTick();
-    computeLayout();
-
-    if (typeof ResizeObserver !== 'undefined' && containerRef.value) {
-      resizeObserver = new ResizeObserver(() => {
-        // Clear height cache on resize — column widths change, so item heights change.
-        cachedHeights.length = 0;
-        isMeasuredFlag = false;
-        isMeasured.value = false;
-        computeLayout();
+  if (useCss.value) {
+    // Only needed to resolve a breakpoint map against the container width.
+    if (
+      props.columns !== undefined &&
+      typeof ResizeObserver !== 'undefined' &&
+      containerRef.value
+    ) {
+      resizeObserver = new ResizeObserver((entries) => {
+        cssWidth.value = entries[0].contentRect.width;
       });
       resizeObserver.observe(containerRef.value);
     }
-
-    if (props.virtualize) {
-      viewportH.value = window.innerHeight;
-      syncContainerTop();
-      scrollY.value = window.scrollY;
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onWindowResize);
-    }
+    return;
   }
+
+  if (props.observeItemResize) {
+    itemObserver = createItemObserver({
+      onChange: () => runLayout(),
+      watchImages: props.watchImages,
+    });
+    // Adopt items that mounted before the observer existed.
+    itemEls.value.forEach((el) => el && itemObserver?.observe(el));
+  }
+
+  runLayout();
+
+  if (typeof ResizeObserver !== 'undefined' && containerRef.value) {
+    let prevWidth = -1;
+    resizeObserver = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+      // Only width matters — reacting to height would feed back into the
+      // container height this component sets itself.
+      if (prevWidth === width) return;
+      prevWidth = width;
+      widthChangeScheduler.schedule();
+    });
+    resizeObserver.observe(containerRef.value);
+  }
+
+  if (props.virtualize) startScrollTracking();
 });
 
 onBeforeUnmount(() => {
+  widthChangeScheduler.cancel();
   resizeObserver?.disconnect();
-  if (props.virtualize) {
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('resize', onWindowResize);
+  itemObserver?.disconnect();
+  disposeScroll?.();
+});
+
+// Re-subscribe when the scroll target or virtualize flag changes.
+watch([() => props.scrollContainer, () => props.virtualize], () => {
+  if (!isMounted.value || useCss.value) return;
+  if (props.virtualize) startScrollTracking();
+  else {
+    disposeScroll?.();
+    disposeScroll = null;
   }
 });
 
@@ -260,25 +381,43 @@ watch(
       cachedHeights.splice(props.items.length);
     }
     await nextTick();
-    computeLayout();
+    runLayout();
   }
 );
 
-watch([() => props.gutter, () => props.minColWidth], async () => {
-  if (!isMounted.value || useCss.value) return;
-  await nextTick();
-  computeLayout();
+watch(
+  [() => props.gutter, () => props.minColWidth, () => props.columns],
+  async () => {
+    if (!isMounted.value || useCss.value) return;
+    await nextTick();
+    runLayout();
+  }
+);
+
+/*
+ * Template notes
+ * --------------
+ * SSR: the server renders every item with the --ssr class (a plain CSS grid),
+ * so items appear in the page source and are indexable by crawlers. The client
+ * switches to --js after hydration and applies masonry transforms.
+ *
+ * The root <div> must remain the ONLY top-level node in the template. A sibling
+ * comment turns this into a fragment component, which silently breaks attribute
+ * fallthrough: `class` and `style` passed by a parent would never apply. Vue
+ * strips comments in production but keeps them in development, so the bug would
+ * only appear in dev builds.
+ */
+
+// ── Public API ────────────────────────────────────────────────────────────────
+defineExpose({
+  /** Recompute the layout immediately. */
+  refresh: runLayout,
 });
 </script>
 
 <template>
-  <!--
-    SSR note: the server renders all items with the --ssr class (a plain CSS grid),
-    so they are visible in the page source and indexable by crawlers.
-    The client switches to --js after hydration and applies masonry positions.
-  -->
   <div ref="containerRef" :class="containerClass" :style="containerStyle">
-    <template v-for="(item, i) in items" :key="i">
+    <template v-for="(item, i) in items" :key="itemKey(item, i)">
       <div
         v-if="isVisible(i)"
         :ref="(el) => collectItemRef(el, i)"

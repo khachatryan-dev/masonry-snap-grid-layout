@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "baseUrl": ".",
+    // Resolve the package to local source, so the examples are verified against
+    // the code in this repo rather than whatever version is installed.
+    "paths": {
+      "masonry-snap-grid-layout": ["src/index.ts"],
+      "masonry-snap-grid-layout/react": ["src/react/index.ts"],
+      "masonry-snap-grid-layout/vue": ["src/vue/index.ts"],
+      "masonry-snap-grid-layout/angular": ["src/angular/index.ts"]
+    }
+  },
+  "include": [
+    "examples/examples-shims.d.ts",
+    "src/vue-shim.d.ts",
+    "examples/react/src",
+    "examples/vue/src",
+    "examples/angular/src"
+  ]
+}
