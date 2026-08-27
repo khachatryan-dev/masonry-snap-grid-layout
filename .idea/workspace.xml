@@ -4,63 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="chore: update workspace configuration for npm scripts and recent branch">
-      <change beforePath="$PROJECT_DIR$/.github/FUNDING.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/FUNDING.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/publish.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/publish.yml" afterDir="false" />
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix: normalize path separators in layerOf function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.prettierrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.prettierrc.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARCHITECTURE.md" beforeDir="false" afterPath="$PROJECT_DIR$/ARCHITECTURE.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" beforeDir="false" afterPath="$PROJECT_DIR$/CODE_OF_CONDUCT.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/CONTRIBUTING.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/eslint.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/eslint.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/angular/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/examples/angular/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/angular/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/examples/angular/src/app/app.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/angular/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/examples/angular/src/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/examples-shims.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/examples/examples-shims.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/react/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/examples/react/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vanilla/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vanilla/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vanilla/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vanilla/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/vue/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/examples/vue/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/check-architecture.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-architecture.mjs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/check-package.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-package.mjs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/check-size.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-size.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/angular/masonry-snap-grid.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/angular/masonry-snap-grid.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/engine/cssEngine.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/engine/cssEngine.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/engine/jsEngine.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/engine/jsEngine.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/lib/measure.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lib/measure.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/lib/schedule.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lib/schedule.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/lib/scroll.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lib/scroll.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/lib/supports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/lib/supports.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/columns.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/columns.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/layout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/layout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/virtualization.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/virtualization.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vanilla/MasonrySnapGridLayout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/vanilla/MasonrySnapGridLayout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vanilla/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/vanilla/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/angular.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/angular.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-layout.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-layout.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-measure.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-measure.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-scroll.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-scroll.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-virtualization.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-virtualization.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/css-fallback.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/css-fallback.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/react.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/setup.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/setup.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/ssr.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/ssr.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/vue.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/vue.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.examples.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.examples.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tsconfig.vue.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.vue.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,48 +69,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feat/v1.3.0",
-    "ignore.virus.scanning.warn.message": "true",
-    "js.last.introduce.type": "CONST",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/macdev/Documents/Projects/masonry-snap-grid-layout",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.build.executor": "Run",
-    "npm.check:arch.executor": "Run",
-    "npm.check:package.executor": "Run",
-    "npm.dev (1).executor": "Run",
-    "npm.dev (3).executor": "Run",
-    "npm.dev.executor": "Run",
-    "npm.lint:fix.executor": "Run",
-    "npm.ng.executor": "Run",
-    "npm.serve:ssr:masonry-test.executor": "Run",
-    "npm.start.executor": "Run",
-    "npm.test (1).executor": "Run",
-    "npm.test.executor": "Run",
-    "npm.typecheck.executor": "Run",
-    "npm.typecheck:angular.executor": "Run",
-    "npm.typecheck:core.executor": "Run",
-    "npm.typecheck:examples.executor": "Run",
-    "npm.typecheck:vue.executor": "Run",
-    "npm.watch.executor": "Run",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/v1.3.0&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;js.last.introduce.type&quot;: &quot;CONST&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/macdev/Documents/Projects/masonry-snap-grid-layout&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.check:arch.executor&quot;: &quot;Run&quot;,
+    &quot;npm.check:package.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev (3).executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.lint:fix.executor&quot;: &quot;Run&quot;,
+    &quot;npm.ng.executor&quot;: &quot;Run&quot;,
+    &quot;npm.serve:ssr:masonry-test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.test (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.test.executor&quot;: &quot;Run&quot;,
+    &quot;npm.typecheck.executor&quot;: &quot;Run&quot;,
+    &quot;npm.typecheck:angular.executor&quot;: &quot;Run&quot;,
+    &quot;npm.typecheck:core.executor&quot;: &quot;Run&quot;,
+    &quot;npm.typecheck:examples.executor&quot;: &quot;Run&quot;,
+    &quot;npm.typecheck:vue.executor&quot;: &quot;Run&quot;,
+    &quot;npm.watch.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
@@ -179,17 +126,7 @@
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.test">
-    <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="build" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="npm.lint:fix">
     <configuration name="dev (2)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/examples/angular/package.json" />
       <command value="run" />
@@ -220,6 +157,16 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="lint:fix" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="lint:fix" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -233,10 +180,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="npm.test" />
+        <item itemvalue="npm.lint:fix" />
         <item itemvalue="npm.dev (3)" />
         <item itemvalue="npm.dev (2)" />
         <item itemvalue="npm.dev" />
-        <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
   </component>
@@ -276,14 +223,6 @@
       <workItem from="1772732808292" duration="7322000" />
       <workItem from="1772980554077" duration="4608000" />
       <workItem from="1787732539642" duration="1134000" />
-    </task>
-    <task id="LOCAL-00013" summary="check ci/cd">
-      <option name="closed" value="true" />
-      <created>1754823393428</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1754823393428</updated>
     </task>
     <task id="LOCAL-00014" summary="check ci/cd">
       <option name="closed" value="true" />
@@ -669,7 +608,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772983705051</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="fix: normalize path separators in layerOf function">
+      <option name="closed" value="true" />
+      <created>1787861050921</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1787861050921</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -687,7 +634,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="add react.js part" />
     <MESSAGE value="fix bug" />
     <MESSAGE value="bugfix react part" />
     <MESSAGE value="update readme file" />
@@ -712,7 +658,8 @@
     <MESSAGE value="docs: overhaul README, add CHANGELOG, keywords, and remove publish CI job" />
     <MESSAGE value="### Added&#10;- **Full scroll virtualization support in React** — items outside the viewport are now correctly hidden and rendered dynamically using `'virtualize'` + `'overscan'`.&#10;- **Stable item measurement and layout calculation** — prevents infinite recalculations and ensures item positions are accurate before virtualization runs.&#10;- **ItemRefs synchronization** — `'itemRefs'` array now automatically matches `'items.length'` to avoid broken measurement or position misalignment.&#10;- **Scroll container offset updates** — container absolute top position is recalculated on scroll/resize to prevent miscalculated visible items.&#10;- Comments added throughout the React component for easier maintenance and readability.&#10;### Fixed&#10;- React component: **Item positions were not calculated on initial render** due to early virtualization checks. Fixed by computing layout after mount and measurement completion.&#10;- React component: **Scroll virtualization did not work** when items were added or removed. Fixed by ensuring `'isMeasured'` and `'positions'` are updated correctly.&#10;- React component: **ResizeObserver triggered infinite layout cycles** when container width changed. Fixed by tracking previous width and using stable `'computeLayoutRef'`.&#10;- React component: `'isMeasured'` reset on items change no longer breaks virtualization.&#10;- React component: Prevented unnecessary re-renders caused by `'computeLayout'` being in dependency arrays of effects." />
     <MESSAGE value="chore: update workspace configuration for npm scripts and recent branch" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore: update workspace configuration for npm scripts and recent branch" />
+    <MESSAGE value="fix: normalize path separators in layerOf function" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: normalize path separators in layerOf function" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
