@@ -1,5 +1,5 @@
-import { computeLayout, type LayoutResult } from '../model/layout';
-import type { ColumnsOption } from '../model/columns';
+import { computeLayout, type LayoutResult } from "../model/layout";
+import type { ColumnsOption } from "../model/columns";
 
 export interface ApplyLayoutExtras {
   /** Fixed column count or breakpoint map; overrides `minColWidth`. */
@@ -28,7 +28,7 @@ export function applyMasonryLayout(
   gutter: number,
   animate: boolean,
   duration: number,
-  extras: ApplyLayoutExtras = {}
+  extras: ApplyLayoutExtras = {},
 ): LayoutResult | null {
   const containerWidth = container.clientWidth;
   if (containerWidth <= 0) return null;
@@ -45,9 +45,9 @@ export function applyMasonryLayout(
     });
 
     items.forEach((item) => {
-      item.style.position = 'absolute';
+      item.style.position = "absolute";
       item.style.width = `${preliminary.columnWidth}px`;
-      item.style.transition = animate ? `transform ${duration}ms ease` : '';
+      item.style.transition = animate ? `transform ${duration}ms ease` : "";
     });
 
     // Phase 2 — read every height in one pass, now that widths are correct.
@@ -71,7 +71,7 @@ export function applyMasonryLayout(
     item.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
   });
 
-  container.style.position = 'relative';
+  container.style.position = "relative";
   container.style.height = `${containerHeight}px`;
 
   return { positions, containerHeight, columnCount, columnWidth };
@@ -82,14 +82,14 @@ export function applyMasonryLayout(
  */
 export function removeMasonryLayout(
   container: HTMLElement,
-  items: HTMLElement[]
+  items: HTMLElement[],
 ): void {
   items.forEach((item) => {
-    item.style.position = '';
-    item.style.width = '';
-    item.style.transform = '';
-    item.style.transition = '';
+    item.style.position = "";
+    item.style.width = "";
+    item.style.transform = "";
+    item.style.transition = "";
   });
-  container.style.position = '';
-  container.style.height = '';
+  container.style.position = "";
+  container.style.height = "";
 }

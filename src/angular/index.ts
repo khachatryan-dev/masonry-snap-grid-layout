@@ -1,1 +1,1 @@
-export { MasonrySnapGridComponent } from './masonry-snap-grid.component';
+export { MasonrySnapGridComponent } from "./masonry-snap-grid.component";

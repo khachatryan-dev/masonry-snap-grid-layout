@@ -24,12 +24,12 @@ export type ColumnsOption = number | Record<number, number>;
 export function getColumnCount(
   containerWidth: number,
   minColWidth: number,
-  gutter: number
+  gutter: number,
 ): number {
   if (containerWidth <= 0) return 1;
   return Math.max(
     1,
-    Math.floor((containerWidth + gutter) / (minColWidth + gutter))
+    Math.floor((containerWidth + gutter) / (minColWidth + gutter)),
   );
 }
 
@@ -39,7 +39,7 @@ export function getColumnCount(
  */
 export function resolveBreakpoints(
   containerWidth: number,
-  map: Record<number, number>
+  map: Record<number, number>,
 ): number | null {
   // Numeric sort — object key order is insertion order for non-integer-like
   // keys, so it cannot be relied on.
@@ -71,13 +71,13 @@ export function resolveColumnCount(
     columns?: ColumnsOption;
     minColWidth: number;
     gutter: number;
-  }
+  },
 ): number {
   const { columns, minColWidth, gutter } = options;
 
-  if (typeof columns === 'number') {
+  if (typeof columns === "number") {
     if (Number.isFinite(columns) && columns > 0) return Math.floor(columns);
-  } else if (columns && typeof columns === 'object') {
+  } else if (columns && typeof columns === "object") {
     const fromMap = resolveBreakpoints(containerWidth, columns);
     if (fromMap !== null) return fromMap;
   }

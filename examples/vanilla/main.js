@@ -1,15 +1,15 @@
-import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
-import 'masonry-snap-grid-layout/style.css';
+import MasonrySnapGridLayout from "masonry-snap-grid-layout";
+import "masonry-snap-grid-layout/style.css";
 
 const COLORS = [
-  '#fde68a',
-  '#a7f3d0',
-  '#bfdbfe',
-  '#fca5a5',
-  '#c4b5fd',
-  '#fdba74',
-  '#6ee7b7',
-  '#93c5fd',
+  "#fde68a",
+  "#a7f3d0",
+  "#bfdbfe",
+  "#fca5a5",
+  "#c4b5fd",
+  "#fdba74",
+  "#6ee7b7",
+  "#93c5fd",
 ];
 const INITIAL_COUNT = 1200;
 
@@ -20,9 +20,9 @@ function makeItem(i) {
   return {
     id: i,
     title: `Card ${i + 1}`,
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'.slice(
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.".slice(
       0,
-      20 + ((i * 7) % 80)
+      20 + ((i * 7) % 80),
     ),
     height: 80 + ((i * 37) % 180),
     color: COLORS[i % COLORS.length],
@@ -32,14 +32,14 @@ function makeItem(i) {
 const makeItems = (n) => Array.from({ length: n }, (_, i) => makeItem(i));
 
 function renderTextCard(item) {
-  const el = document.createElement('div');
-  el.className = 'card';
+  const el = document.createElement("div");
+  el.className = "card";
   el.style.background = item.color;
   el.style.height = `${item.height}px`;
 
-  const title = document.createElement('strong');
+  const title = document.createElement("strong");
   title.textContent = item.title;
-  const body = document.createElement('p');
+  const body = document.createElement("p");
   body.textContent = item.body;
   el.append(title, body);
   return el;
@@ -50,14 +50,14 @@ function renderPhotoCard(item, index) {
   // so the first measurement happens against a zero-height image. Self-healing
   // is what corrects the layout once each one decodes.
   const h = 140 + ((item.id * 53) % 220);
-  const figure = document.createElement('figure');
-  figure.className = 'photo';
+  const figure = document.createElement("figure");
+  figure.className = "photo";
 
-  const img = document.createElement('img');
+  const img = document.createElement("img");
   img.src = `https://picsum.photos/seed/msgl-${item.id}/400/${h}`;
   img.alt = `Placeholder ${item.id}`;
 
-  const caption = document.createElement('figcaption');
+  const caption = document.createElement("figcaption");
   caption.textContent = `#${index} · ${item.title}`;
 
   figure.append(img, caption);
@@ -72,13 +72,14 @@ function renderPhotoCard(item, index) {
  * reference actually changes — so the toggle would silently do nothing.
  */
 function currentRenderer() {
-  return state.content === 'images' ? renderPhotoCard : renderTextCard;
+  return state.content === "images" ? renderPhotoCard : renderTextCard;
 }
 
 const cssSupported = (() => {
   try {
     return (
-      typeof CSS !== 'undefined' && CSS.supports('grid-template-rows', 'masonry')
+      typeof CSS !== "undefined" &&
+      CSS.supports("grid-template-rows", "masonry")
     );
   } catch {
     return false;
@@ -88,51 +89,52 @@ const cssSupported = (() => {
 const state = {
   items: makeItems(INITIAL_COUNT),
   nextId: INITIAL_COUNT,
-  mode: 'js',
+  mode: "js",
   animate: true,
-  content: 'text',
-  columnMode: 'minWidth',
+  content: "text",
+  columnMode: "minWidth",
   fixedColumns: 3,
   lastLayout: null,
 };
 
 const $ = (id) => document.getElementById(id);
-const container = $('grid');
+const container = $("grid");
 
 /** Undefined means "derive the count from minColWidth". */
 function currentColumns() {
-  if (state.columnMode === 'fixed') return state.fixedColumns;
-  if (state.columnMode === 'responsive') return RESPONSIVE_COLUMNS;
+  if (state.columnMode === "fixed") return state.fixedColumns;
+  if (state.columnMode === "responsive") return RESPONSIVE_COLUMNS;
   return undefined;
 }
 
 function columnSummary() {
-  if (state.columnMode === 'fixed') return `columns: ${state.fixedColumns}`;
-  if (state.columnMode === 'responsive') return 'columns: { 0:1, 520:2, 900:3, … }';
-  return `minColWidth: ${$('minColWidth').value}px`;
+  if (state.columnMode === "fixed") return `columns: ${state.fixedColumns}`;
+  if (state.columnMode === "responsive")
+    return "columns: { 0:1, 520:2, 900:3, … }";
+  return `minColWidth: ${$("minColWidth").value}px`;
 }
 
 function updateBadges() {
-  const usingCss = state.mode === 'auto' && cssSupported;
+  const usingCss = state.mode === "auto" && cssSupported;
 
-  const engine = $('badge-engine');
-  engine.textContent = usingCss ? '✦ Native CSS masonry' : '⚙ JS masonry';
-  engine.style.background = usingCss ? '#059669' : '#4f46e5';
+  const engine = $("badge-engine");
+  engine.textContent = usingCss ? "✦ Native CSS masonry" : "⚙ JS masonry";
+  engine.style.background = usingCss ? "#059669" : "#4f46e5";
 
-  $('badge-count').textContent = `${state.items.length} items`;
-  $('badge-columns').textContent = columnSummary();
-  $('badge-images').style.display = state.content === 'images' ? '' : 'none';
+  $("badge-count").textContent = `${state.items.length} items`;
+  $("badge-columns").textContent = columnSummary();
+  $("badge-images").style.display = state.content === "images" ? "" : "none";
 
   const layout = state.lastLayout;
-  $('badge-layout').textContent = layout
+  $("badge-layout").textContent = layout
     ? `${layout.columnCount} cols × ${Math.round(layout.columnWidth)}px · ${Math.round(layout.containerHeight)}px tall`
-    : '';
+    : "";
 }
 
 const masonry = new MasonrySnapGridLayout(container, {
   layoutMode: state.mode,
-  gutter: Number($('gutter').value),
-  minColWidth: Number($('minColWidth').value),
+  gutter: Number($("gutter").value),
+  minColWidth: Number($("minColWidth").value),
   animate: state.animate,
   items: state.items,
   // Stable identity, so updateItems() reuses existing elements instead of
@@ -153,8 +155,8 @@ const masonry = new MasonrySnapGridLayout(container, {
 function applyOptions() {
   masonry.setOptions({
     layoutMode: state.mode,
-    gutter: Number($('gutter').value),
-    minColWidth: Number($('minColWidth').value),
+    gutter: Number($("gutter").value),
+    minColWidth: Number($("minColWidth").value),
     columns: currentColumns(),
     animate: state.animate,
   });
@@ -172,58 +174,59 @@ function setSegActive(groupId, attrName, value) {
   document
     .querySelectorAll(`#${groupId} button`)
     .forEach((b) =>
-      b.classList.toggle('active', b.dataset[attrName] === String(value))
+      b.classList.toggle("active", b.dataset[attrName] === String(value)),
     );
 }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
-$('gutter').addEventListener('input', function () {
-  $('gutter-label').textContent = `Gutter: ${this.value}px`;
+$("gutter").addEventListener("input", function () {
+  $("gutter-label").textContent = `Gutter: ${this.value}px`;
   applyOptions();
 });
 
-$('minColWidth').addEventListener('input', function () {
-  $('col-label').textContent = `Min col: ${this.value}px`;
+$("minColWidth").addEventListener("input", function () {
+  $("col-label").textContent = `Min col: ${this.value}px`;
   applyOptions();
 });
 
-$('fixedColumns').addEventListener('input', function () {
+$("fixedColumns").addEventListener("input", function () {
   state.fixedColumns = Number(this.value);
-  $('fixed-label').textContent = `Fixed columns: ${this.value}`;
+  $("fixed-label").textContent = `Fixed columns: ${this.value}`;
   applyOptions();
 });
 
-$('mode-seg').addEventListener('click', (e) => {
-  const btn = e.target.closest('button[data-mode]');
+$("mode-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-mode]");
   if (!btn) return;
   state.mode = btn.dataset.mode;
-  setSegActive('mode-seg', 'mode', state.mode);
+  setSegActive("mode-seg", "mode", state.mode);
   applyOptions();
 });
 
-$('animate-seg').addEventListener('click', (e) => {
-  const btn = e.target.closest('button[data-anim]');
+$("animate-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-anim]");
   if (!btn) return;
-  state.animate = btn.dataset.anim === 'true';
-  setSegActive('animate-seg', 'anim', state.animate);
+  state.animate = btn.dataset.anim === "true";
+  setSegActive("animate-seg", "anim", state.animate);
   applyOptions();
 });
 
-$('columns-seg').addEventListener('click', (e) => {
-  const btn = e.target.closest('button[data-colmode]');
+$("columns-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-colmode]");
   if (!btn) return;
   state.columnMode = btn.dataset.colmode;
-  setSegActive('columns-seg', 'colmode', state.columnMode);
-  $('fixed-wrap').style.display = state.columnMode === 'fixed' ? '' : 'none';
-  $('mincol-wrap').style.display = state.columnMode === 'minWidth' ? '' : 'none';
+  setSegActive("columns-seg", "colmode", state.columnMode);
+  $("fixed-wrap").style.display = state.columnMode === "fixed" ? "" : "none";
+  $("mincol-wrap").style.display =
+    state.columnMode === "minWidth" ? "" : "none";
   applyOptions();
 });
 
-$('content-seg').addEventListener('click', (e) => {
-  const btn = e.target.closest('button[data-content]');
+$("content-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-content]");
   if (!btn) return;
   state.content = btn.dataset.content;
-  setSegActive('content-seg', 'content', state.content);
+  setSegActive("content-seg", "content", state.content);
   // A different renderer reference is what makes setOptions rebuild the
   // elements for the new content type.
   masonry.setOptions({ renderItem: currentRenderer() });
@@ -231,15 +234,15 @@ $('content-seg').addEventListener('click', (e) => {
 });
 
 // ── Item actions ──────────────────────────────────────────────────────────────
-$('addBtn').addEventListener('click', () => {
+$("addBtn").addEventListener("click", () => {
   setItems([...state.items, makeItem(state.nextId++)]);
 });
 
-$('prependBtn').addEventListener('click', () => {
+$("prependBtn").addEventListener("click", () => {
   setItems([makeItem(state.nextId++), ...state.items]);
 });
 
-$('shuffleBtn').addEventListener('click', () => {
+$("shuffleBtn").addEventListener("click", () => {
   const next = [...state.items];
   for (let i = next.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -248,12 +251,12 @@ $('shuffleBtn').addEventListener('click', () => {
   setItems(next);
 });
 
-$('removeBtn').addEventListener('click', () => {
+$("removeBtn").addEventListener("click", () => {
   if (!state.items.length) return;
   setItems(state.items.slice(0, -1));
 });
 
-$('resetBtn').addEventListener('click', () => {
+$("resetBtn").addEventListener("click", () => {
   state.nextId = INITIAL_COUNT;
   setItems(makeItems(INITIAL_COUNT));
 });

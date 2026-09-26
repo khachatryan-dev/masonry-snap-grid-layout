@@ -167,7 +167,7 @@ bun add masonry-snap-grid-layout
 The stylesheet is required in every framework:
 
 ```js
-import 'masonry-snap-grid-layout/style.css';
+import "masonry-snap-grid-layout/style.css";
 ```
 
 Or via CDN:
@@ -189,16 +189,16 @@ use. Nothing from the other frameworks is included in your bundle.
 ### Vanilla JS
 
 ```js
-import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
-import 'masonry-snap-grid-layout/style.css';
+import MasonrySnapGridLayout from "masonry-snap-grid-layout";
+import "masonry-snap-grid-layout/style.css";
 
-const masonry = new MasonrySnapGridLayout(document.getElementById('grid'), {
+const masonry = new MasonrySnapGridLayout(document.getElementById("grid"), {
   items,
   gutter: 16,
   minColWidth: 240,
   getItemKey: (item) => item.id, // enables DOM reuse across updates
   renderItem: (item, index) => {
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     el.style.height = `${item.height}px`;
     el.textContent = `${index}. ${item.title}`;
     return el;
@@ -218,8 +218,8 @@ masonry.destroy(); // remove styles, stop all observers
 SSR-safe — works with Next.js (App and Pages Router), Remix, and plain Vite.
 
 ```tsx
-import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
-import 'masonry-snap-grid-layout/style.css';
+import MasonrySnapGrid from "masonry-snap-grid-layout/react";
+import "masonry-snap-grid-layout/style.css";
 
 export default function Gallery({ items }) {
   return (
@@ -231,8 +231,8 @@ export default function Gallery({ items }) {
       virtualize
       overscan={300}
       renderItem={(item) => (
-        <article style={{ borderRadius: 12, overflow: 'hidden' }}>
-          <img src={item.src} alt={item.alt} style={{ width: '100%' }} />
+        <article style={{ borderRadius: 12, overflow: "hidden" }}>
+          <img src={item.src} alt={item.alt} style={{ width: "100%" }} />
           <h3>{item.title}</h3>
         </article>
       )}
@@ -251,8 +251,8 @@ Drop-in component with a typed scoped slot.
 
 ```vue
 <script setup lang="ts">
-import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
-import 'masonry-snap-grid-layout/style.css';
+import MasonrySnapGrid from "masonry-snap-grid-layout/vue";
+import "masonry-snap-grid-layout/style.css";
 
 const items = [/* ... */];
 </script>
@@ -284,9 +284,9 @@ const items = [/* ... */];
 A **standalone component** ships with the package, for Angular 17+.
 
 ```typescript
-import { Component } from '@angular/core';
-import { MasonrySnapGridComponent } from 'masonry-snap-grid-layout/angular';
-import type { LayoutInfo } from 'masonry-snap-grid-layout';
+import { Component } from "@angular/core";
+import { MasonrySnapGridComponent } from "masonry-snap-grid-layout/angular";
+import type { LayoutInfo } from "masonry-snap-grid-layout";
 
 interface Card {
   id: number;
@@ -295,7 +295,7 @@ interface Card {
 }
 
 @Component({
-  selector: 'app-gallery',
+  selector: "app-gallery",
   standalone: true,
   imports: [MasonrySnapGridComponent],
   template: `
@@ -318,7 +318,7 @@ export class GalleryComponent {
   // renderItem returns a DOM element, so it is defined as a class field
   // rather than a method — `this` must stay bound.
   renderCard = (card: Card, index: number): HTMLElement => {
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     el.style.height = `${card.height}px`;
     el.textContent = `${index}. ${card.title}`;
     return el;
@@ -333,7 +333,7 @@ export class GalleryComponent {
 Import the stylesheet once in `src/styles.css`:
 
 ```css
-@import 'masonry-snap-grid-layout/style.css';
+@import "masonry-snap-grid-layout/style.css";
 ```
 
 > **Two Angular caveats.** `renderItem` returns an `HTMLElement`, so Angular templates
@@ -351,16 +351,16 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-} from '@angular/core';
-import MasonrySnapGridLayout from 'masonry-snap-grid-layout';
+} from "@angular/core";
+import MasonrySnapGridLayout from "masonry-snap-grid-layout";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
   template: `<div #grid></div>`,
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('grid') gridRef!: ElementRef<HTMLDivElement>;
+  @ViewChild("grid") gridRef!: ElementRef<HTMLDivElement>;
   private masonry?: MasonrySnapGridLayout<Card>;
 
   ngAfterViewInit(): void {
@@ -368,7 +368,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       items: this.items,
       gutter: 16,
       renderItem: (item) => {
-        const el = document.createElement('div');
+        const el = document.createElement("div");
         el.textContent = item.title;
         return el;
       },
@@ -477,14 +477,14 @@ import type {
   LayoutInfo,
   ColumnsOption, // number | Record<number, number>
   ItemPosition, // { x, y, width }
-} from 'masonry-snap-grid-layout';
+} from "masonry-snap-grid-layout";
 
 interface LayoutInfo {
   columnCount: number;
   columnWidth: number;
   containerHeight: number;
   itemCount: number;
-  engine: 'css' | 'js';
+  engine: "css" | "js";
 }
 ```
 
@@ -702,9 +702,9 @@ Add `'use client'` in the App Router, since the component uses browser APIs afte
 hydration:
 
 ```tsx
-'use client';
-import MasonrySnapGrid from 'masonry-snap-grid-layout/react';
-import 'masonry-snap-grid-layout/style.css';
+"use client";
+import MasonrySnapGrid from "masonry-snap-grid-layout/react";
+import "masonry-snap-grid-layout/style.css";
 ```
 
 No directive is needed in the Pages Router.
@@ -716,7 +716,7 @@ The Vue component works with SSR out of the box. Import the stylesheet in
 
 ```ts
 export default defineNuxtConfig({
-  css: ['masonry-snap-grid-layout/style.css'],
+  css: ["masonry-snap-grid-layout/style.css"],
 });
 ```
 
@@ -740,7 +740,7 @@ export default defineNuxtConfig({
       width={photo.width}
       height={photo.height}
       loading="lazy"
-      style={{ width: '100%', height: 'auto', display: 'block' }}
+      style={{ width: "100%", height: "auto", display: "block" }}
     />
   )}
 />

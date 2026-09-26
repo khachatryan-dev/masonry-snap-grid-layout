@@ -10,7 +10,7 @@
  */
 export function supportsCss(property: string, value: string): boolean {
   try {
-    return typeof CSS !== 'undefined' && CSS.supports(property, value);
+    return typeof CSS !== "undefined" && CSS.supports(property, value);
   } catch {
     return false;
   }

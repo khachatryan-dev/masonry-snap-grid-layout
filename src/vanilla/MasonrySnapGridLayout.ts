@@ -11,11 +11,11 @@ import {
   type LayoutInfo,
   type MasonryOptions,
   type Scheduler,
-} from '../core';
+} from "../core";
 
 /** Every option with its default filled in. */
 type ResolvedOptions<T> = MasonryOptions<T> & {
-  layoutMode: NonNullable<MasonryOptions<T>['layoutMode']>;
+  layoutMode: NonNullable<MasonryOptions<T>["layoutMode"]>;
   gutter: number;
   minColWidth: number;
   animate: boolean;
@@ -60,7 +60,7 @@ export default class MasonrySnapGridLayout<T> {
   constructor(container: HTMLElement, options: MasonryOptions<T>) {
     this.container = container;
     this.options = {
-      layoutMode: 'auto',
+      layoutMode: "auto",
       gutter: 16,
       minColWidth: 250,
       animate: true,
@@ -118,9 +118,9 @@ export default class MasonrySnapGridLayout<T> {
   }
 
   private shouldUseCss(): boolean {
-    if (this.options.layoutMode === 'js') return false;
+    if (this.options.layoutMode === "js") return false;
     // 'auto' (default): use CSS masonry only when the browser natively supports it
-    return supportsCss('grid-template-rows', 'masonry');
+    return supportsCss("grid-template-rows", "masonry");
   }
 
   /**
@@ -186,7 +186,7 @@ export default class MasonrySnapGridLayout<T> {
       // Without keys there is no identity to reconcile against, so every node
       // is rebuilt. Release the outgoing ones before they are dropped.
       this.releaseElements(this.elements);
-      this.container.innerHTML = '';
+      this.container.innerHTML = "";
     }
 
     const nextElements = this.buildElements();
@@ -230,11 +230,11 @@ export default class MasonrySnapGridLayout<T> {
           columnCount,
           columnWidth: Math.max(
             0,
-            (width - gutter * (columnCount - 1)) / columnCount
+            (width - gutter * (columnCount - 1)) / columnCount,
           ),
           containerHeight: this.container.clientHeight,
           itemCount: this.elements.length,
-          engine: 'css',
+          engine: "css",
         });
       }
       return;
@@ -247,7 +247,7 @@ export default class MasonrySnapGridLayout<T> {
       gutter,
       animate,
       transitionDuration,
-      { columns, estimatedItemHeight }
+      { columns, estimatedItemHeight },
     );
 
     if (result && onLayout) {
@@ -256,14 +256,14 @@ export default class MasonrySnapGridLayout<T> {
         columnWidth: result.columnWidth,
         containerHeight: result.containerHeight,
         itemCount: this.elements.length,
-        engine: 'js',
+        engine: "js",
       };
       onLayout(info);
     }
   }
 
   private observeResize(): void {
-    if (typeof ResizeObserver === 'undefined') return;
+    if (typeof ResizeObserver === "undefined") return;
     // Coalesced so a drag-resize does not run one layout per observer callback.
     this.resizeObserver = new ResizeObserver(() => this.scheduler.schedule());
     this.resizeObserver.observe(this.container);
@@ -282,7 +282,7 @@ export default class MasonrySnapGridLayout<T> {
    * previous engine's styles before switching, so callers never have to
    * destroy and rebuild the instance to change a single option.
    */
-  setOptions(next: Partial<Omit<MasonryOptions<T>, 'items'>>): void {
+  setOptions(next: Partial<Omit<MasonryOptions<T>, "items">>): void {
     const prevMode = this.options.layoutMode;
     const prevRenderItem = this.options.renderItem;
 
@@ -342,7 +342,7 @@ export default class MasonrySnapGridLayout<T> {
     } else {
       removeMasonryLayout(this.container, this.elements);
     }
-    this.container.innerHTML = '';
+    this.container.innerHTML = "";
     this.elements = [];
     this.keyed.clear();
   }

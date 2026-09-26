@@ -1,210 +1,213 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getColumnCount, supportsCss } from '../src/core';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { getColumnCount, supportsCss } from "../src/core";
 import {
   applyMasonryLayout,
   removeMasonryLayout,
-} from '../src/core/engine/jsEngine';
-import { applyCssMasonry, removeCssMasonry } from '../src/core/engine/cssEngine';
-import MasonrySnapGridLayout from '../src/vanilla/MasonrySnapGridLayout';
-import { installMockResizeObserver, MockResizeObserver } from './setup';
+} from "../src/core/engine/jsEngine";
+import {
+  applyCssMasonry,
+  removeCssMasonry,
+} from "../src/core/engine/cssEngine";
+import MasonrySnapGridLayout from "../src/vanilla/MasonrySnapGridLayout";
+import { installMockResizeObserver, MockResizeObserver } from "./setup";
 
 // ── Utility functions ────────────────────────────────────────────────────────
 
-describe('getColumnCount', () => {
-  it('returns 1 for zero-width container', () => {
+describe("getColumnCount", () => {
+  it("returns 1 for zero-width container", () => {
     expect(getColumnCount(0, 250, 16)).toBe(1);
   });
 
-  it('returns 1 for negative-width container', () => {
+  it("returns 1 for negative-width container", () => {
     expect(getColumnCount(-100, 250, 16)).toBe(1);
   });
 
-  it('returns 1 when container is too narrow for 2 columns', () => {
+  it("returns 1 when container is too narrow for 2 columns", () => {
     expect(getColumnCount(250, 250, 16)).toBe(1);
   });
 
-  it('calculates correct column count for standard widths', () => {
+  it("calculates correct column count for standard widths", () => {
     // (1200 + 16) / (250 + 16) = 1216 / 266 ≈ 4.57 → 4
     expect(getColumnCount(1200, 250, 16)).toBe(4);
   });
 
-  it('returns 1 when minColWidth equals container width', () => {
+  it("returns 1 when minColWidth equals container width", () => {
     expect(getColumnCount(300, 300, 16)).toBe(1);
   });
 
-  it('handles zero gutter', () => {
+  it("handles zero gutter", () => {
     // 1000 / 250 = 4
     expect(getColumnCount(1000, 250, 0)).toBe(4);
   });
 });
 
-describe('supportsCss', () => {
-  it('returns false when CSS is not defined', () => {
+describe("supportsCss", () => {
+  it("returns false when CSS is not defined", () => {
     const original = globalThis.CSS;
     // @ts-expect-error intentional
     delete globalThis.CSS;
-    expect(supportsCss('display', 'grid')).toBe(false);
+    expect(supportsCss("display", "grid")).toBe(false);
     globalThis.CSS = original;
   });
 
-  it('returns false without throwing on invalid property', () => {
-    expect(supportsCss('not-a-real-property', 'not-a-value')).toBe(false);
+  it("returns false without throwing on invalid property", () => {
+    expect(supportsCss("not-a-real-property", "not-a-value")).toBe(false);
   });
 });
 
 // ── JS Layout engine ─────────────────────────────────────────────────────────
 
-describe('applyMasonryLayout', () => {
+describe("applyMasonryLayout", () => {
   let container: HTMLDivElement;
   let items: HTMLDivElement[];
 
   beforeEach(() => {
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
 
     items = [1, 2, 3].map(() => {
-      const el = document.createElement('div');
+      const el = document.createElement("div");
       container.appendChild(el);
       return el;
     });
   });
 
-  it('does not apply layout when container width is 0', () => {
-    Object.defineProperty(container, 'clientWidth', {
+  it("does not apply layout when container width is 0", () => {
+    Object.defineProperty(container, "clientWidth", {
       value: 0,
       configurable: true,
     });
     applyMasonryLayout(container, items, 250, 16, false, 400);
-    expect(container.style.height).toBe('');
+    expect(container.style.height).toBe("");
   });
 
-  it('positions items with absolute and transform styles', () => {
+  it("positions items with absolute and transform styles", () => {
     applyMasonryLayout(container, items, 250, 16, false, 400);
     items.forEach((item) => {
-      expect(item.style.position).toBe('absolute');
+      expect(item.style.position).toBe("absolute");
       expect(item.style.transform).toMatch(/translate\(/);
     });
   });
 
-  it('sets container position to relative', () => {
+  it("sets container position to relative", () => {
     applyMasonryLayout(container, items, 250, 16, false, 400);
-    expect(container.style.position).toBe('relative');
+    expect(container.style.position).toBe("relative");
   });
 
-  it('sets container height to a positive number', () => {
+  it("sets container height to a positive number", () => {
     applyMasonryLayout(container, items, 250, 16, false, 400);
     const height = parseFloat(container.style.height);
     expect(height).toBeGreaterThan(0);
   });
 
-  it('applies transition when animate is true', () => {
+  it("applies transition when animate is true", () => {
     applyMasonryLayout(container, items, 250, 16, true, 300);
     items.forEach((item) => {
-      expect(item.style.transition).toContain('300ms');
+      expect(item.style.transition).toContain("300ms");
     });
   });
 
-  it('clears transition when animate is false', () => {
+  it("clears transition when animate is false", () => {
     applyMasonryLayout(container, items, 250, 16, false, 400);
     items.forEach((item) => {
-      expect(item.style.transition).toBe('');
+      expect(item.style.transition).toBe("");
     });
   });
 
-  it('handles empty items array', () => {
+  it("handles empty items array", () => {
     applyMasonryLayout(container, [], 250, 16, false, 400);
-    expect(container.style.height).toBe('0px');
+    expect(container.style.height).toBe("0px");
   });
 });
 
-describe('removeMasonryLayout', () => {
-  it('clears inline styles from container and items', () => {
-    const container = document.createElement('div');
-    const item = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.height = '500px';
-    item.style.position = 'absolute';
-    item.style.transform = 'translate(10px, 20px)';
+describe("removeMasonryLayout", () => {
+  it("clears inline styles from container and items", () => {
+    const container = document.createElement("div");
+    const item = document.createElement("div");
+    container.style.position = "relative";
+    container.style.height = "500px";
+    item.style.position = "absolute";
+    item.style.transform = "translate(10px, 20px)";
 
     removeMasonryLayout(container, [item]);
 
-    expect(container.style.position).toBe('');
-    expect(container.style.height).toBe('');
-    expect(item.style.position).toBe('');
-    expect(item.style.transform).toBe('');
+    expect(container.style.position).toBe("");
+    expect(container.style.height).toBe("");
+    expect(item.style.position).toBe("");
+    expect(item.style.transform).toBe("");
   });
 });
 
 // ── CSS engine ───────────────────────────────────────────────────────────────
 
-describe('applyCssMasonry', () => {
-  it('sets display grid and grid properties', () => {
-    const container = document.createElement('div');
+describe("applyCssMasonry", () => {
+  it("sets display grid and grid properties", () => {
+    const container = document.createElement("div");
     applyCssMasonry(container, 16, 250);
-    expect(container.style.display).toBe('grid');
-    expect(container.style.gap).toBe('16px');
-    expect(container.style.gridTemplateColumns).toContain('250px');
+    expect(container.style.display).toBe("grid");
+    expect(container.style.gap).toBe("16px");
+    expect(container.style.gridTemplateColumns).toContain("250px");
   });
 });
 
-describe('removeCssMasonry', () => {
-  it('clears grid styles from container', () => {
-    const container = document.createElement('div');
+describe("removeCssMasonry", () => {
+  it("clears grid styles from container", () => {
+    const container = document.createElement("div");
     applyCssMasonry(container, 16, 250);
     removeCssMasonry(container);
-    expect(container.style.display).toBe('');
-    expect(container.style.gap).toBe('');
+    expect(container.style.display).toBe("");
+    expect(container.style.gap).toBe("");
   });
 });
 
 // ── MasonrySnapGridLayout class ───────────────────────────────────────────────
 
-describe('MasonrySnapGridLayout', () => {
+describe("MasonrySnapGridLayout", () => {
   let container: HTMLDivElement;
 
   const makeItem = (title: string) => {
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     el.textContent = title;
     return el;
   };
 
-  const items = ['Alpha', 'Beta', 'Gamma'];
+  const items = ["Alpha", "Beta", "Gamma"];
 
   beforeEach(() => {
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
-  it('renders items into the container', () => {
+  it("renders items into the container", () => {
     new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
     });
     expect(container.children.length).toBe(items.length);
   });
 
-  it('updates items on updateItems()', () => {
+  it("updates items on updateItems()", () => {
     const masonry = new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
     });
-    masonry.updateItems(['One', 'Two']);
+    masonry.updateItems(["One", "Two"]);
     expect(container.children.length).toBe(2);
   });
 
-  it('clears the container on destroy()', () => {
+  it("clears the container on destroy()", () => {
     const masonry = new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
     });
     masonry.destroy();
     expect(container.children.length).toBe(0);
   });
 
-  it('disconnects every ResizeObserver it created on destroy()', () => {
+  it("disconnects every ResizeObserver it created on destroy()", () => {
     // The engine creates one observer for the container and one shared
     // observer for the items, so assert that all of them are torn down
     // rather than pinning the assertion to a specific count.
@@ -226,7 +229,7 @@ describe('MasonrySnapGridLayout', () => {
     const masonry = new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
     });
 
     expect(created.length).toBeGreaterThan(0);
@@ -236,8 +239,8 @@ describe('MasonrySnapGridLayout', () => {
     globalThis.ResizeObserver = OriginalResizeObserver;
   });
 
-  it('handles zero-width container gracefully', () => {
-    Object.defineProperty(container, 'clientWidth', {
+  it("handles zero-width container gracefully", () => {
+    Object.defineProperty(container, "clientWidth", {
       value: 0,
       configurable: true,
     });
@@ -246,8 +249,8 @@ describe('MasonrySnapGridLayout', () => {
         new MasonrySnapGridLayout(container, {
           items,
           renderItem: makeItem,
-          layoutMode: 'js',
-        })
+          layoutMode: "js",
+        }),
     ).not.toThrow();
   });
 
@@ -258,14 +261,14 @@ describe('MasonrySnapGridLayout', () => {
     new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'auto',
+      layoutMode: "auto",
     });
-    expect(container.style.display).toBe('grid');
+    expect(container.style.display).toBe("grid");
 
     CSS.supports = originalSupports;
   });
 
-  it('does not leak observed elements across updates', () => {
+  it("does not leak observed elements across updates", () => {
     // Removing a node from the DOM does not stop a ResizeObserver watching it,
     // so a full rebuild must unobserve the outgoing elements or the observer's
     // set grows without bound on every updateItems() call.
@@ -274,15 +277,15 @@ describe('MasonrySnapGridLayout', () => {
       const masonry = new MasonrySnapGridLayout(container, {
         items,
         renderItem: makeItem,
-        layoutMode: 'js',
+        layoutMode: "js",
       });
 
-      for (let i = 0; i < 5; i++) masonry.updateItems(['a', 'b', 'c']);
+      for (let i = 0; i < 5; i++) masonry.updateItems(["a", "b", "c"]);
 
       const watched = MockResizeObserver.instances.reduce(
         (total, o) =>
           total + [...o.observed].filter((el) => el !== container).length,
-        0
+        0,
       );
       expect(watched).toBe(3);
       masonry.destroy();
@@ -291,20 +294,20 @@ describe('MasonrySnapGridLayout', () => {
     }
   });
 
-  it('replaces elements rather than stranding them when renderItem changes', () => {
+  it("replaces elements rather than stranding them when renderItem changes", () => {
     // With getItemKey set, render() reconciles instead of wiping the container,
     // so a new renderer must explicitly discard the elements the old one built.
     const masonry = new MasonrySnapGridLayout<string>(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
       getItemKey: (item) => item,
     });
     expect(container.children.length).toBe(3);
 
     masonry.setOptions({
       renderItem: (title: string) => {
-        const el = document.createElement('span');
+        const el = document.createElement("span");
         el.textContent = `new ${title}`;
         return el;
       },
@@ -312,62 +315,64 @@ describe('MasonrySnapGridLayout', () => {
 
     expect(container.children.length).toBe(3);
     expect(
-      Array.from(container.children).every((el) => el.tagName === 'SPAN')
+      Array.from(container.children).every((el) => el.tagName === "SPAN"),
     ).toBe(true);
     masonry.destroy();
   });
 
-  it('reuses elements across updates when getItemKey is supplied', () => {
+  it("reuses elements across updates when getItemKey is supplied", () => {
     const masonry = new MasonrySnapGridLayout<string>(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
       getItemKey: (item) => item,
     });
 
     const gamma = Array.from(container.children).find(
-      (el) => el.textContent === 'Gamma'
+      (el) => el.textContent === "Gamma",
     );
 
-    masonry.updateItems(['Delta', ...items]);
+    masonry.updateItems(["Delta", ...items]);
 
     expect(container.children.length).toBe(4);
     expect(
-      Array.from(container.children).find((el) => el.textContent === 'Gamma')
+      Array.from(container.children).find((el) => el.textContent === "Gamma"),
     ).toBe(gamma);
     masonry.destroy();
   });
 
-  it('drops elements whose keys disappear', () => {
+  it("drops elements whose keys disappear", () => {
     const masonry = new MasonrySnapGridLayout<string>(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
       getItemKey: (item) => item,
     });
 
-    masonry.updateItems(['Alpha']);
+    masonry.updateItems(["Alpha"]);
 
     expect(container.children.length).toBe(1);
-    expect(container.textContent).toBe('Alpha');
+    expect(container.textContent).toBe("Alpha");
     masonry.destroy();
   });
 
-  it('re-layouts when setOptions changes the gutter', () => {
+  it("re-layouts when setOptions changes the gutter", () => {
     const masonry = new MasonrySnapGridLayout(container, {
       items,
       renderItem: makeItem,
-      layoutMode: 'js',
+      layoutMode: "js",
     });
     const before = (container.children[1] as HTMLElement).style.transform;
 
     masonry.setOptions({ gutter: 0 });
 
-    expect((container.children[1] as HTMLElement).style.transform).not.toBe(before);
+    expect((container.children[1] as HTMLElement).style.transform).not.toBe(
+      before,
+    );
     masonry.destroy();
   });
 
-  it('uses default options when none provided', () => {
+  it("uses default options when none provided", () => {
     const masonry = new MasonrySnapGridLayout(container, {
       items: [],
       renderItem: makeItem,
@@ -380,31 +385,31 @@ describe('MasonrySnapGridLayout', () => {
 
 // ── setOptions and the item observer (regression) ────────────────────────────
 
-describe('MasonrySnapGridLayout item observation via setOptions', () => {
+describe("MasonrySnapGridLayout item observation via setOptions", () => {
   let container: HTMLDivElement;
   let restore: () => void;
 
   const renderItem = (item: { title: string }): HTMLElement => {
-    const el = document.createElement('div');
-    el.className = 'probe-item';
+    const el = document.createElement("div");
+    el.className = "probe-item";
     el.textContent = item.title;
     return el;
   };
 
-  const items = [{ title: 'a' }, { title: 'b' }, { title: 'c' }];
+  const items = [{ title: "a" }, { title: "b" }, { title: "c" }];
 
   /** Is any live observer watching the grid's item elements? */
   const observingItems = (): boolean =>
     MockResizeObserver.active.some((o) =>
       [...o.observed].some((el) =>
-        (el as HTMLElement).classList.contains('probe-item')
-      )
+        (el as HTMLElement).classList.contains("probe-item"),
+      ),
     );
 
   beforeEach(() => {
     restore = installMockResizeObserver();
-    container = document.createElement('div');
-    container.style.width = '800px';
+    container = document.createElement("div");
+    container.style.width = "800px";
     document.body.appendChild(container);
   });
 
@@ -419,10 +424,10 @@ describe('MasonrySnapGridLayout item observation via setOptions', () => {
    * Turning observation on through `setOptions` did nothing at all, leaving
    * the self-healing layout dead for the instance's whole lifetime.
    */
-  it('starts observing items when observeItemResize is turned on', () => {
+  it("starts observing items when observeItemResize is turned on", () => {
     const grid = new MasonrySnapGridLayout(container, {
       items,
-      layoutMode: 'js',
+      layoutMode: "js",
       observeItemResize: false,
       renderItem,
     });
@@ -434,10 +439,10 @@ describe('MasonrySnapGridLayout item observation via setOptions', () => {
     grid.destroy();
   });
 
-  it('stops observing items when observeItemResize is turned off', () => {
+  it("stops observing items when observeItemResize is turned off", () => {
     const grid = new MasonrySnapGridLayout(container, {
       items,
-      layoutMode: 'js',
+      layoutMode: "js",
       observeItemResize: true,
       renderItem,
     });
@@ -449,10 +454,10 @@ describe('MasonrySnapGridLayout item observation via setOptions', () => {
     grid.destroy();
   });
 
-  it('rebuilds the observer when watchImages changes', () => {
+  it("rebuilds the observer when watchImages changes", () => {
     const grid = new MasonrySnapGridLayout(container, {
       items,
-      layoutMode: 'js',
+      layoutMode: "js",
       observeItemResize: true,
       watchImages: false,
       renderItem,
@@ -468,10 +473,10 @@ describe('MasonrySnapGridLayout item observation via setOptions', () => {
     grid.destroy();
   });
 
-  it('does not observe items while the CSS engine is active', () => {
+  it("does not observe items while the CSS engine is active", () => {
     const grid = new MasonrySnapGridLayout(container, {
       items,
-      layoutMode: 'js',
+      layoutMode: "js",
       observeItemResize: true,
       renderItem,
     });
@@ -482,13 +487,13 @@ describe('MasonrySnapGridLayout item observation via setOptions', () => {
     const originalCSS = globalThis.CSS;
     globalThis.CSS = {
       supports: (property: string, value?: string) =>
-        property === 'grid-template-rows' && value === 'masonry',
+        property === "grid-template-rows" && value === "masonry",
     } as unknown as typeof globalThis.CSS;
 
-    grid.setOptions({ layoutMode: 'auto' });
+    grid.setOptions({ layoutMode: "auto" });
     expect(observingItems()).toBe(false);
 
-    grid.setOptions({ layoutMode: 'js' });
+    grid.setOptions({ layoutMode: "js" });
     expect(observingItems()).toBe(true);
 
     globalThis.CSS = originalCSS;

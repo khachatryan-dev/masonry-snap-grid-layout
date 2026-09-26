@@ -1,5 +1,5 @@
-import { resolveColumnCount } from '../model/columns';
-import type { ColumnsOption } from '../model/columns';
+import { resolveColumnCount } from "../model/columns";
+import type { ColumnsOption } from "../model/columns";
 
 /**
  * Apply native CSS masonry layout using CSS Grid with `grid-template-rows: masonry`.
@@ -15,9 +15,9 @@ export function applyCssMasonry(
   container: HTMLElement,
   gutter: number,
   minColWidth: number,
-  columns?: ColumnsOption
+  columns?: ColumnsOption,
 ): void {
-  container.style.display = 'grid';
+  container.style.display = "grid";
 
   if (columns !== undefined) {
     const count = resolveColumnCount(container.clientWidth, {
@@ -30,18 +30,18 @@ export function applyCssMasonry(
     container.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minColWidth}px, 1fr))`;
   }
 
-  container.style.gridTemplateRows = 'masonry';
+  container.style.gridTemplateRows = "masonry";
   container.style.gap = `${gutter}px`;
-  container.style.alignContent = 'start';
+  container.style.alignContent = "start";
 }
 
 /**
  * Remove CSS masonry styles from a container.
  */
 export function removeCssMasonry(container: HTMLElement): void {
-  container.style.display = '';
-  container.style.gridTemplateColumns = '';
-  container.style.gridTemplateRows = '';
-  container.style.gap = '';
-  container.style.alignContent = '';
+  container.style.display = "";
+  container.style.gridTemplateColumns = "";
+  container.style.gridTemplateRows = "";
+  container.style.gap = "";
+  container.style.alignContent = "";
 }

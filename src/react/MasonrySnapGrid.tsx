@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   canVirtualize,
   computeLayout,
@@ -19,7 +25,7 @@ import {
   type LayoutMode,
   type Scheduler,
   type ScrollState,
-} from '../core';
+} from "../core";
 
 /**
  * Anything the component accepts as the scrolling viewport, including a React
@@ -28,7 +34,7 @@ import {
 export type ReactScrollTarget =
   | Window
   | HTMLElement
-  | 'window'
+  | "window"
   | null
   | React.RefObject<HTMLElement | null>
   | (() => Window | HTMLElement | null);
@@ -121,10 +127,10 @@ export interface MasonrySnapGridProps<T> {
 }
 
 function normalizeScrollTarget(
-  target: ReactScrollTarget | undefined
+  target: ReactScrollTarget | undefined,
 ): () => Window | HTMLElement | null {
   return () => {
-    if (target && typeof target === 'object' && 'current' in target) {
+    if (target && typeof target === "object" && "current" in target) {
       return resolveScrollTarget(target.current);
     }
     return resolveScrollTarget(target);
@@ -146,7 +152,7 @@ function normalizeScrollTarget(
  */
 function MasonrySnapGrid<T>({
   items,
-  layoutMode = 'auto',
+  layoutMode = "auto",
   gutter = 16,
   minColWidth = 250,
   columns,
@@ -241,7 +247,7 @@ function MasonrySnapGrid<T>({
   const [cssWidth, setCssWidth] = useState(0);
 
   const hasEstimate =
-    typeof estimatedItemHeight === 'number' && estimatedItemHeight > 0;
+    typeof estimatedItemHeight === "number" && estimatedItemHeight > 0;
 
   /**
    * Item identity. Declared ahead of the layout pass because the height cache
@@ -249,7 +255,7 @@ function MasonrySnapGrid<T>({
    */
   const keyFor = useCallback(
     (item: T, i: number): React.Key => (getItemKey ? getItemKey(item, i) : i),
-    [getItemKey]
+    [getItemKey],
   );
 
   /**
@@ -262,8 +268,8 @@ function MasonrySnapGrid<T>({
   useEffect(() => {
     setIsMounted(true);
 
-    if (layoutMode !== 'js') {
-      setUseCss(supportsCss('grid-template-rows', 'masonry'));
+    if (layoutMode !== "js") {
+      setUseCss(supportsCss("grid-template-rows", "masonry"));
     } else {
       setUseCss(false);
     }
@@ -314,7 +320,7 @@ function MasonrySnapGrid<T>({
       gutter,
       minColWidth,
       columns,
-      hasEstimate ? estimatedItemHeight : 0
+      hasEstimate ? estimatedItemHeight : 0,
     );
 
     // Items still waiting on a height will have been forced into the DOM by
@@ -331,7 +337,7 @@ function MasonrySnapGrid<T>({
       columnWidth: result.columnWidth,
       containerHeight: result.containerHeight,
       itemCount: items.length,
-      engine: 'js',
+      engine: "js",
     });
   }, [
     items,
@@ -389,7 +395,7 @@ function MasonrySnapGrid<T>({
     if (!isMounted) return;
 
     const container = containerRef.current;
-    if (!container || typeof ResizeObserver === 'undefined') return;
+    if (!container || typeof ResizeObserver === "undefined") return;
 
     const scheduler = createScheduler(() => {
       // Column width changed, so every cached height is now stale.
@@ -484,22 +490,25 @@ function MasonrySnapGrid<T>({
     const explicitColumns =
       columns === undefined
         ? undefined
-        : resolveColumnCount(cssWidth || containerRef.current?.offsetWidth || 0, {
-            columns,
-            minColWidth,
-            gutter,
-          });
+        : resolveColumnCount(
+            cssWidth || containerRef.current?.offsetWidth || 0,
+            {
+              columns,
+              minColWidth,
+              gutter,
+            },
+          );
 
     return (
       <div
         ref={containerRef}
         className={`msgl-container msgl-container--css${
-          className ? ` ${className}` : ''
+          className ? ` ${className}` : ""
         }`}
         style={
           {
-            '--msgl-gutter': `${gutter}px`,
-            '--msgl-min-col-width': `${minColWidth}px`,
+            "--msgl-gutter": `${gutter}px`,
+            "--msgl-min-col-width": `${minColWidth}px`,
             ...(explicitColumns
               ? {
                   gridTemplateColumns: `repeat(${explicitColumns}, minmax(0, 1fr))`,
@@ -534,15 +543,15 @@ function MasonrySnapGrid<T>({
     <div
       ref={containerRef}
       className={`msgl-container${
-        isMounted ? ' msgl-container--js' : ' msgl-container--ssr'
-      }${className ? ` ${className}` : ''}`}
+        isMounted ? " msgl-container--js" : " msgl-container--ssr"
+      }${className ? ` ${className}` : ""}`}
       style={
         {
-          position: isMounted ? 'relative' : undefined,
+          position: isMounted ? "relative" : undefined,
           height: hasPositions ? `${containerHeight}px` : undefined,
-          '--msgl-transition-duration': `${transitionDuration}ms`,
-          '--msgl-gutter': `${gutter}px`,
-          '--msgl-min-col-width': `${minColWidth}px`,
+          "--msgl-transition-duration": `${transitionDuration}ms`,
+          "--msgl-gutter": `${gutter}px`,
+          "--msgl-min-col-width": `${minColWidth}px`,
           ...style,
         } as React.CSSProperties
       }
@@ -559,12 +568,12 @@ function MasonrySnapGrid<T>({
             key={keyFor(item, i)}
             ref={getRefCallback(i)}
             className={`msgl-item${
-              animate && isPositioned ? ' msgl-item--animated' : ''
+              animate && isPositioned ? " msgl-item--animated" : ""
             }`}
             style={
               isPositioned
                 ? {
-                    position: 'absolute',
+                    position: "absolute",
                     width: `${pos.width}px`,
                     transform: `translate(${pos.x}px, ${pos.y}px)`,
                   }
@@ -589,7 +598,7 @@ function computeLayout_(
   gutter: number,
   minColWidth: number,
   columns: ColumnsOption | undefined,
-  fallbackHeight: number | undefined
+  fallbackHeight: number | undefined,
 ) {
   return computeLayout({
     count,

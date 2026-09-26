@@ -18,7 +18,7 @@ export interface Scheduler {
   cancel(): void;
 }
 
-const hasRaf = () => typeof requestAnimationFrame === 'function';
+const hasRaf = () => typeof requestAnimationFrame === "function";
 
 export function createScheduler(fn: () => void): Scheduler {
   let frame: number | null = null;

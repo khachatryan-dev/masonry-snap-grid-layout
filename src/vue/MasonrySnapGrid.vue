@@ -7,7 +7,7 @@ import {
   onBeforeUnmount,
   nextTick,
   type ComponentPublicInstance,
-} from 'vue';
+} from "vue";
 import {
   canVirtualize,
   computeLayout,
@@ -28,7 +28,7 @@ import {
   type LayoutMode,
   type ScrollState,
   type ScrollTargetOption,
-} from '../core';
+} from "../core";
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 const props = withDefaults(
@@ -80,7 +80,7 @@ const props = withDefaults(
     watchImages?: boolean;
   }>(),
   {
-    layoutMode: 'auto',
+    layoutMode: "auto",
     gutter: 16,
     minColWidth: 250,
     animate: true,
@@ -89,7 +89,7 @@ const props = withDefaults(
     overscan: 300,
     observeItemResize: true,
     watchImages: true,
-  }
+  },
 );
 
 // ── Emits ─────────────────────────────────────────────────────────────────────
@@ -121,22 +121,23 @@ const scroll = ref<ScrollState>(EMPTY_SCROLL_STATE);
 
 const hasEstimate = computed(
   () =>
-    typeof props.estimatedItemHeight === 'number' && props.estimatedItemHeight > 0
+    typeof props.estimatedItemHeight === "number" &&
+    props.estimatedItemHeight > 0,
 );
 
 // ── Derived styles ────────────────────────────────────────────────────────────
 const containerClass = computed(() => {
-  if (!isMounted.value) return 'msgl-container msgl-container--ssr';
+  if (!isMounted.value) return "msgl-container msgl-container--ssr";
   return useCss.value
-    ? 'msgl-container msgl-container--css'
-    : 'msgl-container msgl-container--js';
+    ? "msgl-container msgl-container--css"
+    : "msgl-container msgl-container--js";
 });
 
 const containerStyle = computed<Record<string, string>>(() => {
   const s: Record<string, string> = {
-    '--msgl-transition-duration': `${props.transitionDuration}ms`,
-    '--msgl-gutter': `${props.gutter}px`,
-    '--msgl-min-col-width': `${props.minColWidth}px`,
+    "--msgl-transition-duration": `${props.transitionDuration}ms`,
+    "--msgl-gutter": `${props.gutter}px`,
+    "--msgl-min-col-width": `${props.minColWidth}px`,
   };
 
   if (useCss.value) {
@@ -147,7 +148,7 @@ const containerStyle = computed<Record<string, string>>(() => {
           columns: props.columns,
           minColWidth: props.minColWidth,
           gutter: props.gutter,
-        }
+        },
       );
       s.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
     }
@@ -155,7 +156,7 @@ const containerStyle = computed<Record<string, string>>(() => {
   }
 
   if (isMounted.value) {
-    s.position = 'relative';
+    s.position = "relative";
     if (containerHeight.value > 0) s.height = `${containerHeight.value}px`;
   }
   return s;
@@ -169,8 +170,8 @@ function getItemClass(i: number): string {
   const positioned =
     isMounted.value && !useCss.value && positions.value[i] !== undefined;
   return positioned && props.animate
-    ? 'msgl-item msgl-item--animated'
-    : 'msgl-item';
+    ? "msgl-item msgl-item--animated"
+    : "msgl-item";
 }
 
 function getItemStyle(i: number): Record<string, string> {
@@ -179,7 +180,7 @@ function getItemStyle(i: number): Record<string, string> {
   // previous `layoutMode` would fight it.
   if (!isMounted.value || useCss.value || !pos) return {};
   return {
-    position: 'absolute',
+    position: "absolute",
     width: `${pos.width}px`,
     transform: `translate(${pos.x}px, ${pos.y}px)`,
   };
@@ -266,12 +267,12 @@ function runLayout(): void {
   positions.value = result.positions;
   containerHeight.value = result.containerHeight;
 
-  emit('layout', {
+  emit("layout", {
     columnCount: result.columnCount,
     columnWidth: result.columnWidth,
     containerHeight: result.containerHeight,
     itemCount: items.length,
-    engine: 'js',
+    engine: "js",
   });
 }
 
@@ -280,7 +281,7 @@ let itemObserver: ItemObserver | null = null;
 
 function collectItemRef(
   el: Element | ComponentPublicInstance | null,
-  i: number
+  i: number,
 ): void {
   const next = el instanceof HTMLElement ? (el as HTMLDivElement) : null;
   const prev = itemEls.value[i];
@@ -317,7 +318,7 @@ function startScrollTracking(): void {
     () => containerRef.value,
     (state) => {
       scroll.value = state;
-    }
+    },
   );
 }
 
@@ -355,7 +356,7 @@ function syncItemObserver(): void {
 function startCssWidthObserver(): void {
   if (
     props.columns === undefined ||
-    typeof ResizeObserver === 'undefined' ||
+    typeof ResizeObserver === "undefined" ||
     !containerRef.value
   ) {
     return;
@@ -367,7 +368,7 @@ function startCssWidthObserver(): void {
 }
 
 function startContainerWidthObserver(): void {
-  if (typeof ResizeObserver === 'undefined' || !containerRef.value) return;
+  if (typeof ResizeObserver === "undefined" || !containerRef.value) return;
 
   let prevWidth = -1;
   resizeObserver = new ResizeObserver((entries) => {
@@ -409,8 +410,8 @@ function leaveMode(): void {
 function resolveUseCss(): boolean {
   // 'auto' (default): use CSS masonry if the browser supports it, else JS.
   // 'js': always use JS masonry.
-  if (props.layoutMode === 'js') return false;
-  return supportsCss('grid-template-rows', 'masonry');
+  if (props.layoutMode === "js") return false;
+  return supportsCss("grid-template-rows", "masonry");
 }
 
 onMounted(async () => {
@@ -441,7 +442,7 @@ watch(
 
     await nextTick();
     enterMode();
-  }
+  },
 );
 
 // Item observation is likewise a live setting, not a mount-time one.
@@ -469,7 +470,7 @@ watch(
     // computeVisibleIndices — so one layout pass after they mount is enough.
     await nextTick();
     runLayout();
-  }
+  },
 );
 
 watch(
@@ -478,7 +479,7 @@ watch(
     if (!isMounted.value || useCss.value) return;
     await nextTick();
     runLayout();
-  }
+  },
 );
 
 /*

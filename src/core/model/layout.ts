@@ -1,4 +1,4 @@
-import { resolveColumnCount, type ColumnsOption } from './columns';
+import { resolveColumnCount, type ColumnsOption } from "./columns";
 
 /** Resolved position of a single item within the grid. */
 export interface ItemPosition {
@@ -63,7 +63,7 @@ export function computeLayout(params: ComputeLayoutParams): LayoutResult {
   // would place items to the left of the container and render them inverted.
   const columnWidth = Math.max(
     0,
-    (containerWidth - gutter * (columnCount - 1)) / columnCount
+    (containerWidth - gutter * (columnCount - 1)) / columnCount,
   );
 
   const colHeights = new Array<number>(columnCount).fill(0);
@@ -88,7 +88,7 @@ export function computeLayout(params: ComputeLayoutParams): LayoutResult {
 
     const h = heights[i];
     colHeights[col] +=
-      (typeof h === 'number' && h > 0 ? h : fallbackHeight) + gutter;
+      (typeof h === "number" && h > 0 ? h : fallbackHeight) + gutter;
   }
 
   // Subtract the trailing gutter to get true content height.

@@ -6,30 +6,30 @@
  * server-rendering path. Everything DOM-dependent is therefore guarded — in
  * Node there is no `HTMLElement` to patch and no `document` for jest-dom.
  */
-const HAS_DOM = typeof HTMLElement !== 'undefined';
+const HAS_DOM = typeof HTMLElement !== "undefined";
 
-if (typeof document !== 'undefined') {
-  await import('@testing-library/jest-dom');
+if (typeof document !== "undefined") {
+  await import("@testing-library/jest-dom");
 }
 
 if (HAS_DOM) {
   // jsdom does not implement layout, so offsetWidth/offsetHeight return 0.
   // Patch HTMLElement to return predictable non-zero values for layout tests.
-  Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+  Object.defineProperty(HTMLElement.prototype, "offsetWidth", {
     configurable: true,
     get() {
       return parseInt(this.style.width, 10) || 800;
     },
   });
 
-  Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+  Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
     configurable: true,
     get() {
       return parseInt(this.style.height, 10) || 200;
     },
   });
 
-  Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+  Object.defineProperty(HTMLElement.prototype, "clientWidth", {
     configurable: true,
     get() {
       return parseInt(this.style.width, 10) || 800;
@@ -42,7 +42,7 @@ if (HAS_DOM) {
  * simulate a scrolled page.
  */
 export function setScrollY(value: number): void {
-  Object.defineProperty(window, 'scrollY', {
+  Object.defineProperty(window, "scrollY", {
     value,
     writable: true,
     configurable: true,
@@ -66,7 +66,7 @@ export function setScrollY(value: number): void {
 export function mockRectGeometry(
   el: HTMLElement,
   documentTop: number,
-  height = 0
+  height = 0,
 ): void {
   el.getBoundingClientRect = () => {
     const top = documentTop - window.scrollY;
@@ -140,9 +140,9 @@ export class MockResizeObserver {
               x: 0,
               y: 0,
             },
-          }) as unknown as ResizeObserverEntry
+          }) as unknown as ResizeObserverEntry,
       ),
-      this as unknown as ResizeObserver
+      this as unknown as ResizeObserver,
     );
   }
 
@@ -173,7 +173,7 @@ export function installMockResizeObserver(): () => void {
 
 /** An image that reports itself as still decoding, which jsdom never does. */
 export function makePendingImage(): HTMLImageElement {
-  const img = document.createElement('img');
-  Object.defineProperty(img, 'complete', { value: false, configurable: true });
+  const img = document.createElement("img");
+  Object.defineProperty(img, "complete", { value: false, configurable: true });
   return img;
 }

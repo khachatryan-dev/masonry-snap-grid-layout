@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import MasonrySnapGrid from 'masonry-snap-grid-layout/vue';
-import type { LayoutInfo } from 'masonry-snap-grid-layout';
-import 'masonry-snap-grid-layout/style.css';
+import { computed, ref } from "vue";
+import MasonrySnapGrid from "masonry-snap-grid-layout/vue";
+import type { LayoutInfo } from "masonry-snap-grid-layout";
+import "masonry-snap-grid-layout/style.css";
 
 interface Card {
   id: number;
@@ -12,29 +12,29 @@ interface Card {
   color: string;
 }
 
-type LayoutMode = 'auto' | 'js';
-type ColumnMode = 'minWidth' | 'fixed' | 'responsive';
-type Content = 'text' | 'images';
-type ScrollMode = 'page' | 'panel';
+type LayoutMode = "auto" | "js";
+type ColumnMode = "minWidth" | "fixed" | "responsive";
+type Content = "text" | "images";
+type ScrollMode = "page" | "panel";
 
 const COLORS = [
-  '#fde68a',
-  '#a7f3d0',
-  '#bfdbfe',
-  '#fca5a5',
-  '#c4b5fd',
-  '#fdba74',
-  '#6ee7b7',
-  '#93c5fd',
+  "#fde68a",
+  "#a7f3d0",
+  "#bfdbfe",
+  "#fca5a5",
+  "#c4b5fd",
+  "#fdba74",
+  "#6ee7b7",
+  "#93c5fd",
 ];
 
 function makeItem(i: number): Card {
   return {
     id: i,
     title: `Card ${i + 1}`,
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'.slice(
+    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.".slice(
       0,
-      20 + ((i * 7) % 80)
+      20 + ((i * 7) % 80),
     ),
     height: 80 + ((i * 37) % 180),
     color: COLORS[i % COLORS.length],
@@ -44,7 +44,8 @@ function makeItem(i: number): Card {
 function cssMasonrySupported(): boolean {
   try {
     return (
-      typeof CSS !== 'undefined' && CSS.supports('grid-template-rows', 'masonry')
+      typeof CSS !== "undefined" &&
+      CSS.supports("grid-template-rows", "masonry")
     );
   } catch {
     return false;
@@ -52,7 +53,8 @@ function cssMasonrySupported(): boolean {
 }
 
 const INITIAL_COUNT = 500;
-const makeItems = (n: number) => Array.from({ length: n }, (_, i) => makeItem(i));
+const makeItems = (n: number) =>
+  Array.from({ length: n }, (_, i) => makeItem(i));
 
 /** Breakpoint map keyed on minimum *container* width, mobile-first. */
 const RESPONSIVE_COLUMNS = { 0: 1, 520: 2, 900: 3, 1280: 4, 1600: 5 };
@@ -60,39 +62,39 @@ const RESPONSIVE_COLUMNS = { 0: 1, 520: 2, 900: 3, 1280: 4, 1600: 5 };
 const items = ref<Card[]>(makeItems(INITIAL_COUNT));
 const gutter = ref(16);
 const minColWidth = ref(220);
-const columnMode = ref<ColumnMode>('minWidth');
+const columnMode = ref<ColumnMode>("minWidth");
 const fixedColumns = ref(3);
-const layoutMode = ref<LayoutMode>('auto');
+const layoutMode = ref<LayoutMode>("auto");
 const virtualize = ref(true);
 const animate = ref(true);
 const overscan = ref(300);
 const useEstimate = ref(false);
-const content = ref<Content>('text');
-const scrollMode = ref<ScrollMode>('page');
+const content = ref<Content>("text");
+const scrollMode = ref<ScrollMode>("page");
 const layout = ref<LayoutInfo | null>(null);
 const panel = ref<HTMLDivElement | null>(null);
 let nextId = INITIAL_COUNT;
 
 const cssSupported = cssMasonrySupported();
-const usingCss = computed(() => layoutMode.value === 'auto' && cssSupported);
+const usingCss = computed(() => layoutMode.value === "auto" && cssSupported);
 
 /** Undefined means "derive the count from minColWidth". */
 const columns = computed(() => {
-  if (columnMode.value === 'fixed') return fixedColumns.value;
-  if (columnMode.value === 'responsive') return RESPONSIVE_COLUMNS;
+  if (columnMode.value === "fixed") return fixedColumns.value;
+  if (columnMode.value === "responsive") return RESPONSIVE_COLUMNS;
   return undefined;
 });
 
 const columnSummary = computed(() => {
-  if (columnMode.value === 'fixed') return `columns="${fixedColumns.value}"`;
-  if (columnMode.value === 'responsive')
+  if (columnMode.value === "fixed") return `columns="${fixedColumns.value}"`;
+  if (columnMode.value === "responsive")
     return 'columns="{ 0:1, 520:2, 900:3, … }"';
   return `min-col-width="${minColWidth.value}"`;
 });
 
 /** Only track the panel element while it is actually the scrolling viewport. */
 const scrollContainer = computed(() =>
-  scrollMode.value === 'panel' ? panel.value : undefined
+  scrollMode.value === "panel" ? panel.value : undefined,
 );
 
 const getItemKey = (item: Card) => item.id;
@@ -139,23 +141,23 @@ function onLayout(info: LayoutInfo) {
 
 // ── Style helpers ─────────────────────────────────────────────────────────────
 const FIELD =
-  'display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:#555;white-space:nowrap';
+  "display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:#555;white-space:nowrap";
 
 function badge(bg: string) {
   return `padding:4px 10px;border-radius:99px;background:${bg};color:#fff;font-size:.75rem;font-weight:600;white-space:nowrap`;
 }
 function segBtn(active: boolean) {
-  return `padding:4px 10px;border:none;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;background:${active ? '#4f46e5' : '#e5e7eb'};color:${active ? '#fff' : '#374151'}`;
+  return `padding:4px 10px;border:none;border-radius:6px;cursor:pointer;font-size:.75rem;font-weight:600;background:${active ? "#4f46e5" : "#e5e7eb"};color:${active ? "#fff" : "#374151"}`;
 }
 function toggleBtn(active: boolean) {
-  return `padding:4px 12px;border:none;border-radius:99px;cursor:pointer;font-size:.8rem;font-weight:600;background:${active ? '#4f46e5' : '#d1d5db'};color:${active ? '#fff' : '#374151'}`;
+  return `padding:4px 12px;border:none;border-radius:99px;cursor:pointer;font-size:.8rem;font-weight:600;background:${active ? "#4f46e5" : "#d1d5db"};color:${active ? "#fff" : "#374151"}`;
 }
 function actionBtn(bg: string) {
   return `padding:8px 14px;border:none;border-radius:6px;background:${bg};color:#fff;cursor:pointer;font-size:.875rem`;
 }
 
 const cardShell =
-  'margin:0;border-radius:12px;overflow:hidden;background:#e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.10)';
+  "margin:0;border-radius:12px;overflow:hidden;background:#e5e7eb;box-shadow:0 1px 4px rgba(0,0,0,.10)";
 
 function textCard(item: Card) {
   return `background:${item.color};border-radius:12px;padding:16px;height:${item.height}px;display:flex;flex-direction:column;gap:8px;font-size:.875rem;color:#333`;
@@ -186,7 +188,7 @@ function textCard(item: Card) {
       "
     >
       <span :style="badge(usingCss ? '#059669' : '#4f46e5')">
-        Engine: {{ usingCss ? '✦ Native CSS masonry' : '⚙ JS masonry' }}
+        Engine: {{ usingCss ? "✦ Native CSS masonry" : "⚙ JS masonry" }}
       </span>
       <span :style="badge('#6b7280')">{{ items.length }} items</span>
       <span :style="badge('#374151')">{{ columnSummary }}</span>
@@ -196,10 +198,13 @@ function textCard(item: Card) {
       </span>
       <span v-if="virtualize && !usingCss" :style="badge('#d97706')">
         ⚡ Virtualized (overscan {{ overscan }}px{{
-          useEstimate ? ', estimated heights' : ''
+          useEstimate ? ", estimated heights" : ""
         }})
       </span>
-      <span v-if="scrollMode === 'panel' && !usingCss" :style="badge('#7c3aed')">
+      <span
+        v-if="scrollMode === 'panel' && !usingCss"
+        :style="badge('#7c3aed')"
+      >
         ▤ Scrolling inside a panel
       </span>
       <span v-if="content === 'images'" :style="badge('#be185d')">
@@ -301,31 +306,45 @@ function textCard(item: Card) {
 
       <label :style="FIELD">
         Virtualize (JS only)
-        <button @click="virtualize = !virtualize" :style="toggleBtn(virtualize)">
-          {{ virtualize ? 'ON' : 'OFF' }}
+        <button
+          @click="virtualize = !virtualize"
+          :style="toggleBtn(virtualize)"
+        >
+          {{ virtualize ? "ON" : "OFF" }}
         </button>
       </label>
 
       <label v-if="virtualize && !usingCss" :style="FIELD">
         Overscan: {{ overscan }}px
-        <input type="range" min="0" max="800" step="50" v-model.number="overscan" />
+        <input
+          type="range"
+          min="0"
+          max="800"
+          step="50"
+          v-model.number="overscan"
+        />
       </label>
 
       <label v-if="virtualize && !usingCss" :style="FIELD">
         Estimated heights
-        <button @click="useEstimate = !useEstimate" :style="toggleBtn(useEstimate)">
-          {{ useEstimate ? 'ON' : 'OFF' }}
+        <button
+          @click="useEstimate = !useEstimate"
+          :style="toggleBtn(useEstimate)"
+        >
+          {{ useEstimate ? "ON" : "OFF" }}
         </button>
       </label>
 
       <label :style="FIELD">
         Animate
         <button @click="animate = !animate" :style="toggleBtn(animate)">
-          {{ animate ? 'ON' : 'OFF' }}
+          {{ animate ? "ON" : "OFF" }}
         </button>
       </label>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 2px">
+      <div
+        style="display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 2px"
+      >
         <button @click="addItem" :style="actionBtn('#4f46e5')">+ Append</button>
         <button @click="prependItem" :style="actionBtn('#0f766e')">
           ↑ Prepend
@@ -333,17 +352,21 @@ function textCard(item: Card) {
         <button @click="shuffleItems" :style="actionBtn('#7c3aed')">
           ⇄ Shuffle
         </button>
-        <button @click="removeItem" :style="actionBtn('#6b7280')">− Remove</button>
-        <button @click="resetItems" :style="actionBtn('#9ca3af')">↺ Reset</button>
+        <button @click="removeItem" :style="actionBtn('#6b7280')">
+          − Remove
+        </button>
+        <button @click="resetItems" :style="actionBtn('#9ca3af')">
+          ↺ Reset
+        </button>
       </div>
     </div>
 
     <p style="font-size: 0.8rem; color: #666; margin: 0 0 16px">
       <strong>Prepend</strong> and <strong>Shuffle</strong> demonstrate
-      <code>get-item-key</code>: cards keep their own heights and content because
-      identity travels with the data, not the position. Switch
-      <strong>Content</strong> to <em>images</em> to watch the grid re-pack itself
-      as each image decodes.
+      <code>get-item-key</code>: cards keep their own heights and content
+      because identity travels with the data, not the position. Switch
+      <strong>Content</strong> to <em>images</em> to watch the grid re-pack
+      itself as each image decodes.
     </p>
 
     <!-- Scrollable panel: the grid virtualizes against this element -->
@@ -380,13 +403,17 @@ function textCard(item: Card) {
               :alt="`Placeholder ${item.id}`"
               style="width: 100%; height: auto; display: block"
             />
-            <figcaption style="padding: 8px 12px; font-size: 0.75rem; color: #555">
+            <figcaption
+              style="padding: 8px 12px; font-size: 0.75rem; color: #555"
+            >
               #{{ index }} · {{ item.title }}
             </figcaption>
           </figure>
           <div v-else :style="textCard(item)">
             <strong>{{ item.title }}</strong>
-            <p style="color: #555; line-height: 1.5; margin: 0">{{ item.body }}</p>
+            <p style="color: #555; line-height: 1.5; margin: 0">
+              {{ item.body }}
+            </p>
           </div>
         </template>
       </MasonrySnapGrid>
@@ -414,13 +441,17 @@ function textCard(item: Card) {
             :alt="`Placeholder ${item.id}`"
             style="width: 100%; height: auto; display: block"
           />
-          <figcaption style="padding: 8px 12px; font-size: 0.75rem; color: #555">
+          <figcaption
+            style="padding: 8px 12px; font-size: 0.75rem; color: #555"
+          >
             #{{ index }} · {{ item.title }}
           </figcaption>
         </figure>
         <div v-else :style="textCard(item)">
           <strong>{{ item.title }}</strong>
-          <p style="color: #555; line-height: 1.5; margin: 0">{{ item.body }}</p>
+          <p style="color: #555; line-height: 1.5; margin: 0">
+            {{ item.body }}
+          </p>
         </div>
       </template>
     </MasonrySnapGrid>

@@ -1,4 +1,4 @@
-import { createScheduler } from './schedule';
+import { createScheduler } from "./schedule";
 
 export interface ItemObserverOptions {
   /** Invoked, coalesced to once per frame, when any observed item's box changes. */
@@ -45,7 +45,7 @@ const NOOP_OBSERVER: ItemObserver = {
 export function createItemObserver(options: ItemObserverOptions): ItemObserver {
   const { onChange, watchImages = true } = options;
 
-  if (typeof ResizeObserver === 'undefined') {
+  if (typeof ResizeObserver === "undefined") {
     // SSR and older browsers: layout still runs, it just cannot self-heal.
     return NOOP_OBSERVER;
   }
@@ -72,7 +72,7 @@ export function createItemObserver(options: ItemObserverOptions): ItemObserver {
   // Some polyfills implement only part of the interface; degrade instead of
   // throwing inside a user's render.
   const safeUnobserve = (el: HTMLElement): void => {
-    if (typeof ro.unobserve === 'function') ro.unobserve(el);
+    if (typeof ro.unobserve === "function") ro.unobserve(el);
   };
 
   const ro = new ResizeObserver((entries) => {
@@ -93,7 +93,7 @@ export function createItemObserver(options: ItemObserverOptions): ItemObserver {
   const attachImageListeners = (el: HTMLElement): void => {
     if (!watchImages || imageCleanups.has(el)) return;
 
-    const images = Array.from(el.querySelectorAll('img'));
+    const images = Array.from(el.querySelectorAll("img"));
     const pending = images.filter((img) => !img.complete);
     if (pending.length === 0) return;
 
@@ -103,11 +103,11 @@ export function createItemObserver(options: ItemObserverOptions): ItemObserver {
     const detachers: Array<() => void> = [];
 
     for (const img of pending) {
-      img.addEventListener('load', settle, { once: true });
-      img.addEventListener('error', settle, { once: true });
+      img.addEventListener("load", settle, { once: true });
+      img.addEventListener("error", settle, { once: true });
       detachers.push(() => {
-        img.removeEventListener('load', settle);
-        img.removeEventListener('error', settle);
+        img.removeEventListener("load", settle);
+        img.removeEventListener("error", settle);
       });
     }
 

@@ -4,30 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix: improve path handling and enhance package validation in build scripts">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.prettierignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.prettierrc.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARCHITECTURE.md" beforeDir="false" afterPath="$PROJECT_DIR$/ARCHITECTURE.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/check-architecture.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-architecture.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/check-package.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-package.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/check-size.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-size.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/postbuild.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/postbuild.mjs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/layout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/layout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/model/virtualization.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/model/virtualization.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/react/MasonrySnapGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vanilla/MasonrySnapGridLayout.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/vanilla/MasonrySnapGridLayout.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/vue/MasonrySnapGrid.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-layout.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-layout.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core-virtualization.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core-virtualization.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/core.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/core.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/react.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/react.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/vue.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/vue.test.ts" afterDir="false" />
-    </list>
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -145,32 +122,12 @@
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.lint:fix">
-    <configuration name="dev (2)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/examples/angular/package.json" />
+  <component name="RunManager" selected="npm.check:arch">
+    <configuration name="check:arch" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
-        <script value="dev" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="dev (3)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/examples/vanilla/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="dev" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <method v="2" />
-    </configuration>
-    <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/examples/react/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="dev" />
+        <script value="check:arch" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -186,6 +143,16 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="prepublishOnly" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="prepublishOnly" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="test" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -196,13 +163,23 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="typecheck:examples" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="typecheck:examples" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="npm.test" />
+        <item itemvalue="npm.check:arch" />
+        <item itemvalue="npm.typecheck:examples" />
+        <item itemvalue="npm.prepublishOnly" />
         <item itemvalue="npm.lint:fix" />
-        <item itemvalue="npm.dev (3)" />
-        <item itemvalue="npm.dev (2)" />
-        <item itemvalue="npm.dev" />
+        <item itemvalue="npm.test" />
       </list>
     </recent_temporary>
   </component>
@@ -243,15 +220,7 @@
       <workItem from="1772980554077" duration="4608000" />
       <workItem from="1787732539642" duration="1134000" />
       <workItem from="1790187971253" duration="8683000" />
-      <workItem from="1790427714243" duration="315000" />
-    </task>
-    <task id="LOCAL-00014" summary="check ci/cd">
-      <option name="closed" value="true" />
-      <created>1754823689557</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1754823689557</updated>
+      <workItem from="1790427714243" duration="697000" />
     </task>
     <task id="LOCAL-00015" summary="check ci/cd">
       <option name="closed" value="true" />
@@ -637,7 +606,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787861050921</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values">
+      <option name="closed" value="true" />
+      <created>1790428177411</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1790428177412</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -655,7 +632,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="bugfix react part" />
     <MESSAGE value="update readme file" />
     <MESSAGE value="check ci/cd" />
     <MESSAGE value="docs: add professional comments and JSDoc across core layout, React wrapper, types, and CSS" />
@@ -680,7 +656,8 @@
     <MESSAGE value="chore: update workspace configuration for npm scripts and recent branch" />
     <MESSAGE value="fix: normalize path separators in layerOf function" />
     <MESSAGE value="fix: improve path handling and enhance package validation in build scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: improve path handling and enhance package validation in build scripts" />
+    <MESSAGE value="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -1,5 +1,5 @@
-import type { ItemPosition } from './layout';
-import type { ScrollState } from './types';
+import type { ItemPosition } from "./layout";
+import type { ScrollState } from "./types";
 
 export interface VisibleRangeParams {
   /**
@@ -61,7 +61,7 @@ export function computeVisibleIndices(params: VisibleRangeParams): Set<number> {
   for (let i = 0; i < count; i++) {
     const pos = positions[i];
     const h = heights[i];
-    const measured = typeof h === 'number' && h > 0;
+    const measured = typeof h === "number" && h > 0;
 
     if (!pos || (!measured && fallbackHeight <= 0)) {
       visible.add(i);

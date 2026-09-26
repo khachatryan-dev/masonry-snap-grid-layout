@@ -1,5 +1,5 @@
-import { createScheduler } from './schedule';
-import { EMPTY_SCROLL_STATE, type ScrollState } from '../model/types';
+import { createScheduler } from "./schedule";
+import { EMPTY_SCROLL_STATE, type ScrollState } from "../model/types";
 
 export type { ScrollState };
 export { EMPTY_SCROLL_STATE };
@@ -14,16 +14,16 @@ export type ScrollTargetOption =
   | HTMLElement
   | null
   | undefined
-  | 'window'
+  | "window"
   | (() => Window | HTMLElement | null);
 
 /** Narrow a {@link ScrollTargetOption} to a concrete, live target. */
 export function resolveScrollTarget(
-  option: ScrollTargetOption
+  option: ScrollTargetOption,
 ): Window | HTMLElement | null {
-  if (typeof window === 'undefined') return null;
-  if (option === 'window' || option == null) return window;
-  if (typeof option === 'function') {
+  if (typeof window === "undefined") return null;
+  if (option === "window" || option == null) return window;
+  if (typeof option === "function") {
     const resolved = option();
     return resolved ?? window;
   }
@@ -35,7 +35,7 @@ export function resolveScrollTarget(
  * realms (iframes, jsdom, SSR shims). Only DOM nodes carry `nodeType`.
  */
 const isWindow = (t: Window | HTMLElement): t is Window =>
-  typeof (t as unknown as { nodeType?: number }).nodeType !== 'number';
+  typeof (t as unknown as { nodeType?: number }).nodeType !== "number";
 
 /**
  * Read current scroll geometry. Performs one `getBoundingClientRect()` on the
@@ -44,7 +44,7 @@ const isWindow = (t: Window | HTMLElement): t is Window =>
  */
 export function readScrollState(
   target: Window | HTMLElement | null,
-  container: HTMLElement | null
+  container: HTMLElement | null,
 ): ScrollState {
   if (!target || !container) return EMPTY_SCROLL_STATE;
 
@@ -87,7 +87,7 @@ export function scrollStatesEqual(a: ScrollState, b: ScrollState): boolean {
 export function createScrollTracker(
   target: Window | HTMLElement | null,
   getContainer: () => HTMLElement | null,
-  onChange: (state: ScrollState) => void
+  onChange: (state: ScrollState) => void,
 ): () => void {
   if (!target) return () => {};
 
@@ -103,12 +103,12 @@ export function createScrollTracker(
   const scheduler = createScheduler(measure);
   const onEvent = () => scheduler.schedule();
 
-  target.addEventListener('scroll', onEvent, { passive: true });
+  target.addEventListener("scroll", onEvent, { passive: true });
 
   // Element targets do not emit window resize, but the page resizing can still
   // change their box, so listen on both where available.
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', onEvent);
+  if (typeof window !== "undefined") {
+    window.addEventListener("resize", onEvent);
   }
 
   // Prime synchronously so the first paint has real geometry.
@@ -116,9 +116,9 @@ export function createScrollTracker(
 
   return () => {
     scheduler.cancel();
-    target.removeEventListener('scroll', onEvent);
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('resize', onEvent);
+    target.removeEventListener("scroll", onEvent);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", onEvent);
     }
   };
 }

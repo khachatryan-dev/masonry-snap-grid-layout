@@ -1,15 +1,15 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mount, type VueWrapper } from '@vue/test-utils';
-import { renderToString } from 'vue/server-renderer';
-import { createSSRApp, h } from 'vue';
-import MasonrySnapGrid from '../src/vue/MasonrySnapGrid.vue';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { mount, type VueWrapper } from "@vue/test-utils";
+import { renderToString } from "vue/server-renderer";
+import { createSSRApp, h } from "vue";
+import MasonrySnapGrid from "../src/vue/MasonrySnapGrid.vue";
 import {
   flushFrames,
   installMockResizeObserver,
   mockRectGeometry,
   MockResizeObserver,
   setScrollY,
-} from './setup';
+} from "./setup";
 
 type Item = { id: number; title: string };
 
@@ -25,14 +25,14 @@ const makeItems = (n: number): Item[] =>
  */
 const itemSlot = {
   default: (params: { item: Item; index: number }) =>
-    h('div', { 'data-testid': `item-${params.item.id}` }, params.item.title),
+    h("div", { "data-testid": `item-${params.item.id}` }, params.item.title),
 };
 
 function mountGrid(
-  props: Record<string, unknown>
+  props: Record<string, unknown>,
 ): VueWrapper<InstanceType<typeof MasonrySnapGrid>> {
   return mount(MasonrySnapGrid, {
-    props: { layoutMode: 'js', ...props },
+    props: { layoutMode: "js", ...props },
     slots: itemSlot,
     attachTo: document.body,
   }) as VueWrapper<InstanceType<typeof MasonrySnapGrid>>;
@@ -45,40 +45,40 @@ async function settle(wrapper: VueWrapper<unknown>): Promise<void> {
 }
 
 const items = (wrapper: VueWrapper<unknown>) =>
-  wrapper.element.querySelectorAll<HTMLElement>('.msgl-item');
+  wrapper.element.querySelectorAll<HTMLElement>(".msgl-item");
 
 const testIds = (wrapper: VueWrapper<unknown>) =>
-  Array.from(wrapper.element.querySelectorAll<HTMLElement>('[data-testid]')).map(
-    (el) => el.dataset.testid
-  );
+  Array.from(
+    wrapper.element.querySelectorAll<HTMLElement>("[data-testid]"),
+  ).map((el) => el.dataset.testid);
 
-describe('Vue MasonrySnapGrid rendering', () => {
-  it('renders every item through the scoped slot', async () => {
+describe("Vue MasonrySnapGrid rendering", () => {
+  it("renders every item through the scoped slot", async () => {
     const wrapper = mountGrid({ items: makeItems(4) });
     await settle(wrapper);
 
     expect(items(wrapper)).toHaveLength(4);
-    expect(wrapper.text()).toContain('Item 0');
-    expect(wrapper.text()).toContain('Item 3');
+    expect(wrapper.text()).toContain("Item 0");
+    expect(wrapper.text()).toContain("Item 3");
     wrapper.unmount();
   });
 
-  it('exposes the item index to the slot', async () => {
+  it("exposes the item index to the slot", async () => {
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(3), layoutMode: 'js' },
+      props: { items: makeItems(3), layoutMode: "js" },
       slots: {
         default: (p: { item: Item; index: number }) =>
-          h('div', { 'data-testid': `idx-${p.index}` }, p.item.title),
+          h("div", { "data-testid": `idx-${p.index}` }, p.item.title),
       },
       attachTo: document.body,
     });
     await settle(wrapper);
 
-    expect(testIds(wrapper)).toEqual(['idx-0', 'idx-1', 'idx-2']);
+    expect(testIds(wrapper)).toEqual(["idx-0", "idx-1", "idx-2"]);
     wrapper.unmount();
   });
 
-  it('renders an empty grid without error', async () => {
+  it("renders an empty grid without error", async () => {
     const wrapper = mountGrid({ items: [] });
     await settle(wrapper);
 
@@ -86,25 +86,25 @@ describe('Vue MasonrySnapGrid rendering', () => {
     wrapper.unmount();
   });
 
-  it('switches to the JS mode class after mount', async () => {
+  it("switches to the JS mode class after mount", async () => {
     const wrapper = mountGrid({ items: makeItems(2) });
     await settle(wrapper);
 
-    expect(wrapper.classes()).toContain('msgl-container--js');
-    expect(wrapper.classes()).not.toContain('msgl-container--ssr');
+    expect(wrapper.classes()).toContain("msgl-container--js");
+    expect(wrapper.classes()).not.toContain("msgl-container--ssr");
     wrapper.unmount();
   });
 });
 
-describe('Vue MasonrySnapGrid server rendering', () => {
-  it('includes every item in the server-rendered HTML', async () => {
+describe("Vue MasonrySnapGrid server rendering", () => {
+  it("includes every item in the server-rendered HTML", async () => {
     // SEO is the whole point of the SSR pass: items must be in page source.
     const app = createSSRApp({
       render: () =>
         h(
           MasonrySnapGrid as never,
-          { items: makeItems(5), layoutMode: 'js' },
-          itemSlot
+          { items: makeItems(5), layoutMode: "js" },
+          itemSlot,
         ),
     });
     const html = await renderToString(app);
@@ -112,90 +112,94 @@ describe('Vue MasonrySnapGrid server rendering', () => {
     for (let i = 0; i < 5; i++) expect(html).toContain(`item-${i}`);
   });
 
-  it('uses the SSR grid class on the server', async () => {
+  it("uses the SSR grid class on the server", async () => {
     const app = createSSRApp({
       render: () =>
         h(
           MasonrySnapGrid as never,
-          { items: makeItems(2), layoutMode: 'js' },
-          itemSlot
+          { items: makeItems(2), layoutMode: "js" },
+          itemSlot,
         ),
     });
     const html = await renderToString(app);
 
-    expect(html).toContain('msgl-container--ssr');
+    expect(html).toContain("msgl-container--ssr");
   });
 });
 
-describe('Vue MasonrySnapGrid layout', () => {
-  it('absolutely positions items with a transform', async () => {
+describe("Vue MasonrySnapGrid layout", () => {
+  it("absolutely positions items with a transform", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
     const first = items(wrapper)[0];
-    expect(first.style.position).toBe('absolute');
-    expect(first.style.width).toBe('256px');
-    expect(first.style.transform).toBe('translate(0px, 0px)');
+    expect(first.style.position).toBe("absolute");
+    expect(first.style.width).toBe("256px");
+    expect(first.style.transform).toBe("translate(0px, 0px)");
     wrapper.unmount();
   });
 
-  it('fills the first row across three columns', async () => {
+  it("fills the first row across three columns", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
     const xs = Array.from(items(wrapper)).map((el) => el.style.transform);
     expect(xs).toEqual([
-      'translate(0px, 0px)',
-      'translate(272px, 0px)',
-      'translate(544px, 0px)',
+      "translate(0px, 0px)",
+      "translate(272px, 0px)",
+      "translate(544px, 0px)",
     ]);
     wrapper.unmount();
   });
 
-  it('wraps to the next row using the shortest column', async () => {
+  it("wraps to the next row using the shortest column", async () => {
     const wrapper = mountGrid({ items: makeItems(4) });
     await settle(wrapper);
 
-    expect(items(wrapper)[3].style.transform).toBe('translate(0px, 216px)');
+    expect(items(wrapper)[3].style.transform).toBe("translate(0px, 216px)");
     wrapper.unmount();
   });
 
-  it('sets the container height excluding the trailing gutter', async () => {
+  it("sets the container height excluding the trailing gutter", async () => {
     const wrapper = mountGrid({ items: makeItems(6) });
     await settle(wrapper);
 
     // 2 rows of 200px plus one 16px gutter.
-    expect(wrapper.element.style.height).toBe('416px');
+    expect(wrapper.element.style.height).toBe("416px");
     wrapper.unmount();
   });
 
-  it('respects a custom gutter', async () => {
+  it("respects a custom gutter", async () => {
     const wrapper = mountGrid({ items: makeItems(3), gutter: 0 });
     await settle(wrapper);
 
     // 3 columns of exactly 800/3 with no gaps.
     const xs = Array.from(items(wrapper)).map((el) => el.style.transform);
-    expect(xs[1]).toContain('translate(266.6');
+    expect(xs[1]).toContain("translate(266.6");
     wrapper.unmount();
   });
 
-  it('applies the animation class when animate is enabled', async () => {
+  it("applies the animation class when animate is enabled", async () => {
     const wrapper = mountGrid({ items: makeItems(2), animate: true });
     await settle(wrapper);
 
-    expect(items(wrapper)[0].classList.contains('msgl-item--animated')).toBe(true);
+    expect(items(wrapper)[0].classList.contains("msgl-item--animated")).toBe(
+      true,
+    );
     wrapper.unmount();
   });
 
-  it('omits the animation class when animate is disabled', async () => {
+  it("omits the animation class when animate is disabled", async () => {
     const wrapper = mountGrid({ items: makeItems(2), animate: false });
     await settle(wrapper);
 
-    expect(items(wrapper)[0].classList.contains('msgl-item--animated')).toBe(false);
+    expect(items(wrapper)[0].classList.contains("msgl-item--animated")).toBe(
+      false,
+    );
     wrapper.unmount();
   });
 
-  it('relayouts when items change', async () => {
+  it("relayouts when items change", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
@@ -203,79 +207,79 @@ describe('Vue MasonrySnapGrid layout', () => {
     await settle(wrapper);
 
     expect(items(wrapper)).toHaveLength(6);
-    expect(wrapper.element.style.height).toBe('416px');
+    expect(wrapper.element.style.height).toBe("416px");
     wrapper.unmount();
   });
 
-  it('relayouts when minColWidth changes', async () => {
+  it("relayouts when minColWidth changes", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
-    expect(items(wrapper)[0].style.width).toBe('256px');
+    expect(items(wrapper)[0].style.width).toBe("256px");
 
     // A 390px minimum leaves room for exactly 2 columns:
     // floor((800 + 16) / (390 + 16)) = 2, each (800 - 16) / 2 = 392px.
     await wrapper.setProps({ minColWidth: 390 });
     await settle(wrapper);
 
-    expect(items(wrapper)[0].style.width).toBe('392px');
+    expect(items(wrapper)[0].style.width).toBe("392px");
 
     // A 400px minimum no longer fits two: floor(816 / 416) = 1.
     await wrapper.setProps({ minColWidth: 400 });
     await settle(wrapper);
 
-    expect(items(wrapper)[0].style.width).toBe('800px');
+    expect(items(wrapper)[0].style.width).toBe("800px");
     wrapper.unmount();
   });
 
-  it('emits layout with the resolved geometry', async () => {
+  it("emits layout with the resolved geometry", async () => {
     const wrapper = mountGrid({ items: makeItems(6) });
     await settle(wrapper);
 
-    const events = wrapper.emitted('layout');
+    const events = wrapper.emitted("layout");
     expect(events).toBeTruthy();
     expect(events![events!.length - 1][0]).toMatchObject({
       columnCount: 3,
       columnWidth: 256,
       containerHeight: 416,
       itemCount: 6,
-      engine: 'js',
+      engine: "js",
     });
     wrapper.unmount();
   });
 
-  it('exposes a refresh method', async () => {
+  it("exposes a refresh method", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
     expect(typeof (wrapper.vm as unknown as { refresh: unknown }).refresh).toBe(
-      'function'
+      "function",
     );
     expect(() =>
-      (wrapper.vm as unknown as { refresh: () => void }).refresh()
+      (wrapper.vm as unknown as { refresh: () => void }).refresh(),
     ).not.toThrow();
     wrapper.unmount();
   });
 });
 
-describe('Vue MasonrySnapGrid columns', () => {
+describe("Vue MasonrySnapGrid columns", () => {
   const distinctX = (wrapper: VueWrapper<unknown>) => {
     const xs = Array.from(items(wrapper)).map((el) => {
       const m = /translate\((\d+(?:\.\d+)?)px/.exec(el.style.transform);
-      return m ? m[1] : '';
+      return m ? m[1] : "";
     });
     return [...new Set(xs)];
   };
 
-  it('honours a fixed column count', async () => {
+  it("honours a fixed column count", async () => {
     const wrapper = mountGrid({ items: makeItems(6), columns: 2 });
     await settle(wrapper);
 
     expect(distinctX(wrapper)).toHaveLength(2);
-    expect(items(wrapper)[0].style.width).toBe('392px');
+    expect(items(wrapper)[0].style.width).toBe("392px");
     wrapper.unmount();
   });
 
-  it('resolves a breakpoint map against the container width', async () => {
+  it("resolves a breakpoint map against the container width", async () => {
     const wrapper = mountGrid({
       items: makeItems(6),
       columns: { 0: 1, 640: 2, 1200: 4 },
@@ -287,7 +291,7 @@ describe('Vue MasonrySnapGrid columns', () => {
     wrapper.unmount();
   });
 
-  it('relayouts when columns change', async () => {
+  it("relayouts when columns change", async () => {
     const wrapper = mountGrid({ items: makeItems(6), columns: 2 });
     await settle(wrapper);
     expect(distinctX(wrapper)).toHaveLength(2);
@@ -300,8 +304,8 @@ describe('Vue MasonrySnapGrid columns', () => {
   });
 });
 
-describe('Vue MasonrySnapGrid item identity', () => {
-  it('keeps a DOM node attached to its item when the list is prepended to', async () => {
+describe("Vue MasonrySnapGrid item identity", () => {
+  it("keeps a DOM node attached to its item when the list is prepended to", async () => {
     // Without a stable key, index is the only identity, so prepending shifts
     // every item into its neighbour's node and inherits its cached height.
     const base = makeItems(3);
@@ -314,19 +318,21 @@ describe('Vue MasonrySnapGrid item identity', () => {
     const before = wrapper.element.querySelector('[data-testid="item-2"]');
 
     await wrapper.setProps({
-      items: [{ id: 99, title: 'Item 99' }, ...base],
+      items: [{ id: 99, title: "Item 99" }, ...base],
     });
     await settle(wrapper);
 
-    expect(wrapper.element.querySelector('[data-testid="item-2"]')).toBe(before);
+    expect(wrapper.element.querySelector('[data-testid="item-2"]')).toBe(
+      before,
+    );
     wrapper.unmount();
   });
 });
 
-describe('Vue MasonrySnapGrid virtualization', () => {
+describe("Vue MasonrySnapGrid virtualization", () => {
   afterEach(() => setScrollY(0));
 
-  it('renders every item when virtualize is off', async () => {
+  it("renders every item when virtualize is off", async () => {
     const wrapper = mountGrid({ items: makeItems(18) });
     await settle(wrapper);
 
@@ -334,7 +340,7 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     wrapper.unmount();
   });
 
-  it('clips items below the viewport once measured', async () => {
+  it("clips items below the viewport once measured", async () => {
     const wrapper = mountGrid({
       items: makeItems(18),
       virtualize: true,
@@ -344,16 +350,16 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     mockRectGeometry(wrapper.element as HTMLElement, 0);
 
     setScrollY(0);
-    window.dispatchEvent(new Event('scroll'));
+    window.dispatchEvent(new Event("scroll"));
     await settle(wrapper);
 
     // A 768px viewport reaches row 3 (y=648); row 4 starts at 864.
-    expect(testIds(wrapper)).toContain('item-0');
-    expect(testIds(wrapper)).not.toContain('item-17');
+    expect(testIds(wrapper)).toContain("item-0");
+    expect(testIds(wrapper)).not.toContain("item-17");
     wrapper.unmount();
   });
 
-  it('keeps the container height correct while items are clipped', async () => {
+  it("keeps the container height correct while items are clipped", async () => {
     const wrapper = mountGrid({
       items: makeItems(18),
       virtualize: true,
@@ -362,11 +368,11 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     await settle(wrapper);
 
     // 6 rows of 200px plus 5 gutters — the scrollbar must not shrink.
-    expect(wrapper.element.style.height).toBe('1280px');
+    expect(wrapper.element.style.height).toBe("1280px");
     wrapper.unmount();
   });
 
-  it('brings later rows in as the page scrolls', async () => {
+  it("brings later rows in as the page scrolls", async () => {
     // Vue previously never refreshed the container offset on scroll — only
     // React had that fix — so the visible window drifted out of alignment.
     const wrapper = mountGrid({
@@ -377,17 +383,17 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     await settle(wrapper);
     mockRectGeometry(wrapper.element as HTMLElement, 0);
 
-    expect(testIds(wrapper)).not.toContain('item-15');
+    expect(testIds(wrapper)).not.toContain("item-15");
 
     setScrollY(1080);
-    window.dispatchEvent(new Event('scroll'));
+    window.dispatchEvent(new Event("scroll"));
     await settle(wrapper);
 
-    expect(testIds(wrapper)).toContain('item-15');
+    expect(testIds(wrapper)).toContain("item-15");
     wrapper.unmount();
   });
 
-  it('drops rows that scroll above the window', async () => {
+  it("drops rows that scroll above the window", async () => {
     const wrapper = mountGrid({
       items: makeItems(18),
       virtualize: true,
@@ -396,20 +402,20 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     await settle(wrapper);
     mockRectGeometry(wrapper.element as HTMLElement, 0);
 
-    expect(testIds(wrapper)).toContain('item-0');
+    expect(testIds(wrapper)).toContain("item-0");
 
     setScrollY(300);
-    window.dispatchEvent(new Event('scroll'));
+    window.dispatchEvent(new Event("scroll"));
     await settle(wrapper);
 
-    expect(testIds(wrapper)).not.toContain('item-0');
-    expect(testIds(wrapper)).toContain('item-3');
+    expect(testIds(wrapper)).not.toContain("item-0");
+    expect(testIds(wrapper)).toContain("item-3");
     wrapper.unmount();
   });
 
-  it('virtualizes against an element scroll container', async () => {
-    const box = document.createElement('div');
-    Object.defineProperty(box, 'clientHeight', {
+  it("virtualizes against an element scroll container", async () => {
+    const box = document.createElement("div");
+    Object.defineProperty(box, "clientHeight", {
       value: 400,
       configurable: true,
     });
@@ -428,24 +434,24 @@ describe('Vue MasonrySnapGrid virtualization', () => {
     grid.getBoundingClientRect = () => ({ top: -box.scrollTop }) as DOMRect;
 
     box.scrollTop = 0;
-    box.dispatchEvent(new Event('scroll'));
+    box.dispatchEvent(new Event("scroll"));
     await settle(wrapper);
 
     // A 400px panel reaches row 1 (y=216); row 2 starts at 432.
-    expect(testIds(wrapper)).toContain('item-0');
-    expect(testIds(wrapper)).not.toContain('item-17');
+    expect(testIds(wrapper)).toContain("item-0");
+    expect(testIds(wrapper)).not.toContain("item-17");
 
     box.scrollTop = 1080;
-    box.dispatchEvent(new Event('scroll'));
+    box.dispatchEvent(new Event("scroll"));
     await settle(wrapper);
 
-    expect(testIds(wrapper)).toContain('item-15');
+    expect(testIds(wrapper)).toContain("item-15");
 
     wrapper.unmount();
     box.remove();
   });
 
-  it('clips a large list immediately when given an estimated height', async () => {
+  it("clips a large list immediately when given an estimated height", async () => {
     const wrapper = mountGrid({
       items: makeItems(300),
       virtualize: true,
@@ -456,12 +462,12 @@ describe('Vue MasonrySnapGrid virtualization', () => {
 
     expect(items(wrapper).length).toBeLessThan(300);
     // 100 rows x 200px + 99 gutters x 16px
-    expect(wrapper.element.style.height).toBe('21584px');
+    expect(wrapper.element.style.height).toBe("21584px");
     wrapper.unmount();
   });
 });
 
-describe('Vue MasonrySnapGrid self-healing measurement', () => {
+describe("Vue MasonrySnapGrid self-healing measurement", () => {
   let restore: () => void;
 
   beforeEach(() => {
@@ -470,37 +476,37 @@ describe('Vue MasonrySnapGrid self-healing measurement', () => {
 
   afterEach(() => restore());
 
-  it('observes each item so content settling can trigger a relayout', async () => {
+  it("observes each item so content settling can trigger a relayout", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
     const watchingItems = MockResizeObserver.instances.some((o) =>
       [...o.observed].some((el) =>
-        (el as HTMLElement).classList.contains('msgl-item')
-      )
+        (el as HTMLElement).classList.contains("msgl-item"),
+      ),
     );
     expect(watchingItems).toBe(true);
     wrapper.unmount();
   });
 
-  it('relayouts when an item resizes after first measurement', async () => {
+  it("relayouts when an item resizes after first measurement", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
-    const before = wrapper.emitted('layout')?.length ?? 0;
+    const before = wrapper.emitted("layout")?.length ?? 0;
     const item = items(wrapper)[0];
     const observer = MockResizeObserver.instances.find((o) =>
-      o.observed.has(item)
+      o.observed.has(item),
     )!;
 
     observer.emit([item]);
     await settle(wrapper);
 
-    expect(wrapper.emitted('layout')!.length).toBeGreaterThan(before);
+    expect(wrapper.emitted("layout")!.length).toBeGreaterThan(before);
     wrapper.unmount();
   });
 
-  it('does not observe items when observeItemResize is false', async () => {
+  it("does not observe items when observeItemResize is false", async () => {
     const wrapper = mountGrid({
       items: makeItems(3),
       observeItemResize: false,
@@ -509,37 +515,37 @@ describe('Vue MasonrySnapGrid self-healing measurement', () => {
 
     const watchingItems = MockResizeObserver.instances.some((o) =>
       [...o.observed].some((el) =>
-        (el as HTMLElement).classList.contains('msgl-item')
-      )
+        (el as HTMLElement).classList.contains("msgl-item"),
+      ),
     );
     expect(watchingItems).toBe(false);
     wrapper.unmount();
   });
 
-  it('tears down every observer on unmount', async () => {
+  it("tears down every observer on unmount", async () => {
     const wrapper = mountGrid({ items: makeItems(3) });
     await settle(wrapper);
 
     wrapper.unmount();
 
     expect(MockResizeObserver.instances.some((o) => o.observed.size > 0)).toBe(
-      false
+      false,
     );
   });
 
-  it('removes its scroll listeners on unmount', async () => {
-    const remove = vi.spyOn(window, 'removeEventListener');
+  it("removes its scroll listeners on unmount", async () => {
+    const remove = vi.spyOn(window, "removeEventListener");
     const wrapper = mountGrid({ items: makeItems(3), virtualize: true });
     await settle(wrapper);
 
     wrapper.unmount();
 
-    expect(remove).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(remove).toHaveBeenCalledWith("scroll", expect.any(Function));
     remove.mockRestore();
   });
 });
 
-describe('Vue MasonrySnapGrid CSS masonry mode', () => {
+describe("Vue MasonrySnapGrid CSS masonry mode", () => {
   let originalCSS: typeof globalThis.CSS;
 
   beforeEach(() => {
@@ -554,42 +560,42 @@ describe('Vue MasonrySnapGrid CSS masonry mode', () => {
   const supportMasonry = () => {
     globalThis.CSS = {
       supports: (property: string, value?: string) =>
-        property === 'grid-template-rows' && value === 'masonry',
+        property === "grid-template-rows" && value === "masonry",
     } as unknown as typeof globalThis.CSS;
   };
 
-  it('uses the CSS masonry class when the browser supports it', async () => {
+  it("uses the CSS masonry class when the browser supports it", async () => {
     supportMasonry();
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(4), layoutMode: 'auto' },
+      props: { items: makeItems(4), layoutMode: "auto" },
       slots: itemSlot,
       attachTo: document.body,
     });
     await settle(wrapper);
 
-    expect(wrapper.classes()).toContain('msgl-container--css');
-    expect(wrapper.classes()).not.toContain('msgl-container--js');
+    expect(wrapper.classes()).toContain("msgl-container--css");
+    expect(wrapper.classes()).not.toContain("msgl-container--js");
     wrapper.unmount();
   });
 
-  it('writes no transforms, since the browser positions items', async () => {
+  it("writes no transforms, since the browser positions items", async () => {
     supportMasonry();
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(4), layoutMode: 'auto' },
+      props: { items: makeItems(4), layoutMode: "auto" },
       slots: itemSlot,
       attachTo: document.body,
     });
     await settle(wrapper);
 
-    expect(items(wrapper)[0].style.transform).toBe('');
-    expect(items(wrapper)[0].style.position).toBe('');
+    expect(items(wrapper)[0].style.transform).toBe("");
+    expect(items(wrapper)[0].style.position).toBe("");
     wrapper.unmount();
   });
 
-  it('renders every item, because CSS masonry cannot virtualize', async () => {
+  it("renders every item, because CSS masonry cannot virtualize", async () => {
     supportMasonry();
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(30), layoutMode: 'auto', virtualize: true },
+      props: { items: makeItems(30), layoutMode: "auto", virtualize: true },
       slots: itemSlot,
       attachTo: document.body,
     });
@@ -599,12 +605,12 @@ describe('Vue MasonrySnapGrid CSS masonry mode', () => {
     wrapper.unmount();
   });
 
-  it('exposes gutter and column width as custom properties', async () => {
+  it("exposes gutter and column width as custom properties", async () => {
     supportMasonry();
     const wrapper = mount(MasonrySnapGrid, {
       props: {
         items: makeItems(2),
-        layoutMode: 'auto',
+        layoutMode: "auto",
         gutter: 24,
         minColWidth: 300,
       },
@@ -613,48 +619,48 @@ describe('Vue MasonrySnapGrid CSS masonry mode', () => {
     });
     await settle(wrapper);
 
-    const style = wrapper.element.getAttribute('style') ?? '';
-    expect(style).toContain('--msgl-gutter: 24px');
-    expect(style).toContain('--msgl-min-col-width: 300px');
+    const style = wrapper.element.getAttribute("style") ?? "";
+    expect(style).toContain("--msgl-gutter: 24px");
+    expect(style).toContain("--msgl-min-col-width: 300px");
     wrapper.unmount();
   });
 
-  it('writes an explicit track list when columns is set', async () => {
+  it("writes an explicit track list when columns is set", async () => {
     supportMasonry();
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(6), layoutMode: 'auto', columns: 2 },
+      props: { items: makeItems(6), layoutMode: "auto", columns: 2 },
       slots: itemSlot,
       attachTo: document.body,
     });
     await settle(wrapper);
 
     expect((wrapper.element as HTMLElement).style.gridTemplateColumns).toBe(
-      'repeat(2, minmax(0, 1fr))'
+      "repeat(2, minmax(0, 1fr))",
     );
     wrapper.unmount();
   });
 
-  it('falls back to the JS engine when support is absent', async () => {
+  it("falls back to the JS engine when support is absent", async () => {
     globalThis.CSS = {
       supports: () => false,
     } as unknown as typeof globalThis.CSS;
 
     const wrapper = mount(MasonrySnapGrid, {
-      props: { items: makeItems(4), layoutMode: 'auto' },
+      props: { items: makeItems(4), layoutMode: "auto" },
       slots: itemSlot,
       attachTo: document.body,
     });
     await settle(wrapper);
 
-    expect(wrapper.classes()).toContain('msgl-container--js');
-    expect(items(wrapper)[0].style.transform).toContain('translate(');
+    expect(wrapper.classes()).toContain("msgl-container--js");
+    expect(items(wrapper)[0].style.transform).toContain("translate(");
     wrapper.unmount();
   });
 });
 
 // ── Live prop changes + incremental virtualization (regression) ──────────────
 
-describe('MasonrySnapGrid live prop changes', () => {
+describe("MasonrySnapGrid live prop changes", () => {
   let restore: () => void;
   let originalCSS: typeof globalThis.CSS;
 
@@ -675,36 +681,36 @@ describe('MasonrySnapGrid live prop changes', () => {
    * and changing it afterwards silently did nothing — the same class of bug
    * that made every Angular input except `items` inert before 1.3.0.
    */
-  it('switches engines when layoutMode changes after mount', async () => {
+  it("switches engines when layoutMode changes after mount", async () => {
     globalThis.CSS = {
       supports: (property: string, value?: string) =>
-        property === 'grid-template-rows' && value === 'masonry',
+        property === "grid-template-rows" && value === "masonry",
     } as unknown as typeof globalThis.CSS;
 
-    const wrapper = mountGrid({ items: makeItems(4), layoutMode: 'js' });
+    const wrapper = mountGrid({ items: makeItems(4), layoutMode: "js" });
     await settle(wrapper);
 
     const root = wrapper.element as HTMLElement;
-    expect(root.className).toContain('msgl-container--js');
-    expect(root.style.height).not.toBe('');
+    expect(root.className).toContain("msgl-container--js");
+    expect(root.style.height).not.toBe("");
 
-    await wrapper.setProps({ layoutMode: 'auto' });
+    await wrapper.setProps({ layoutMode: "auto" });
     await settle(wrapper);
 
-    expect(root.className).toContain('msgl-container--css');
+    expect(root.className).toContain("msgl-container--css");
     // The JS engine's leftovers must not fight the browser's placement.
-    expect(root.style.height).toBe('');
+    expect(root.style.height).toBe("");
     const item = wrapper.find('[data-testid="item-0"]').element
       .parentElement as HTMLElement;
-    expect(item.style.position).toBe('');
-    expect(item.style.transform).toBe('');
+    expect(item.style.position).toBe("");
+    expect(item.style.transform).toBe("");
   });
 
   /**
    * Regression: the item observer was built once, in `onMounted`, so turning
    * `observeItemResize` on later left the self-healing path dead.
    */
-  it('starts observing items when observeItemResize is turned on later', async () => {
+  it("starts observing items when observeItemResize is turned on later", async () => {
     const wrapper = mountGrid({
       items: makeItems(4),
       observeItemResize: false,
@@ -714,8 +720,8 @@ describe('MasonrySnapGrid live prop changes', () => {
     const observing = () =>
       MockResizeObserver.active.some((o) =>
         [...o.observed].some((el) =>
-          (el as HTMLElement).classList.contains('msgl-item')
-        )
+          (el as HTMLElement).classList.contains("msgl-item"),
+        ),
       );
 
     expect(observing()).toBe(false);
@@ -726,7 +732,7 @@ describe('MasonrySnapGrid live prop changes', () => {
     expect(observing()).toBe(true);
   });
 
-  it('stops observing items when observeItemResize is turned off later', async () => {
+  it("stops observing items when observeItemResize is turned off later", async () => {
     const wrapper = mountGrid({ items: makeItems(4), observeItemResize: true });
     await settle(wrapper);
 
@@ -735,8 +741,8 @@ describe('MasonrySnapGrid live prop changes', () => {
 
     const stillObserving = MockResizeObserver.active.some((o) =>
       [...o.observed].some((el) =>
-        (el as HTMLElement).classList.contains('msgl-item')
-      )
+        (el as HTMLElement).classList.contains("msgl-item"),
+      ),
     );
     expect(stillObserving).toBe(false);
   });
@@ -745,7 +751,7 @@ describe('MasonrySnapGrid live prop changes', () => {
    * Regression: appending to a virtualized list used to turn virtualization off
    * for the whole list until everything had been measured again.
    */
-  it('keeps the list virtualized when a page is appended', async () => {
+  it("keeps the list virtualized when a page is appended", async () => {
     const wrapper = mountGrid({
       items: makeItems(120),
       virtualize: true,
@@ -755,7 +761,7 @@ describe('MasonrySnapGrid live prop changes', () => {
     mockRectGeometry(wrapper.element as HTMLElement, 0, 20000);
     await settle(wrapper);
 
-    const mounted = () => wrapper.findAll('.msgl-item').length;
+    const mounted = () => wrapper.findAll(".msgl-item").length;
     expect(mounted()).toBeLessThan(120);
 
     await wrapper.setProps({ items: makeItems(150) });

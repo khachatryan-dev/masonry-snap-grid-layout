@@ -1,7 +1,7 @@
-import type { ColumnsOption } from './columns';
-import type { ItemPosition } from './layout';
+import type { ColumnsOption } from "./columns";
+import type { ItemPosition } from "./layout";
 
-export type LayoutMode = 'auto' | 'js';
+export type LayoutMode = "auto" | "js";
 
 /**
  * Scroll geometry, expressed in the scroll target's own coordinate space so
@@ -39,7 +39,7 @@ export interface LayoutInfo {
   /** Number of items positioned. */
   itemCount: number;
   /** Which engine produced this layout. */
-  engine: 'css' | 'js';
+  engine: "css" | "js";
 }
 
 /**

@@ -9,14 +9,14 @@ import {
   ViewChild,
   ElementRef,
   SimpleChanges,
-} from '@angular/core';
-import MasonrySnapGridLayout from '../vanilla';
+} from "@angular/core";
+import MasonrySnapGridLayout from "../vanilla";
 import type {
   ColumnsOption,
   LayoutInfo,
   LayoutMode,
   MasonryOptions,
-} from '../core';
+} from "../core";
 
 /**
  * Angular standalone component for masonry-snap-grid-layout.
@@ -42,7 +42,7 @@ import type {
  * };
  */
 @Component({
-  selector: 'masonry-snap-grid',
+  selector: "masonry-snap-grid",
   standalone: true,
   template: `<div #containerRef></div>`,
   styles: [
@@ -61,7 +61,7 @@ export class MasonrySnapGridComponent<T = unknown>
   @Input({ required: true }) items: T[] = [];
 
   /** Engine strategy. Default: 'auto' */
-  @Input() layoutMode: LayoutMode = 'auto';
+  @Input() layoutMode: LayoutMode = "auto";
 
   /** Space between items in pixels. Default: 16 */
   @Input() gutter = 16;
@@ -105,46 +105,49 @@ export class MasonrySnapGridComponent<T = unknown>
    * Function that receives a data item and returns an HTMLElement.
    * Required.
    */
-  @Input({ required: true }) renderItem!: MasonryOptions<T>['renderItem'];
+  @Input({ required: true }) renderItem!: MasonryOptions<T>["renderItem"];
 
   /** Emits after every layout pass. */
   @Output() layout = new EventEmitter<LayoutInfo>();
 
-  @ViewChild('containerRef') private containerRef!: ElementRef<HTMLDivElement>;
+  @ViewChild("containerRef") private containerRef!: ElementRef<HTMLDivElement>;
 
   private masonry?: MasonrySnapGridLayout<T>;
 
   /** Inputs that map straight onto engine options. */
   private static readonly OPTION_INPUTS = [
-    'layoutMode',
-    'gutter',
-    'minColWidth',
-    'columns',
-    'animate',
-    'transitionDuration',
-    'observeItemResize',
-    'watchImages',
-    'estimatedItemHeight',
-    'getItemKey',
-    'renderItem',
+    "layoutMode",
+    "gutter",
+    "minColWidth",
+    "columns",
+    "animate",
+    "transitionDuration",
+    "observeItemResize",
+    "watchImages",
+    "estimatedItemHeight",
+    "getItemKey",
+    "renderItem",
   ] as const;
 
   ngAfterViewInit(): void {
-    this.masonry = new MasonrySnapGridLayout<T>(this.containerRef.nativeElement, {
-      items: this.items,
-      gutter: this.gutter,
-      minColWidth: this.minColWidth,
-      columns: this.columns,
-      animate: this.animate,
-      transitionDuration: this.transitionDuration,
-      layoutMode: this.layoutMode,
-      observeItemResize: this.observeItemResize,
-      watchImages: this.watchImages,
-      estimatedItemHeight: this.estimatedItemHeight,
-      getItemKey: this.getItemKey,
-      renderItem: this.renderItem,
-      onLayout: (info) => this.layout.emit(info),
-    });
+    this.masonry = new MasonrySnapGridLayout<T>(
+      this.containerRef.nativeElement,
+      {
+        items: this.items,
+        gutter: this.gutter,
+        minColWidth: this.minColWidth,
+        columns: this.columns,
+        animate: this.animate,
+        transitionDuration: this.transitionDuration,
+        layoutMode: this.layoutMode,
+        observeItemResize: this.observeItemResize,
+        watchImages: this.watchImages,
+        estimatedItemHeight: this.estimatedItemHeight,
+        getItemKey: this.getItemKey,
+        renderItem: this.renderItem,
+        onLayout: (info) => this.layout.emit(info),
+      },
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -154,7 +157,7 @@ export class MasonrySnapGridComponent<T = unknown>
     // [minColWidth] to a signal or form control silently did nothing after
     // first render. Forward every option input.
     const optionChanges = MasonrySnapGridComponent.OPTION_INPUTS.filter(
-      (name) => changes[name]
+      (name) => changes[name],
     );
 
     if (optionChanges.length > 0) {
@@ -173,7 +176,7 @@ export class MasonrySnapGridComponent<T = unknown>
       });
     }
 
-    if (changes['items']) {
+    if (changes["items"]) {
       this.masonry.updateItems(this.items);
     }
   }
