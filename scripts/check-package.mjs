@@ -1,29 +1,43 @@
 /**
+
  * Published-package integrity check.
  *
  * Packs the tarball, extracts it, and verifies that everything the `exports`
- * map advertises actually resolves from *inside the published package* — not
+ * map advertises actually resolves from inside the published package — not
  * merely from the working tree.
  *
- * This exists because the `./angular` entry shipped broken for several
- * releases: it publishes TypeScript source that imports `../core/*`, but
- * `files` did not include `src/core`, so the import was unresolvable for every
- * consumer. Nothing in the working tree could reveal that, because the source
- * is right there locally — only the tarball tells the truth.
+ * This exists because the `./angular` entry previously shipped broken:
+ * it publishes TypeScript source that imports `../core/*`, but a package
+ * configuration that excludes the required source files can leave those
+ * imports unresolved for consumers. Nothing in the working tree can reveal
+ * that, because the source is available locally — only the tarball tells
+ * the truth.
  */
+
 import { execFileSync } from "child_process";
-import { mkdtempSync, readFileSync, rmSync, existsSync, readdirSync } from "fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  existsSync,
+  readdirSync,
+} from "fs";
 import { tmpdir } from "os";
-import { dirname, join, resolve, extname } from "path";
+import { dirname, join, resolve, extname, relative } from "path";
 import { fileURLToPath } from "url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+const pkg = JSON.parse(
+    readFileSync(join(root, "package.json"), "utf8"),
+);
+
+const normalizePath = (value) => value.split("\").join("/");
 
 const work = mkdtempSync(join(tmpdir(), "msgl-pack-"));
 let failures = 0;
-const fail = (msg) => {
-  console.error(`  ✗ ${msg}`);
+
+const fail = (message) => {
+  console.error(`  ✗ ${message}`);
   failures++;
 };
 
@@ -32,85 +46,178 @@ try {
     cwd: work,
     encoding: "utf8",
   });
-  const tarball = output.trim().split("\n").pop().trim();
 
-  execFileSync("tar", ["-xzf", tarball], { cwd: work });
-  const pub = join(work, "package");
+  const tarball = output.trim().split(/\r?\n/).pop().trim();
 
-  console.log("\nPublished package integrity\n");
+  if (!tarball) {
+    fail("npm pack did not produce a tarball");
+    process.exitCode = 1;
+  } else {
+    execFileSync("tar", ["-xzf", tarball], {
+      cwd: work,
+    });
 
-  // ── 1. Every exports target must exist in the tarball ──────────────────────
-  const targets = new Set();
-  const walkExports = (node) => {
-    if (typeof node === "string") return targets.add(node);
-    if (node && typeof node === "object")
-      Object.values(node).forEach(walkExports);
-  };
-  walkExports(pkg.exports ?? {});
-  for (const field of ["main", "module", "types"]) {
-    if (pkg[field]) targets.add(pkg[field]);
+    ```
+const pub = join(work, "package");
+
+console.log("\nPublished package integrity\n");
+
+// ── 1. Every exports target must exist in the tarball ──────────────────
+
+const targets = new Set();
+
+const walkExports = (node) => {
+  if (typeof node === "string") {
+    targets.add(node);
+    return;
   }
 
-  for (const target of [...targets].sort()) {
-    const abs = join(pub, target);
-    if (existsSync(abs)) console.log(`  ✓ ${target}`);
-    else
-      fail(`declared in package.json but missing from the tarball: ${target}`);
+  if (node && typeof node === "object") {
+    Object.values(node).forEach(walkExports);
+  }
+};
+
+walkExports(pkg.exports ?? {});
+
+for (const field of ["main", "module", "types"]) {
+  if (pkg[field]) {
+    targets.add(pkg[field]);
+  }
+}
+
+for (const target of [...targets].sort()) {
+  if (typeof target !== "string") {
+    continue;
   }
 
-  // ── 2. Relative imports in published source must resolve ───────────────────
-  // Source-shipping entries (the Angular component) compile in the consumer's
-  // build, so a dangling relative import breaks them at install time.
-  const sourceFiles = [];
-  const walkDir = (dir) => {
-    if (!existsSync(dir)) return;
-    for (const name of readdirSync(dir, { withFileTypes: true })) {
-      const full = join(dir, name.name);
-      if (name.isDirectory()) walkDir(full);
-      else if ([".ts", ".tsx", ".js", ".mjs"].includes(extname(name.name))) {
-        sourceFiles.push(full);
-      }
+  const normalizedTarget = target.replace(/^\.?\//, "");
+  const abs = join(pub, normalizedTarget);
+
+  if (existsSync(abs)) {
+    console.log(`  ✓ ${target}`);
+  } else {
+    fail(
+      `declared in package.json but missing from the tarball: ${target}`,
+    );
+  }
+}
+
+// ── 2. Relative imports in published source must resolve ──────────────
+//
+// Source-shipping entries such as the Angular component compile in the
+// consumer's build, so every relative import inside published source must
+// point to another file that is actually present in the tarball.
+
+const sourceFiles = [];
+
+const walkDir = (dir) => {
+  if (!existsSync(dir)) {
+    return;
+  }
+
+  for (const entry of readdirSync(dir, {
+    withFileTypes: true,
+  })) {
+    const full = join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      walkDir(full);
+    } else if (
+      [".ts", ".tsx", ".js", ".mjs", ".vue"].includes(
+        extname(entry.name),
+      )
+    ) {
+      sourceFiles.push(full);
     }
-  };
-  walkDir(join(pub, "src"));
+  }
+};
 
-  const candidates = (base) => [
-    base,
-    `${base}.ts`,
-    `${base}.tsx`,
-    `${base}.js`,
-    `${base}.mjs`,
-    join(base, "index.ts"),
-    join(base, "index.tsx"),
-    join(base, "index.js"),
-  ];
+walkDir(join(pub, "src"));
 
-  let checked = 0;
-  for (const file of sourceFiles) {
-    const code = readFileSync(file, "utf8");
-    const specs = [
-      ...code.matchAll(/(?:from|import)\s*["'](\.[^"']+)["']/g),
-    ].map((m) => m[1]);
+const candidates = (base) => [
+  base,
+  `${base}.ts`,
+  `${base}.tsx`,
+  `${base}.js`,
+  `${base}.mjs`,
+  `${base}.vue`,
+  join(base, "index.ts"),
+  join(base, "index.tsx"),
+  join(base, "index.js"),
+  join(base, "index.mjs"),
+];
 
-    for (const spec of specs) {
-      checked++;
-      const base = resolve(dirname(file), spec);
-      if (!candidates(base).some(existsSync)) {
-        fail(
-          `${file.replace(pub + "/", "")} imports "${spec}", which is not published`,
-        );
-      }
+let checked = 0;
+
+for (const file of sourceFiles) {
+  const code = readFileSync(file, "utf8");
+
+  const specs = [
+    ...code.matchAll(/(?:from|import)\s*["'](\.[^"']+)["']/g),
+  ].map((match) => match[1]);
+
+  for (const spec of specs) {
+    checked++;
+
+    const base = resolve(dirname(file), spec);
+
+    if (!candidates(base).some(existsSync)) {
+      const relativeFile = normalizePath(relative(pub, file));
+
+      fail(
+        `${relativeFile} imports "${spec}", which is not published`,
+      );
     }
   }
-  console.log(
-    `  ✓ ${checked} relative import(s) across ${sourceFiles.length} published source file(s) resolve`,
+}
+
+console.log(
+  `  ✓ ${checked} relative import(s) across ${sourceFiles.length} published source file(s) resolve`,
+);
+
+// ── 3. Verify package metadata ────────────────────────────────────────
+
+const publishedPackageJson = join(pub, "package.json");
+
+if (!existsSync(publishedPackageJson)) {
+  fail("package.json is missing from the published tarball");
+} else {
+  const publishedPkg = JSON.parse(
+    readFileSync(publishedPackageJson, "utf8"),
   );
+
+  if (publishedPkg.name !== pkg.name) {
+    fail(
+      `published package name mismatch: expected "${pkg.name}", got "${publishedPkg.name}"`,
+    );
+  }
+
+  if (publishedPkg.version !== pkg.version) {
+    fail(
+      `published package version mismatch: expected "${pkg.version}", got "${publishedPkg.version}"`,
+    );
+  } else {
+    console.log(
+      `  ✓ package metadata ${publishedPkg.name}@${publishedPkg.version}`,
+    );
+  }
+}
+```
+
+  }
 } finally {
-  rmSync(work, { recursive: true, force: true });
+  rmSync(work, {
+    recursive: true,
+    force: true,
+  });
 }
 
 if (failures > 0) {
-  console.error(`\n✗ published package is broken (${failures} problem(s))\n`);
+  console.error(
+      `\n✗ published package is broken (${failures} problem(s))\n`,
+  );
+
   process.exit(1);
 }
+
 console.log("\n✓ published package is self-consistent\n");

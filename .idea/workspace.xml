@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
+    <list default="true" id="54efe8c4-4b61-4383-919f-7e6613792c24" name="Changes" comment="style: standardize quote usage in imports and other statements">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/check-architecture.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-architecture.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/check-package.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-package.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/check-size.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/check-size.mjs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -65,48 +70,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;js.last.introduce.type&quot;: &quot;CONST&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/khach/OneDrive/Desktop/api/api/football-manager&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.check:arch.executor&quot;: &quot;Run&quot;,
-    &quot;npm.check:package.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev (3).executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.lint:fix.executor&quot;: &quot;Run&quot;,
-    &quot;npm.ng.executor&quot;: &quot;Run&quot;,
-    &quot;npm.serve:ssr:masonry-test.executor&quot;: &quot;Run&quot;,
-    &quot;npm.start.executor&quot;: &quot;Run&quot;,
-    &quot;npm.test (1).executor&quot;: &quot;Run&quot;,
-    &quot;npm.test.executor&quot;: &quot;Run&quot;,
-    &quot;npm.typecheck.executor&quot;: &quot;Run&quot;,
-    &quot;npm.typecheck:angular.executor&quot;: &quot;Run&quot;,
-    &quot;npm.typecheck:core.executor&quot;: &quot;Run&quot;,
-    &quot;npm.typecheck:examples.executor&quot;: &quot;Run&quot;,
-    &quot;npm.typecheck:vue.executor&quot;: &quot;Run&quot;,
-    &quot;npm.watch.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "js.last.introduce.type": "CONST",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/khach/OneDrive/Desktop/api/api/football-manager",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.check:arch.executor": "Run",
+    "npm.check:package.executor": "Run",
+    "npm.dev (1).executor": "Run",
+    "npm.dev (3).executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.lint:fix.executor": "Run",
+    "npm.ng.executor": "Run",
+    "npm.prepublishOnly.executor": "Run",
+    "npm.serve:ssr:masonry-test.executor": "Run",
+    "npm.start.executor": "Run",
+    "npm.test (1).executor": "Run",
+    "npm.test.executor": "Run",
+    "npm.typecheck.executor": "Run",
+    "npm.typecheck:angular.executor": "Run",
+    "npm.typecheck:core.executor": "Run",
+    "npm.typecheck:examples.executor": "Run",
+    "npm.typecheck:vue.executor": "Run",
+    "npm.watch.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "C:\\Users\\khach\\OneDrive\\Desktop\\masonry-snap-grid-layout\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\khach\OneDrive\Desktop\masonry-snap-grid-layout" />
@@ -220,15 +226,7 @@
       <workItem from="1772980554077" duration="4608000" />
       <workItem from="1787732539642" duration="1134000" />
       <workItem from="1790187971253" duration="8683000" />
-      <workItem from="1790427714243" duration="697000" />
-    </task>
-    <task id="LOCAL-00015" summary="check ci/cd">
-      <option name="closed" value="true" />
-      <created>1754823777731</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1754823777731</updated>
+      <workItem from="1790427714243" duration="1237000" />
     </task>
     <task id="LOCAL-00016" summary="check ci/cd">
       <option name="closed" value="true" />
@@ -614,7 +612,15 @@
       <option name="project" value="LOCAL" />
       <updated>1790428177412</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="style: standardize quote usage in imports and other statements">
+      <option name="closed" value="true" />
+      <created>1790428713976</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1790428713976</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -632,7 +638,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update readme file" />
     <MESSAGE value="check ci/cd" />
     <MESSAGE value="docs: add professional comments and JSDoc across core layout, React wrapper, types, and CSS" />
     <MESSAGE value="add video demo" />
@@ -657,7 +662,8 @@
     <MESSAGE value="fix: normalize path separators in layerOf function" />
     <MESSAGE value="fix: improve path handling and enhance package validation in build scripts" />
     <MESSAGE value="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: update version to 1.3.1, improve height caching, and clamp column width to prevent negative values" />
+    <MESSAGE value="style: standardize quote usage in imports and other statements" />
+    <option name="LAST_COMMIT_MESSAGE" value="style: standardize quote usage in imports and other statements" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
