@@ -12,6 +12,7 @@ import {
   canVirtualize,
   computeLayout,
   computeVisibleIndices,
+  createHeightCache,
   createItemObserver,
   createScheduler,
   createScrollTracker,
@@ -20,6 +21,7 @@ import {
   resolveScrollTarget,
   supportsCss,
   type ColumnsOption,
+  type HeightCache,
   type ItemObserver,
   type ItemPosition,
   type LayoutInfo,
@@ -109,12 +111,12 @@ const isMounted = ref(false);
 const useCss = ref(false);
 const cssWidth = ref(0);
 
-/** Cached measured offsetHeight for each item by index. */
-const cachedHeights: number[] = [];
-/** Whether all items have been measured at least once. */
-let isMeasuredFlag = false;
+/**
+ * Measured item heights, cached by item key rather than by index so a height
+ * follows its item through prepends, reorders, and filters.
+ */
+const heightCache: HeightCache = createHeightCache();
 
-const isMeasured = ref(false); // reactive mirror for template/computed
 const scroll = ref<ScrollState>(EMPTY_SCROLL_STATE);
 
 const hasEstimate = computed(
@@ -164,7 +166,8 @@ function itemKey(item: T, i: number): string | number {
 }
 
 function getItemClass(i: number): string {
-  const positioned = isMounted.value && positions.value[i] !== undefined;
+  const positioned =
+    isMounted.value && !useCss.value && positions.value[i] !== undefined;
   return positioned && props.animate
     ? 'msgl-item msgl-item--animated'
     : 'msgl-item';
@@ -172,7 +175,9 @@ function getItemClass(i: number): string {
 
 function getItemStyle(i: number): Record<string, string> {
   const pos = positions.value[i];
-  if (!isMounted.value || !pos) return {};
+  // In CSS mode the browser places the items; leftover JS transforms from a
+  // previous `layoutMode` would fight it.
+  if (!isMounted.value || useCss.value || !pos) return {};
   return {
     position: 'absolute',
     width: `${pos.width}px`,
@@ -189,16 +194,19 @@ function getItemStyle(i: number): Record<string, string> {
 const visibleIndices = computed<Set<number> | null>(() => {
   const active = canVirtualize({
     virtualize: props.virtualize,
-    isMeasured: isMeasured.value,
-    hasEstimate: hasEstimate.value,
     itemCount: props.items.length,
   });
 
-  if (!active || positions.value.length !== props.items.length) return null;
+  if (!active || useCss.value) return null;
 
+  // `positions` lags `items` for one tick after an items change, and some
+  // items may be unmeasured. Both are handled per-item by the core, which
+  // forces just those items to render rather than abandoning virtualization
+  // for the whole list.
   return computeVisibleIndices({
+    count: props.items.length,
     positions: positions.value,
-    heights: cachedHeights,
+    heights: heightCache.read(props.items.map(itemKey)),
     scroll: scroll.value,
     overscan: props.overscan,
     fallbackHeight: hasEstimate.value ? props.estimatedItemHeight : 0,
@@ -218,21 +226,36 @@ function runLayout(): void {
   const w = container.offsetWidth;
   if (w <= 0) return;
 
-  const { gutter, minColWidth, items, virtualize, columns } = props;
+  const { gutter, minColWidth, items, columns } = props;
+
+  const keys = items.map(itemKey);
+
+  // Heights for items that no longer exist would otherwise accumulate for the
+  // lifetime of the grid.
+  heightCache.retain(keys);
+
+  const knownBefore = heightCache.size;
 
   // Measure currently-rendered items; off-screen items reuse cached heights.
   itemEls.value.slice(0, items.length).forEach((el, i) => {
-    if (el) {
-      const h = el.offsetHeight;
-      if (h > 0) cachedHeights[i] = h;
-    }
+    if (el) heightCache.set(keys[i], el.offsetHeight);
   });
+
+  const heights = heightCache.read(keys);
+
+  // Items still waiting on a height will have been forced into the DOM by the
+  // render this pass triggers; come back once they are mounted. Gating on
+  // having learned something is what makes it terminate — an item that
+  // genuinely measures zero never counts as progress.
+  if (heightCache.size > knownBefore && heights.some((h) => h === undefined)) {
+    remeasureScheduler.schedule();
+  }
 
   // Positions are computed for ALL items, using cached or estimated heights, so
   // the container height and scrollbar stay correct while items are virtualized.
   const result = computeLayout({
     count: items.length,
-    heights: cachedHeights,
+    heights,
     containerWidth: w,
     gutter,
     minColWidth,
@@ -242,15 +265,6 @@ function runLayout(): void {
 
   positions.value = result.positions;
   containerHeight.value = result.containerHeight;
-
-  // Enable virtualization once all items have a cached height.
-  if (virtualize && !isMeasuredFlag) {
-    const allCached = items.every((_, i) => (cachedHeights[i] ?? 0) > 0);
-    if (allCached) {
-      isMeasuredFlag = true;
-      isMeasured.value = true;
-    }
-  }
 
   emit('layout', {
     columnCount: result.columnCount,
@@ -280,13 +294,20 @@ function collectItemRef(
 let resizeObserver: ResizeObserver | null = null;
 let disposeScroll: (() => void) | null = null;
 
+/** `watchImages` the live item observer was built with; it is fixed at construction. */
+let observerWatchesImages = true;
+
 /** Coalesced relayout after a container width change invalidates heights. */
 const widthChangeScheduler = createScheduler(() => {
-  cachedHeights.length = 0;
-  isMeasuredFlag = false;
-  isMeasured.value = false;
+  heightCache.clear();
   runLayout();
 });
+
+/**
+ * Follow-up pass for when a measurement round learned something but left items
+ * unmeasured — they only exist in the DOM after the render it triggers.
+ */
+const remeasureScheduler = createScheduler(() => runLayout());
 
 function startScrollTracking(): void {
   disposeScroll?.();
@@ -300,63 +321,133 @@ function startScrollTracking(): void {
   );
 }
 
-onMounted(async () => {
-  // 'auto' (default): use CSS masonry if browser supports it, else JS
-  // 'js': always use JS masonry
-  if (props.layoutMode !== 'js') {
-    useCss.value = supportsCss('grid-template-rows', 'masonry');
-  }
+/**
+ * Bring the item observer in line with the current props.
+ *
+ * Creating it only on mount meant `observeItemResize` and `watchImages` were
+ * read exactly once: flipping either afterwards silently did nothing, and the
+ * self-healing path stayed dead for the component's lifetime.
+ */
+function syncItemObserver(): void {
+  const wanted = !useCss.value && props.observeItemResize;
 
-  isMounted.value = true;
-  await nextTick();
-
-  if (useCss.value) {
-    // Only needed to resolve a breakpoint map against the container width.
-    if (
-      props.columns !== undefined &&
-      typeof ResizeObserver !== 'undefined' &&
-      containerRef.value
-    ) {
-      resizeObserver = new ResizeObserver((entries) => {
-        cssWidth.value = entries[0].contentRect.width;
-      });
-      resizeObserver.observe(containerRef.value);
-    }
+  if (!wanted) {
+    itemObserver?.disconnect();
+    itemObserver = null;
     return;
   }
 
-  if (props.observeItemResize) {
-    itemObserver = createItemObserver({
-      onChange: () => runLayout(),
-      watchImages: props.watchImages,
-    });
-    // Adopt items that mounted before the observer existed.
-    itemEls.value.forEach((el) => el && itemObserver?.observe(el));
+  // `watchImages` cannot be changed on a live observer, so a change rebuilds it.
+  if (itemObserver && observerWatchesImages === props.watchImages) return;
+
+  itemObserver?.disconnect();
+  observerWatchesImages = props.watchImages;
+  itemObserver = createItemObserver({
+    onChange: () => runLayout(),
+    watchImages: props.watchImages,
+  });
+
+  // Adopt items that mounted before the observer existed.
+  itemEls.value.forEach((el) => el && itemObserver?.observe(el));
+}
+
+/** Watch the container purely to re-resolve a breakpoint map. */
+function startCssWidthObserver(): void {
+  if (
+    props.columns === undefined ||
+    typeof ResizeObserver === 'undefined' ||
+    !containerRef.value
+  ) {
+    return;
+  }
+  resizeObserver = new ResizeObserver((entries) => {
+    cssWidth.value = entries[0].contentRect.width;
+  });
+  resizeObserver.observe(containerRef.value);
+}
+
+function startContainerWidthObserver(): void {
+  if (typeof ResizeObserver === 'undefined' || !containerRef.value) return;
+
+  let prevWidth = -1;
+  resizeObserver = new ResizeObserver((entries) => {
+    const width = entries[0].contentRect.width;
+    // Only width matters — reacting to height would feed back into the
+    // container height this component sets itself.
+    if (prevWidth === width) return;
+    prevWidth = width;
+    widthChangeScheduler.schedule();
+  });
+  resizeObserver.observe(containerRef.value);
+}
+
+/** Start everything the active engine needs. */
+function enterMode(): void {
+  if (useCss.value) {
+    startCssWidthObserver();
+    return;
   }
 
+  syncItemObserver();
   runLayout();
-
-  if (typeof ResizeObserver !== 'undefined' && containerRef.value) {
-    let prevWidth = -1;
-    resizeObserver = new ResizeObserver((entries) => {
-      const width = entries[0].contentRect.width;
-      // Only width matters — reacting to height would feed back into the
-      // container height this component sets itself.
-      if (prevWidth === width) return;
-      prevWidth = width;
-      widthChangeScheduler.schedule();
-    });
-    resizeObserver.observe(containerRef.value);
-  }
-
+  startContainerWidthObserver();
   if (props.virtualize) startScrollTracking();
+}
+
+/** Stop everything the active engine started. Safe to call repeatedly. */
+function leaveMode(): void {
+  widthChangeScheduler.cancel();
+  remeasureScheduler.cancel();
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+  itemObserver?.disconnect();
+  itemObserver = null;
+  disposeScroll?.();
+  disposeScroll = null;
+}
+
+function resolveUseCss(): boolean {
+  // 'auto' (default): use CSS masonry if the browser supports it, else JS.
+  // 'js': always use JS masonry.
+  if (props.layoutMode === 'js') return false;
+  return supportsCss('grid-template-rows', 'masonry');
+}
+
+onMounted(async () => {
+  useCss.value = resolveUseCss();
+  isMounted.value = true;
+  await nextTick();
+  enterMode();
 });
 
-onBeforeUnmount(() => {
-  widthChangeScheduler.cancel();
-  resizeObserver?.disconnect();
-  itemObserver?.disconnect();
-  disposeScroll?.();
+onBeforeUnmount(leaveMode);
+
+// Switching engines at runtime: tear the old one down, discard any layout it
+// wrote, and start the new one. Previously `layoutMode` was read once on mount,
+// so binding it to a ref did nothing after first render.
+watch(
+  () => props.layoutMode,
+  async () => {
+    if (!isMounted.value) return;
+
+    const next = resolveUseCss();
+    if (next === useCss.value) return;
+
+    leaveMode();
+    useCss.value = next;
+    positions.value = [];
+    containerHeight.value = 0;
+    heightCache.clear();
+
+    await nextTick();
+    enterMode();
+  }
+);
+
+// Item observation is likewise a live setting, not a mount-time one.
+watch([() => props.observeItemResize, () => props.watchImages], () => {
+  if (!isMounted.value) return;
+  syncItemObserver();
 });
 
 // Re-subscribe when the scroll target or virtualize flag changes.
@@ -374,12 +465,8 @@ watch(
   () => props.items,
   async () => {
     if (!isMounted.value || useCss.value) return;
-    if (props.virtualize) {
-      // Reset measurement so all items are re-rendered for re-measurement
-      isMeasuredFlag = false;
-      isMeasured.value = false;
-      cachedHeights.splice(props.items.length);
-    }
+    // New items render unconditionally until they have been measured — see
+    // computeVisibleIndices — so one layout pass after they mount is enough.
     await nextTick();
     runLayout();
   }

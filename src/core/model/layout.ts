@@ -57,7 +57,14 @@ export function computeLayout(params: ComputeLayoutParams): LayoutResult {
     gutter,
   });
 
-  const columnWidth = (containerWidth - gutter * (columnCount - 1)) / columnCount;
+  // An explicit `columns` count — or a breakpoint map resolved on a narrow
+  // container — can ask for more columns than the gutters leave room for.
+  // Clamping keeps the width at zero instead of letting it go negative, which
+  // would place items to the left of the container and render them inverted.
+  const columnWidth = Math.max(
+    0,
+    (containerWidth - gutter * (columnCount - 1)) / columnCount
+  );
 
   const colHeights = new Array<number>(columnCount).fill(0);
   const positions: ItemPosition[] = [];

@@ -1022,3 +1022,142 @@ describe('MasonrySnapGrid CSS masonry mode', () => {
     expect((container.firstElementChild as HTMLElement).style.height).toBe('');
   });
 });
+
+// ── Incremental virtualization (regression) ──────────────────────────────────
+
+describe('MasonrySnapGrid incremental virtualization', () => {
+  let restore: () => void;
+
+  beforeEach(() => {
+    restore = installMockResizeObserver();
+    setScrollY(0);
+  });
+
+  afterEach(() => {
+    restore();
+    setScrollY(0);
+  });
+
+  /**
+   * Regression: appending to a virtualized list used to switch virtualization
+   * off for the whole list until every item had been measured again, so adding
+   * one page of results to a long list re-rendered every item in it. That is
+   * precisely the infinite-scroll case virtualization exists for.
+   */
+  it('renders only the new items when a page is appended', async () => {
+    const PAGE = 200;
+    let renderCalls = 0;
+    const countingRenderItem = (item: Item) => {
+      renderCalls++;
+      return renderFixedItem(item);
+    };
+
+    const Grid = ({ items }: { items: Item[] }) => (
+      <MasonrySnapGrid
+        items={items}
+        renderItem={countingRenderItem}
+        getItemKey={(item) => item.id}
+        layoutMode="js"
+        virtualize
+        overscan={0}
+      />
+    );
+
+    const { container, rerender } = render(<Grid items={makeItems(PAGE)} />);
+    mockRectGeometry(container.firstElementChild as HTMLElement, 0, 20000);
+    await act(async () => {});
+    await flushFrames();
+
+    const mountedBefore = container.querySelectorAll('.msgl-item').length;
+    expect(mountedBefore).toBeLessThan(PAGE);
+
+    renderCalls = 0;
+    rerender(<Grid items={makeItems(PAGE + 50)} />);
+    await act(async () => {});
+    await flushFrames();
+
+    // The 50 new items have to render to be measured. Everything already
+    // measured and off-screen must stay out. Before the fix this was 262.
+    expect(renderCalls).toBeLessThan(150);
+
+    // …and the list is still virtualized once the new items settle.
+    const mountedAfter = container.querySelectorAll('.msgl-item').length;
+    expect(mountedAfter).toBeLessThan(PAGE);
+  });
+
+  /**
+   * Heights are cached by item key, so they follow their item when the list is
+   * prepended to. An index-based cache would shift every height onto its
+   * neighbour, and the items that would reveal it are the ones virtualization
+   * has removed from the DOM.
+   */
+  it('keeps the container height correct when items are prepended', async () => {
+    // The harness sizes an element from its own inline height, but the element
+    // being measured is the wrapper the component renders *around* the item.
+    // Fall through to the child so items can have distinct heights, which is
+    // what makes a height landing on the wrong item detectable at all.
+    const original = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      'offsetHeight'
+    );
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+      configurable: true,
+      get(this: HTMLElement) {
+        const own = parseInt(this.style.height, 10);
+        if (own) return own;
+        const child = this.firstElementChild as HTMLElement | null;
+        return (child && parseInt(child.style.height, 10)) || 200;
+      },
+    });
+
+    try {
+      await prependScenario();
+    } finally {
+      if (original) {
+        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', original);
+      }
+    }
+  });
+
+  async function prependScenario(): Promise<void> {
+    // One column, so the container height is simply the sum of item heights.
+    const tall = (item: Item) => (
+      <div style={{ height: item.height }} data-testid={`item-${item.id}`}>
+        {item.title}
+      </div>
+    );
+
+    const Grid = ({ items }: { items: Item[] }) => (
+      <MasonrySnapGrid
+        items={items}
+        renderItem={tall}
+        getItemKey={(item) => item.id}
+        layoutMode="js"
+        minColWidth={800}
+        gutter={0}
+        virtualize
+        overscan={0}
+      />
+    );
+
+    // heights are 100, 120, 140, … (makeItems: 100 + i * 20)
+    const first = makeItems(10);
+    const { container, rerender } = render(<Grid items={first} />);
+    mockRectGeometry(container.firstElementChild as HTMLElement, 0, 20000);
+    await act(async () => {});
+    await flushFrames();
+
+    const root = container.firstElementChild as HTMLElement;
+    const sum = (items: Item[]) => items.reduce((t, i) => t + i.height, 0);
+    expect(parseInt(root.style.height, 10)).toBe(sum(first));
+
+    // Prepend an item that did not exist before. Every other height must stay
+    // attached to the item it was measured from.
+    const prepended: Item[] = [{ id: 999, title: 'New', height: 250 }, ...first];
+    rerender(<Grid items={prepended} />);
+    await act(async () => {});
+    await flushFrames();
+
+    expect(parseInt(root.style.height, 10)).toBe(sum(prepended));
+  }
+});

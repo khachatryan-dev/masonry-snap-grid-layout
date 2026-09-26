@@ -195,3 +195,36 @@ describe('resolveColumnCount', () => {
     ).toBe(2);
   });
 });
+
+describe('computeLayout column width clamping', () => {
+  it('never produces a negative column width', () => {
+    // An explicit count can ask for more columns than the gutters leave room
+    // for. Unclamped, this produced a negative width and negative x offsets,
+    // rendering the row inverted and outside the container.
+    const result = computeLayout({
+      count: 3,
+      heights: [100, 100, 100],
+      containerWidth: 200,
+      gutter: 16,
+      minColWidth: 250,
+      columns: 20,
+    });
+
+    expect(result.columnWidth).toBe(0);
+    expect(result.positions.every((p) => p.width >= 0)).toBe(true);
+    expect(result.positions.every((p) => p.x >= 0)).toBe(true);
+  });
+
+  it('clamps a breakpoint map resolved against a narrow container', () => {
+    const result = computeLayout({
+      count: 2,
+      heights: [100, 100],
+      containerWidth: 120,
+      gutter: 40,
+      minColWidth: 250,
+      columns: { 0: 6 },
+    });
+
+    expect(result.columnWidth).toBe(0);
+  });
+});

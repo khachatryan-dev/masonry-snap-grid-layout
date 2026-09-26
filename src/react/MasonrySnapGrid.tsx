@@ -3,6 +3,7 @@ import {
   canVirtualize,
   computeLayout,
   computeVisibleIndices,
+  createHeightCache,
   createItemObserver,
   createScheduler,
   createScrollTracker,
@@ -11,10 +12,12 @@ import {
   resolveScrollTarget,
   supportsCss,
   type ColumnsOption,
+  type HeightCache,
   type ItemObserver,
   type ItemPosition,
   type LayoutInfo,
   type LayoutMode,
+  type Scheduler,
   type ScrollState,
 } from '../core';
 
@@ -176,11 +179,11 @@ function MasonrySnapGrid<T>({
    */
   const refCallbacks = useRef<Array<(el: HTMLDivElement | null) => void>>([]);
 
-  /** Cache of measured item heights, indexed by item position. */
-  const cachedHeightsRef = useRef<number[]>([]);
-
-  /** Whether every item has been measured at least once. */
-  const isMeasuredRef = useRef(false);
+  /**
+   * Measured item heights, cached by item key rather than by index so that a
+   * height follows its item through prepends, reorders, and filters.
+   */
+  const heightCacheRef = useRef<HeightCache>(createHeightCache());
 
   /** Previous container width, so height-only changes do not relayout. */
   const prevWidthRef = useRef(0);
@@ -199,6 +202,22 @@ function MasonrySnapGrid<T>({
   /** Live item observer, shared by every mounted item. */
   const itemObserverRef = useRef<ItemObserver | null>(null);
 
+  /**
+   * Follow-up layout pass, for when a measurement round learned something but
+   * left items still unmeasured.
+   *
+   * A pass can only measure what is mounted. When every cached height is
+   * invalidated at once — a column-width change does that — the items that are
+   * then forced back into the DOM to be re-measured only exist *after* the
+   * render that pass triggers, so one more pass is needed to read them. It is
+   * gated on having learned a new height, which is what makes it terminate:
+   * an item that genuinely measures zero never counts as progress.
+   */
+  const remeasureRef = useRef<Scheduler | null>(null);
+  if (!remeasureRef.current) {
+    remeasureRef.current = createScheduler(() => computeLayoutRef.current());
+  }
+
   /** Latest onLayout callback, kept out of effect dependencies. */
   const onLayoutRef = useRef(onLayout);
   onLayoutRef.current = onLayout;
@@ -215,9 +234,6 @@ function MasonrySnapGrid<T>({
   /** Whether native CSS masonry should be used */
   const [useCss, setUseCss] = useState(false);
 
-  /** Set once every item has a real measured height. */
-  const [isMeasured, setIsMeasured] = useState(false);
-
   /** Latest scroll geometry, updated at most once per frame. */
   const [scroll, setScroll] = useState<ScrollState>(EMPTY_SCROLL_STATE);
 
@@ -227,6 +243,19 @@ function MasonrySnapGrid<T>({
   const hasEstimate =
     typeof estimatedItemHeight === 'number' && estimatedItemHeight > 0;
 
+  /**
+   * Item identity. Declared ahead of the layout pass because the height cache
+   * is keyed by it, not by index.
+   */
+  const keyFor = useCallback(
+    (item: T, i: number): React.Key => (getItemKey ? getItemKey(item, i) : i),
+    [getItemKey]
+  );
+
+  /**
+   * Item identity. Declared ahead of the layout pass because the height cache
+   * is keyed by it, not by index.
+   */
   /**
    * Detect client mount and CSS masonry support
    */
@@ -246,17 +275,7 @@ function MasonrySnapGrid<T>({
   useEffect(() => {
     itemRefs.current.length = items.length;
     refCallbacks.current.length = items.length;
-    cachedHeightsRef.current.length = items.length;
   }, [items]);
-
-  /**
-   * Reset measurement when items change so new items get measured.
-   */
-  useEffect(() => {
-    if (!virtualize) return;
-    isMeasuredRef.current = false;
-    setIsMeasured(false);
-  }, [items, virtualize]);
 
   /**
    * Core masonry layout pass.
@@ -271,17 +290,26 @@ function MasonrySnapGrid<T>({
     const containerWidth = container.offsetWidth;
     if (containerWidth <= 0) return;
 
+    const cache = heightCacheRef.current;
+    const keys = items.map(keyFor);
+
+    // Heights for items that no longer exist would otherwise accumulate for
+    // the lifetime of the grid.
+    cache.retain(keys);
+
+    const knownBefore = cache.size;
+
     // Measure whatever is currently mounted; virtualized-away items keep
     // their previously cached height.
     itemRefs.current.slice(0, items.length).forEach((el, i) => {
-      if (!el) return;
-      const h = el.offsetHeight;
-      if (h > 0) cachedHeightsRef.current[i] = h;
+      if (el) cache.set(keys[i], el.offsetHeight);
     });
+
+    const heights = cache.read(keys);
 
     const result = computeLayout_(
       items.length,
-      cachedHeightsRef.current,
+      heights,
       containerWidth,
       gutter,
       minColWidth,
@@ -289,18 +317,14 @@ function MasonrySnapGrid<T>({
       hasEstimate ? estimatedItemHeight : 0
     );
 
+    // Items still waiting on a height will have been forced into the DOM by
+    // the render this pass triggers; come back once they are mounted.
+    if (cache.size > knownBefore && heights.some((h) => h === undefined)) {
+      remeasureRef.current?.schedule();
+    }
+
     setPositions(result.positions);
     setContainerHeight(result.containerHeight);
-
-    if (virtualize && !isMeasuredRef.current) {
-      const allCached = items.every(
-        (_, i) => (cachedHeightsRef.current[i] ?? 0) > 0
-      );
-      if (allCached) {
-        isMeasuredRef.current = true;
-        setIsMeasured(true);
-      }
-    }
 
     onLayoutRef.current?.({
       columnCount: result.columnCount,
@@ -311,10 +335,10 @@ function MasonrySnapGrid<T>({
     });
   }, [
     items,
+    keyFor,
     gutter,
     minColWidth,
     columns,
-    virtualize,
     hasEstimate,
     estimatedItemHeight,
   ]);
@@ -330,16 +354,6 @@ function MasonrySnapGrid<T>({
     if (!isMounted || useCss) return;
     computeLayoutRef.current();
   }, [isMounted, useCss, items, gutter, minColWidth, columns]);
-
-  /**
-   * Re-run layout once measurement state flips, so newly measured items are
-   * positioned with their real heights.
-   */
-  useEffect(() => {
-    if (!isMounted || useCss) return;
-    computeLayoutRef.current();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMeasured]);
 
   /**
    * Per-item observation: makes the layout self-healing.
@@ -362,6 +376,9 @@ function MasonrySnapGrid<T>({
     };
   }, [isMounted, useCss, observeItemResize, watchImages]);
 
+  /** Drop any pending follow-up pass on unmount. */
+  useEffect(() => () => remeasureRef.current?.cancel(), []);
+
   /**
    * Container ResizeObserver.
    *
@@ -376,9 +393,7 @@ function MasonrySnapGrid<T>({
 
     const scheduler = createScheduler(() => {
       // Column width changed, so every cached height is now stale.
-      cachedHeightsRef.current = [];
-      isMeasuredRef.current = false;
-      setIsMeasured(false);
+      heightCacheRef.current.clear();
       computeLayoutRef.current();
     });
 
@@ -420,28 +435,26 @@ function MasonrySnapGrid<T>({
    * Which items are inside the viewport, or `null` when everything renders.
    */
   const visibleIndices = useMemo<Set<number> | null>(() => {
-    const active = canVirtualize({
-      virtualize,
-      isMeasured,
-      hasEstimate,
-      itemCount: items.length,
-    });
+    if (!canVirtualize({ virtualize, itemCount: items.length })) return null;
 
-    if (!active || positions.length !== items.length) return null;
-
+    // `positions` may be shorter than `items` on the render that follows an
+    // items change, and some items may be unmeasured. Both cases are handled
+    // per-item by the core, which forces those items to render rather than
+    // abandoning virtualization for the whole list.
     return computeVisibleIndices({
+      count: items.length,
       positions,
-      heights: cachedHeightsRef.current,
+      heights: heightCacheRef.current.read(items.map(keyFor)),
       scroll,
       overscan,
       fallbackHeight: hasEstimate ? estimatedItemHeight : 0,
     });
   }, [
     virtualize,
-    isMeasured,
     hasEstimate,
     estimatedItemHeight,
-    items.length,
+    items,
+    keyFor,
     positions,
     scroll,
     overscan,
@@ -463,11 +476,6 @@ function MasonrySnapGrid<T>({
     }
     return cb;
   };
-
-  const keyFor = useCallback(
-    (item: T, i: number): React.Key => (getItemKey ? getItemKey(item, i) : i),
-    [getItemKey]
-  );
 
   /**
    * CSS Masonry mode — the browser does the placement, so no JS layout runs.
@@ -510,8 +518,14 @@ function MasonrySnapGrid<T>({
     );
   }
 
-  const hasPositions =
-    isMounted && positions.length === items.length && items.length > 0;
+  /**
+   * Keep the container's height as soon as one has been computed, rather than
+   * only while `positions` matches `items` exactly. During the render that
+   * follows an append the two disagree for one frame, and dropping the height
+   * there collapses a container full of absolutely positioned children to zero
+   * — which yanks the page scroll position back on every infinite-scroll page.
+   */
+  const hasPositions = isMounted && items.length > 0 && containerHeight > 0;
 
   /**
    * JS Masonry rendering
@@ -570,7 +584,7 @@ function MasonrySnapGrid<T>({
  */
 function computeLayout_(
   count: number,
-  heights: number[],
+  heights: (number | undefined)[],
   containerWidth: number,
   gutter: number,
   minColWidth: number,

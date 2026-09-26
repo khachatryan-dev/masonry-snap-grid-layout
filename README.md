@@ -38,9 +38,9 @@ One framework-agnostic layout core. Four adapters. Zero dependencies.
 
 **Try it**
 
-[![Vanilla JS Sandbox](https://img.shields.io/badge/%E2%96%B6%20Vanilla%20JS-sandbox-f7df1e?style=for-the-badge)](https://codesandbox.io/p/sandbox/l9xl7s)
-[![React Sandbox](https://img.shields.io/badge/%E2%96%B6%20React-sandbox-61dafb?style=for-the-badge)](https://codesandbox.io/p/sandbox/rgxsxp)
-[![Vue 3 Sandbox](https://img.shields.io/badge/%E2%96%B6%20Vue%203-sandbox-42b883?style=for-the-badge)](https://codesandbox.io/p/devbox/r58pdw)
+[![Vanilla JS Sandbox](https://img.shields.io/badge/%E2%96%B6%20Vanilla%20JS-sandbox-f7df1e?style=for-the-badge)](https://stackblitz.com/edit/masonry-snap-grid-layout-vanilla-js?file=main.js)
+[![React Sandbox](https://img.shields.io/badge/%E2%96%B6%20React-sandbox-61dafb?style=for-the-badge)](https://stackblitz.com/edit/masonry-snap-grid-layout-react?file=package.json)
+[![Vue 3 Sandbox](https://img.shields.io/badge/%E2%96%B6%20Vue%203-sandbox-42b883?style=for-the-badge)](https://stackblitz.com/edit/masonry-snap-grid-layout-vue-3?file=package.json)
 
 [![Run the examples locally](https://img.shields.io/badge/%E2%9A%99%20All%20four%20frameworks-run%20locally-6366f1?style=for-the-badge&labelColor=1e1b4b)](https://github.com/khachatryan-dev/masonry-snap-grid-layout/tree/main/examples)
 

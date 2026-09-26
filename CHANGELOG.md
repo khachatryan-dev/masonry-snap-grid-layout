@@ -4,6 +4,60 @@ All notable changes to this project are documented here.
 
 ---
 
+## [Unreleased]
+
+No breaking changes to any adapter's public API. `core/model` internals changed
+shape — `computeVisibleIndices` now takes an explicit `count`, and
+`canVirtualize` no longer consults measurement state — but `core` is not a
+published entry point.
+
+### Fixed
+
+- **Virtualization collapsed whenever the item list changed, re-rendering every
+  item.** Appending a page of results reset the measurement flag, which turned
+  virtualization off for the _whole_ list until all of it had been measured
+  again. Adding 50 items to a 200-item list cost 262 `renderItem` calls and
+  mounted all 250 nodes; it now costs 74 and mounts only the new items plus
+  what is on screen. The cost of appending is now proportional to the page, not
+  to the list — which is the case virtualization exists for. Affects React and
+  Vue. Unmeasured items are now forced to render individually, by
+  `computeVisibleIndices`, instead of the list falling back wholesale.
+- **Cached heights were indexed by position, so prepending or reordering
+  shifted every height onto the wrong item.** Heights are now cached by
+  `getItemKey`, so a measurement follows its item. This previously self-
+  corrected only because the render-everything fallback above re-measured the
+  list; without that fallback it would have been visible. Affects React and Vue.
+- **The container's height was dropped for one frame after an items change**,
+  collapsing a container of absolutely positioned children to zero and yanking
+  the page scroll position back on every infinite-scroll page. React only; Vue
+  already kept the last known height.
+- **Vanilla/Angular: `setOptions({ observeItemResize })` and
+  `setOptions({ watchImages })` did nothing.** The item observer was built once
+  in the constructor, so enabling self-healing layout after construction — or
+  switching `layoutMode` from CSS back to JS — left it permanently inert. The
+  observer is now reconciled against the current options on every
+  `setOptions()` call.
+- **Vue: `layoutMode`, `observeItemResize`, and `watchImages` were read once on
+  mount.** Binding any of them to a ref and changing it afterwards silently did
+  nothing — the same defect fixed for Angular's inputs in 1.3.0. All three are
+  now watched, and switching `layoutMode` tears down the outgoing engine's
+  styles before the incoming one writes its own.
+- **`columnWidth` could be negative** when an explicit `columns` count, or a
+  breakpoint map resolved against a narrow container, asked for more columns
+  than the gutters leave room for. Items were given negative widths and
+  rendered outside the container. The width is now clamped at zero.
+
+### Internal
+
+- `core/model/heights.ts` — measured heights cached by item identity, shared by
+  the React and Vue adapters.
+- A layout pass that learns a new height but still has unmeasured items now
+  schedules one follow-up pass, because a pass can only measure what is
+  mounted. Gated on having made progress, so an item that genuinely measures
+  zero cannot loop.
+
+---
+
 ## [1.3.0] — 2026-08-26
 
 No breaking changes. Every new option is opt-in, except the self-healing layout

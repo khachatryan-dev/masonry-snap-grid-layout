@@ -33,6 +33,7 @@ describe('computeVisibleIndices', () => {
   it('shows only rows intersecting the viewport at the top of the grid', () => {
     // Window is [0, 768]; rows 0-3 start at 0/216/432/648 and all intersect.
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({}),
@@ -44,6 +45,7 @@ describe('computeVisibleIndices', () => {
   it('extends the window by the overscan buffer', () => {
     // Overscan 300 pushes the end to 1068, pulling in row 4 (y=864).
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({}),
@@ -55,6 +57,7 @@ describe('computeVisibleIndices', () => {
   it('drops rows that have scrolled above the window', () => {
     // Scrolled to 300: row 0 ends at 200 < 300, so it falls out.
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({ scrollOffset: 300 }),
@@ -66,6 +69,7 @@ describe('computeVisibleIndices', () => {
 
   it('brings later rows in as the page scrolls down', () => {
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({ scrollOffset: 1080 }),
@@ -79,12 +83,14 @@ describe('computeVisibleIndices', () => {
     // Grid starts 1000px down the document. Scrolling to exactly 1000 should
     // look identical to scrolling to 0 on a grid at the very top.
     const atTop = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({}),
       overscan: 0,
     });
     const offsetGrid = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({ scrollOffset: 1000, containerOffset: 1000 }),
@@ -96,6 +102,7 @@ describe('computeVisibleIndices', () => {
   it('includes an item straddling the window edge', () => {
     // Row 3 spans 648..848; a window ending at 700 must still include it.
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({ viewportSize: 700 }),
@@ -117,6 +124,7 @@ describe('computeVisibleIndices', () => {
     });
 
     const visible = computeVisibleIndices({
+      count: 18,
       positions: estimated.positions,
       heights: [],
       scroll: scroll({}),
@@ -126,8 +134,77 @@ describe('computeVisibleIndices', () => {
     expect(rowsPresent(visible)).toEqual([0, 1, 2, 3]);
   });
 
+  it('renders an item that has no position yet', () => {
+    // The render that follows an append has more items than positions. Those
+    // items must be mounted — not clipped against a position that is missing.
+    const visible = computeVisibleIndices({
+      count: 20,
+      positions: GRID.positions, // only 18 entries
+      heights: HEIGHTS,
+      scroll: scroll({ scrollOffset: 100000 }),
+      overscan: 0,
+    });
+    expect(visible.has(18)).toBe(true);
+    expect(visible.has(19)).toBe(true);
+    // The placed items are still clipped normally.
+    expect(visible.has(0)).toBe(false);
+  });
+
+  it('renders an unmeasured item when there is no estimate to stand in', () => {
+    // An item that is never rendered is never measured, so clipping it on a
+    // height of zero would strand it.
+    const heights = [...HEIGHTS];
+    delete heights[17];
+
+    const visible = computeVisibleIndices({
+      count: 18,
+      positions: GRID.positions,
+      heights,
+      scroll: scroll({ scrollOffset: 100000 }),
+      overscan: 0,
+    });
+    expect(visible.has(17)).toBe(true);
+    expect(visible.has(16)).toBe(false);
+  });
+
+  it('clips an unmeasured item once an estimate is supplied', () => {
+    // This is what `estimatedItemHeight` buys: no render-everything pass.
+    const heights = [...HEIGHTS];
+    delete heights[17];
+
+    const visible = computeVisibleIndices({
+      count: 18,
+      positions: GRID.positions,
+      heights,
+      scroll: scroll({ scrollOffset: 100000 }),
+      overscan: 0,
+      fallbackHeight: 200,
+    });
+    expect(visible.has(17)).toBe(false);
+  });
+
+  it('keeps virtualizing the measured part of a partly measured list', () => {
+    // The regression this guards: appending to a virtualized list used to turn
+    // virtualization off wholesale, mounting every item in the list.
+    const heights = [...HEIGHTS];
+    for (let i = 15; i < 18; i++) delete heights[i];
+
+    const visible = computeVisibleIndices({
+      count: 18,
+      positions: GRID.positions,
+      heights,
+      scroll: scroll({}),
+      overscan: 0,
+    });
+
+    // Rows 0-3 are on screen, row 4 is not, and the unmeasured row 5 is forced.
+    expect(rowsPresent(visible)).toEqual([0, 1, 2, 3, 5]);
+    expect(visible.size).toBeLessThan(18);
+  });
+
   it('returns an empty set when scrolled far past the grid', () => {
     const visible = computeVisibleIndices({
+      count: 18,
       positions: GRID.positions,
       heights: HEIGHTS,
       scroll: scroll({ scrollOffset: 100000 }),
@@ -138,34 +215,18 @@ describe('computeVisibleIndices', () => {
 });
 
 describe('canVirtualize', () => {
-  const base = {
-    virtualize: true,
-    isMeasured: false,
-    hasEstimate: false,
-    itemCount: 10,
-  };
-
   it('is off when virtualize is disabled', () => {
-    expect(canVirtualize({ ...base, virtualize: false, isMeasured: true })).toBe(
-      false
-    );
-  });
-
-  it('is off before measurement when no estimate is supplied', () => {
-    // Clipping items whose heights are still unknown would lay out from zeros.
-    expect(canVirtualize(base)).toBe(false);
-  });
-
-  it('is on once every item is measured', () => {
-    expect(canVirtualize({ ...base, isMeasured: true })).toBe(true);
-  });
-
-  it('is on immediately when an estimate is supplied', () => {
-    // This is what lets very large lists skip the render-everything pass.
-    expect(canVirtualize({ ...base, hasEstimate: true })).toBe(true);
+    expect(canVirtualize({ virtualize: false, itemCount: 10 })).toBe(false);
   });
 
   it('is off for an empty list', () => {
-    expect(canVirtualize({ ...base, isMeasured: true, itemCount: 0 })).toBe(false);
+    expect(canVirtualize({ virtualize: true, itemCount: 0 })).toBe(false);
+  });
+
+  it('is on for a non-empty list, regardless of measurement state', () => {
+    // Measurement is no longer consulted here. Clipping an unmeasured item is
+    // prevented per-item by computeVisibleIndices, so a partially measured
+    // list stays virtualized instead of falling back to rendering everything.
+    expect(canVirtualize({ virtualize: true, itemCount: 10 })).toBe(true);
   });
 });

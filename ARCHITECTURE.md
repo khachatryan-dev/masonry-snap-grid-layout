@@ -27,6 +27,7 @@ src/
 │   │   ├── types.ts          options, LayoutInfo, ScrollState
 │   │   ├── columns.ts        column count + breakpoint resolution
 │   │   ├── layout.ts         shortest-column placement
+│   │   ├── heights.ts        measured heights, cached by item key
 │   │   └── virtualization.ts visible-window maths
 │   ├── lib/                  browser primitives
 │   │   ├── schedule.ts       animation-frame coalescing
@@ -78,6 +79,7 @@ Import cycles are also rejected.
 | ------------------------------ | ------------------------------------------------ |
 | Placement / column behaviour   | `core/model/layout.ts`, `core/model/columns.ts`  |
 | What is visible when scrolling | `core/model/virtualization.ts`                   |
+| How measurements are retained  | `core/model/heights.ts`                          |
 | Scroll or resize handling      | `core/lib/scroll.ts`                             |
 | Reacting to content resizing   | `core/lib/measure.ts`                            |
 | A new option                   | `core/model/types.ts`, then each adapter's props |
@@ -97,7 +99,7 @@ each adapter.
 | `npm run format:check`  | Prettier                                                      |
 | `npm run check:arch`    | Layer boundaries and import cycles                            |
 | `npm run typecheck`     | Three compilers: `tsc`, the Angular config, and `vue-tsc`     |
-| `npm test`              | 194 tests across all four adapters                            |
+| `npm test`              | 272 tests across all four adapters                            |
 | `npm run build`         | Vite library build plus declarations                          |
 | `npm run size`          | Minified+gzipped budget per entry, including shared chunks    |
 | `npm run check:package` | Packs the tarball and verifies every export actually resolves |
@@ -110,9 +112,9 @@ that — only the packed tarball can.
 ## Testing notes
 
 Tests live in `tests/`, mirroring the layers: `core-layout`, `core-columns`
-(inside `core-layout`), `core-virtualization`, `core-scroll`, `core-measure` for
-the pure and primitive layers, then `core` (Vanilla engine), `react`, `vue`, and
-`angular` for the adapters.
+(inside `core-layout`), `core-heights`, `core-virtualization`, `core-scroll`,
+`core-measure` for the pure and primitive layers, then `core` (Vanilla engine),
+`react`, `vue`, and `angular` for the adapters.
 
 `tests/setup.ts` carries the shared harness. Two pieces matter:
 

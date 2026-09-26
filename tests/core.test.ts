@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { getColumnCount, supportsCss } from '../src/core';
 import {
   applyMasonryLayout,
@@ -375,5 +375,123 @@ describe('MasonrySnapGridLayout', () => {
     // Should not throw; uses layoutMode 'auto', gutter 16, minColWidth 250
     expect(container).toBeTruthy();
     masonry.destroy();
+  });
+});
+
+// ── setOptions and the item observer (regression) ────────────────────────────
+
+describe('MasonrySnapGridLayout item observation via setOptions', () => {
+  let container: HTMLDivElement;
+  let restore: () => void;
+
+  const renderItem = (item: { title: string }): HTMLElement => {
+    const el = document.createElement('div');
+    el.className = 'probe-item';
+    el.textContent = item.title;
+    return el;
+  };
+
+  const items = [{ title: 'a' }, { title: 'b' }, { title: 'c' }];
+
+  /** Is any live observer watching the grid's item elements? */
+  const observingItems = (): boolean =>
+    MockResizeObserver.active.some((o) =>
+      [...o.observed].some((el) =>
+        (el as HTMLElement).classList.contains('probe-item')
+      )
+    );
+
+  beforeEach(() => {
+    restore = installMockResizeObserver();
+    container = document.createElement('div');
+    container.style.width = '800px';
+    document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    restore();
+    container.remove();
+  });
+
+  /**
+   * Regression: the item observer was built once, in `init()`, so
+   * `observeItemResize` and `watchImages` were effectively mount-time-only.
+   * Turning observation on through `setOptions` did nothing at all, leaving
+   * the self-healing layout dead for the instance's whole lifetime.
+   */
+  it('starts observing items when observeItemResize is turned on', () => {
+    const grid = new MasonrySnapGridLayout(container, {
+      items,
+      layoutMode: 'js',
+      observeItemResize: false,
+      renderItem,
+    });
+    expect(observingItems()).toBe(false);
+
+    grid.setOptions({ observeItemResize: true });
+    expect(observingItems()).toBe(true);
+
+    grid.destroy();
+  });
+
+  it('stops observing items when observeItemResize is turned off', () => {
+    const grid = new MasonrySnapGridLayout(container, {
+      items,
+      layoutMode: 'js',
+      observeItemResize: true,
+      renderItem,
+    });
+    expect(observingItems()).toBe(true);
+
+    grid.setOptions({ observeItemResize: false });
+    expect(observingItems()).toBe(false);
+
+    grid.destroy();
+  });
+
+  it('rebuilds the observer when watchImages changes', () => {
+    const grid = new MasonrySnapGridLayout(container, {
+      items,
+      layoutMode: 'js',
+      observeItemResize: true,
+      watchImages: false,
+      renderItem,
+    });
+    const before = MockResizeObserver.active.length;
+
+    // watchImages is fixed at construction, so honouring a change means
+    // building a fresh observer rather than silently keeping the old setting.
+    grid.setOptions({ watchImages: true });
+    expect(observingItems()).toBe(true);
+    expect(MockResizeObserver.active.length).toBe(before);
+
+    grid.destroy();
+  });
+
+  it('does not observe items while the CSS engine is active', () => {
+    const grid = new MasonrySnapGridLayout(container, {
+      items,
+      layoutMode: 'js',
+      observeItemResize: true,
+      renderItem,
+    });
+    expect(observingItems()).toBe(true);
+
+    // CSS masonry does its own placement; watching items would be pointless
+    // work. Switching back must restore observation.
+    const originalCSS = globalThis.CSS;
+    globalThis.CSS = {
+      supports: (property: string, value?: string) =>
+        property === 'grid-template-rows' && value === 'masonry',
+    } as unknown as typeof globalThis.CSS;
+
+    grid.setOptions({ layoutMode: 'auto' });
+    expect(observingItems()).toBe(false);
+
+    grid.setOptions({ layoutMode: 'js' });
+    expect(observingItems()).toBe(true);
+
+    globalThis.CSS = originalCSS;
+    grid.destroy();
   });
 });

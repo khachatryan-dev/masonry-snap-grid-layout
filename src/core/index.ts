@@ -37,6 +37,9 @@ export {
   resolveBreakpoints,
 } from './model/columns';
 
+export { createHeightCache } from './model/heights';
+export type { HeightCache, ItemKey } from './model/heights';
+
 export { computeVisibleIndices, canVirtualize } from './model/virtualization';
 export type { VisibleRangeParams } from './model/virtualization';
 

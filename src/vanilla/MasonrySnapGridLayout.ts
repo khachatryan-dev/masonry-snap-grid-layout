@@ -51,6 +51,9 @@ export default class MasonrySnapGridLayout<T> {
   private usesCss = false;
   private destroyed = false;
 
+  /** `watchImages` the live item observer was built with; it is fixed at construction. */
+  private observerWatchesImages = true;
+
   /** Element cache keyed by `getItemKey`, enabling reuse across updates. */
   private keyed = new Map<string | number, HTMLElement>();
 
@@ -72,16 +75,46 @@ export default class MasonrySnapGridLayout<T> {
 
   private init(): void {
     this.usesCss = this.shouldUseCss();
-
-    if (!this.usesCss && this.options.observeItemResize) {
-      this.itemObserver = createItemObserver({
-        onChange: () => this.layout(),
-        watchImages: this.options.watchImages,
-      });
-    }
-
+    this.syncItemObserver();
     this.render();
     this.observeResize();
+  }
+
+  /**
+   * Bring the item observer in line with the current options.
+   *
+   * The observer used to be built once, in `init()`, which made
+   * `observeItemResize` and `watchImages` mount-time-only: turning either on
+   * through `setOptions` did nothing, and so did switching `layoutMode` from
+   * CSS back to JS — the self-healing path stayed dead for the instance's
+   * whole lifetime.
+   */
+  private syncItemObserver(): void {
+    const wanted = !this.usesCss && this.options.observeItemResize;
+
+    if (!wanted) {
+      this.itemObserver?.disconnect();
+      this.itemObserver = undefined;
+      return;
+    }
+
+    // `watchImages` cannot be changed on a live observer, so a change rebuilds it.
+    if (
+      this.itemObserver &&
+      this.observerWatchesImages === this.options.watchImages
+    ) {
+      return;
+    }
+
+    this.itemObserver?.disconnect();
+    this.observerWatchesImages = this.options.watchImages;
+    this.itemObserver = createItemObserver({
+      onChange: () => this.layout(),
+      watchImages: this.options.watchImages,
+    });
+
+    // Adopt elements that were built before the observer existed.
+    this.elements.forEach((el) => this.itemObserver?.observe(el));
   }
 
   private shouldUseCss(): boolean {
@@ -195,7 +228,10 @@ export default class MasonrySnapGridLayout<T> {
         });
         onLayout({
           columnCount,
-          columnWidth: (width - gutter * (columnCount - 1)) / columnCount,
+          columnWidth: Math.max(
+            0,
+            (width - gutter * (columnCount - 1)) / columnCount
+          ),
           containerHeight: this.container.clientHeight,
           itemCount: this.elements.length,
           engine: 'css',
@@ -269,6 +305,9 @@ export default class MasonrySnapGridLayout<T> {
         this.usesCss = nowCss;
       }
     }
+
+    // Must follow the mode switch above: CSS masonry never observes items.
+    this.syncItemObserver();
 
     if (rendererChanged) {
       // Every element must be rebuilt by the new renderer. Discard the old

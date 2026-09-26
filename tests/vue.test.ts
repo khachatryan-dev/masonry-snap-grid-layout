@@ -651,3 +651,116 @@ describe('Vue MasonrySnapGrid CSS masonry mode', () => {
     wrapper.unmount();
   });
 });
+
+// ── Live prop changes + incremental virtualization (regression) ──────────────
+
+describe('MasonrySnapGrid live prop changes', () => {
+  let restore: () => void;
+  let originalCSS: typeof globalThis.CSS;
+
+  beforeEach(() => {
+    restore = installMockResizeObserver();
+    originalCSS = globalThis.CSS;
+    setScrollY(0);
+  });
+
+  afterEach(() => {
+    restore();
+    globalThis.CSS = originalCSS;
+    setScrollY(0);
+  });
+
+  /**
+   * Regression: `layoutMode` was read once, in `onMounted`. Binding it to a ref
+   * and changing it afterwards silently did nothing — the same class of bug
+   * that made every Angular input except `items` inert before 1.3.0.
+   */
+  it('switches engines when layoutMode changes after mount', async () => {
+    globalThis.CSS = {
+      supports: (property: string, value?: string) =>
+        property === 'grid-template-rows' && value === 'masonry',
+    } as unknown as typeof globalThis.CSS;
+
+    const wrapper = mountGrid({ items: makeItems(4), layoutMode: 'js' });
+    await settle(wrapper);
+
+    const root = wrapper.element as HTMLElement;
+    expect(root.className).toContain('msgl-container--js');
+    expect(root.style.height).not.toBe('');
+
+    await wrapper.setProps({ layoutMode: 'auto' });
+    await settle(wrapper);
+
+    expect(root.className).toContain('msgl-container--css');
+    // The JS engine's leftovers must not fight the browser's placement.
+    expect(root.style.height).toBe('');
+    const item = wrapper.find('[data-testid="item-0"]').element
+      .parentElement as HTMLElement;
+    expect(item.style.position).toBe('');
+    expect(item.style.transform).toBe('');
+  });
+
+  /**
+   * Regression: the item observer was built once, in `onMounted`, so turning
+   * `observeItemResize` on later left the self-healing path dead.
+   */
+  it('starts observing items when observeItemResize is turned on later', async () => {
+    const wrapper = mountGrid({
+      items: makeItems(4),
+      observeItemResize: false,
+    });
+    await settle(wrapper);
+
+    const observing = () =>
+      MockResizeObserver.active.some((o) =>
+        [...o.observed].some((el) =>
+          (el as HTMLElement).classList.contains('msgl-item')
+        )
+      );
+
+    expect(observing()).toBe(false);
+
+    await wrapper.setProps({ observeItemResize: true });
+    await settle(wrapper);
+
+    expect(observing()).toBe(true);
+  });
+
+  it('stops observing items when observeItemResize is turned off later', async () => {
+    const wrapper = mountGrid({ items: makeItems(4), observeItemResize: true });
+    await settle(wrapper);
+
+    await wrapper.setProps({ observeItemResize: false });
+    await settle(wrapper);
+
+    const stillObserving = MockResizeObserver.active.some((o) =>
+      [...o.observed].some((el) =>
+        (el as HTMLElement).classList.contains('msgl-item')
+      )
+    );
+    expect(stillObserving).toBe(false);
+  });
+
+  /**
+   * Regression: appending to a virtualized list used to turn virtualization off
+   * for the whole list until everything had been measured again.
+   */
+  it('keeps the list virtualized when a page is appended', async () => {
+    const wrapper = mountGrid({
+      items: makeItems(120),
+      virtualize: true,
+      overscan: 0,
+      getItemKey: (item: Item) => item.id,
+    });
+    mockRectGeometry(wrapper.element as HTMLElement, 0, 20000);
+    await settle(wrapper);
+
+    const mounted = () => wrapper.findAll('.msgl-item').length;
+    expect(mounted()).toBeLessThan(120);
+
+    await wrapper.setProps({ items: makeItems(150) });
+    await settle(wrapper);
+
+    expect(mounted()).toBeLessThan(120);
+  });
+});
