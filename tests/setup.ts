@@ -85,12 +85,27 @@ export function mockRectGeometry(
 }
 
 /**
- * Wait long enough for jsdom's timer-backed `requestAnimationFrame` to fire.
+ * Wait for `count` real animation frames, then one macrotask.
  * Scroll and resize updates are coalesced into animation frames, so assertions
  * that follow an event must yield at least one frame.
+ *
+ * This waits on frames rather than a fixed wall-clock delay: frame callbacks
+ * run in registration order, so once ours fires every frame the component
+ * queued before it has fired too. A fixed `setTimeout` guess flaked on slow
+ * CI runners and on Windows, whose ~15.6ms timer granularity stretches each
+ * jsdom frame.
  */
-export function flushFrames(count = 2): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 20 * count));
+export async function flushFrames(count = 2): Promise<void> {
+  const raf =
+    typeof requestAnimationFrame === "function"
+      ? requestAnimationFrame
+      : (cb: () => void) => setTimeout(cb, 16);
+  for (let i = 0; i < count; i++) {
+    await new Promise<void>((resolve) => raf(() => resolve()));
+  }
+  // Let work scheduled from inside those frames (state flushes, re-renders)
+  // settle before the caller asserts.
+  await new Promise<void>((resolve) => setTimeout(resolve, 0));
 }
 
 /**
